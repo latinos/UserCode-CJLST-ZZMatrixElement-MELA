@@ -2,14 +2,15 @@
  *
  *  MELA 
  *
- *  $Date: 2012/09/14 16:29:02 $
- *  $Revision: 1.1 $
+ *  $Date: 2012/09/14 17:47:37 $
+ *  $Revision: 1.2 $
  */
 
 #include <ZZMatrixElement/MELA/interface/Mela.h>
 #include <DataFormats/GeometryVector/interface/Pi.h>
 #include <FWCore/ParameterSet/interface/FileInPath.h>
 
+#include "computeAngles.h"
 #include "AngularPdfFactory.h"
 #include "RooqqZZ_JHU.h"
 #include "RooTsallis.h"
@@ -53,10 +54,10 @@ Mela::~Mela(){
 }
 
 
-void Mela::computeLD(TLorentzVector Z1L1,
-		     TLorentzVector Z1L2,
-		     TLorentzVector Z2L1,
-		     TLorentzVector Z2L2,		 
+void Mela::computeLD(TLorentzVector Z1_lept,  // made names more specific, charge effect angle calc.
+		     TLorentzVector Z1_antiLept,  
+		     TLorentzVector Z2_lept,  
+		     TLorentzVector Z2_antiLept,  
 		     // return variables:
 		     double& costhetastar,
 		     double& costheta1, 
@@ -66,8 +67,23 @@ void Mela::computeLD(TLorentzVector Z1L1,
 		     float& ld, 
 		     float& psig,
 		     float& pbkg) {
+  
+  //compute angles
+  double m1=0, m2=0, mzz=0;
+  
+  m1=(Z1_lept + Z1_antiLept).M();
+  m2=(Z2_lept + Z2_antiLept).M();
+  mzz=(Z1_lept + Z1_antiLept + Z2_lept + Z2_antiLept).M();
 
-  //FIXME To be implemented.
+  mela::computeAngles(Z1_lept,Z1_antiLept,Z2_lept,Z2_antiLept,costheta1,costheta2,phi,costhetastar,phistar1);
+
+  //compute ld
+  checkZorder(m1,m2,costhetastar,costheta1,costheta2,phi,phistar1);
+
+  pair<double,double> P = likelihoodDiscriminant(mzz,m1,m2,costhetastar,costheta1,costheta2,phi,phistar1);
+  psig=P.first;
+  pbkg=P.second;
+  ld = psig/(psig+pbkg);
   
 }
 

@@ -6,8 +6,8 @@
  *  MELA 
  *
  *
- *  $Date: 2012/08/19 20:46:50 $
- *  $Revision: 1.4 $
+ *  $Date: 2012/09/14 16:29:02 $
+ *  $Revision: 1.1 $
  *  \author JHU
  */
 
@@ -27,10 +27,10 @@ public:
   ~Mela();
 
   /// Compute angles and LD from the lepton four-vectors.
-  void computeLD(TLorentzVector Z1L1,
-		 TLorentzVector Z1L2,
-		 TLorentzVector Z2L1,
-		 TLorentzVector Z2L2,		 
+  void computeLD(TLorentzVector Z1_lept,
+		 TLorentzVector Z1_antiLept,
+		 TLorentzVector Z2_lept,
+		 TLorentzVector Z2_antiLept,		 
 		 // return variables:
 		 double& costhetastar,
 		 double& costheta1, 

@@ -5,6 +5,7 @@
 <use name="rootmath"/>
 <use name="roofit"/>
 <use name="roofitcore"/>
+<use name="CLHEP"/>
 
 <export>
   <lib   name="1"/>
