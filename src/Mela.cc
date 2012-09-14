@@ -2,8 +2,8 @@
  *
  *  MELA 
  *
- *  $Date: 2012/08/31 11:42:45 $
- *  $Revision: 1.12 $
+ *  $Date: 2012/09/14 16:29:02 $
+ *  $Revision: 1.1 $
  */
 
 #include <ZZMatrixElement/MELA/interface/Mela.h>
@@ -315,9 +315,15 @@ pair<double,double> Mela::likelihoodDiscriminant (double mZZ, double m1, double 
   delete SMZZ;
   delete SMHiggs;
   delete allparamsB;
-  delete[] ptparamsB; //FIXME: this is not deleting the actual objects!!!
   delete allparamsS;
-  delete[] ptparamsS; //FIXME: ditto!!
+
+  for(int i=0; i<NptparamsB; i++){
+    delete ptparamsB[i]; 
+  }
+  for(int i=0; i<NptparamsS; i++){
+    delete ptparamsS[i]; 
+  }
+  
   delete sigPt;
   delete bkgPt;
   delete sigY;
