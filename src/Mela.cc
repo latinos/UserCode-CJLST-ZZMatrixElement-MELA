@@ -2,8 +2,8 @@
  *
  *  MELA 
  *
- *  $Date: 2012/09/14 20:04:45 $
- *  $Revision: 1.3 $
+ *  $Date: 2012/09/17 19:06:31 $
+ *  $Revision: 1.4 $
  */
 
 #include <ZZMatrixElement/MELA/interface/Mela.h>
@@ -237,6 +237,8 @@ pair<float,float> Mela::likelihoodDiscriminant (float mZZ, float m1, float m2, f
  
   char fileName[200];
   sprintf(fileName,"ZZMatrixElement/MELA/data/allParamsSig_%dTeV.txt",LHCsqrts);
+  edm::FileInPath TsallisParams_Sig(fileName);
+  string fullPath = TsallisParams_Sig.fullPath();
 
   RooTsallisExp* sigPt = new RooTsallisExp("sigPt","sigPt",*pt_rrv,*mzz_rrv,
 					   *ptparamsS[0],*ptparamsS[1],*ptparamsS[2],
@@ -246,15 +248,18 @@ pair<float,float> Mela::likelihoodDiscriminant (float mZZ, float m1, float m2, f
 					   *ptparamsS[12],*ptparamsS[13],*ptparamsS[14],
 					   *ptparamsS[15],*ptparamsS[16]);
 
-  allparamsS->readFromFile(fileName,0);
+  allparamsS->readFromFile(fullPath.c_str(),0);
 
   sprintf(fileName,"ZZMatrixElement/MELA/data/allParamsBkg_%dTeV.txt",LHCsqrts);
+  edm::FileInPath TsallisParam_Bkg(fileName);
+  fullPath = TsallisParam_Bkg.fullPath();
+
   RooTsallis* bkgPt = new RooTsallis("bkgPt","bkgPt",*pt_rrv,*mzz_rrv,
 				     *ptparamsB[0],*ptparamsB[1],*ptparamsB[2],
 				     *ptparamsB[3],*ptparamsB[4],*ptparamsB[5],
 				     *ptparamsB[6],*ptparamsB[7],*ptparamsB[8],
 				     *ptparamsB[9],*ptparamsB[10]);
-  allparamsB->readFromFile(fileName,0);
+  allparamsB->readFromFile(fullPath.c_str(),0);
 
   RooRapiditySig* sigY = new RooRapiditySig("sigY", "sigY", *y_rrv, *mzz_rrv, *sqrtS_rrv);
   RooRapidityBkg* bkgY = new RooRapidityBkg("bkgY", "bkgY", *y_rrv, *mzz_rrv, *sqrtS_rrv);
