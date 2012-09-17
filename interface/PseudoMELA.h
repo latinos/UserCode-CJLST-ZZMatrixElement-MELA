@@ -6,11 +6,12 @@
  *  PseudoMELA discriminator 
  *
  *
- *  $Date: 2012/08/19 20:46:50 $
- *  $Revision: 1.4 $
+ *  $Date: 2012/09/14 16:29:02 $
+ *  $Revision: 1.1 $
  *  \author JHU
  */
 
+#include <TLorentzVector.h>
 
 class AngularPdfFactory;
 class RooRealVar;
@@ -24,14 +25,23 @@ public:
 
   ~PseudoMELA(){};
 
-
-  float eval(float zzmass, float z1mass, float z2mass, 
-	     float costhetstar, 
-	     float costheta1, 
-	     float costheta2, 
-	     float phi, 
-	     float phistar1);
-
+  void eval(TLorentzVector Z1_lept,
+	    TLorentzVector Z1_antiLept,
+	    TLorentzVector Z2_lept,
+	    TLorentzVector Z2_antiLept,
+	    float& ld, 
+	    float& psig,
+	    float& pbkg);
+  
+  void eval(float zzmass, float z1mass, float z2mass, 
+	    float costhetstar, 
+	    float costheta1, 
+	    float costheta2, 
+	    float phi, 
+	    float phistar1,
+	    float& ld, 
+	    float& psig, 
+	    float& psigALT);
 
 private:
   void checkZorder(float& z1mass, float& z2mass,

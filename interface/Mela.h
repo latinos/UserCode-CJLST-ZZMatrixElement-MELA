@@ -6,8 +6,8 @@
  *  MELA 
  *
  *
- *  $Date: 2012/09/14 16:29:02 $
- *  $Revision: 1.1 $
+ *  $Date: 2012/09/14 20:04:45 $
+ *  $Revision: 1.2 $
  *  \author JHU
  */
 
@@ -32,11 +32,11 @@ public:
 		 TLorentzVector Z2_lept,
 		 TLorentzVector Z2_antiLept,		 
 		 // return variables:
-		 double& costhetastar,
-		 double& costheta1, 
-		 double& costheta2,
-		 double& phi,
-		 double& phistar1,
+		 float& costhetastar,
+		 float& costheta1, 
+		 float& costheta2,
+		 float& phi,
+		 float& phistar1,
 		 float& ld, 
 		 float& psig,
 		 float& pbkg);
@@ -45,36 +45,36 @@ public:
 
   /// Compute LD from masses and angles. 
   /// Note that the order of m1/m2 must be consistent with the order of theta1/theta2
-  void computeLD(double mZZ, double m1, double m2, 
-		 double costhetastar,
-		 double costheta1, 
-		 double costheta2,
-		 double phi,
-		 double phistar1,
+  void computeLD(float mZZ, float m1, float m2, 
+		 float costhetastar,
+		 float costheta1, 
+		 float costheta2,
+		 float phi,
+		 float phistar1,
 		 float& ld, 
 		 float& psig,
 		 float& pbkg);
 
 private:	
-  std::vector<double> my8DTemplate(bool normalized, double mZZ, double m1, double m2, 
-				   double costhetastar, 
-				   double costheta1, 
-				   double costheta2, 
-				   double phi, 
-				   double phistar1);
+  std::vector<float> my8DTemplate(bool normalized, float mZZ, float m1, float m2, 
+				   float costhetastar, 
+				   float costheta1, 
+				   float costheta2, 
+				   float phi, 
+				   float phistar1);
 
-  std::pair<double,double> likelihoodDiscriminant (double mZZ, double m1, double m2, 
-						   double costhetastar, 
-						   double costheta1, 
-						   double costheta2, 
-						   double phi, 
-						   double phistar1,
+  std::pair<float,float> likelihoodDiscriminant (float mZZ, float m1, float m2, 
+						   float costhetastar, 
+						   float costheta1, 
+						   float costheta2, 
+						   float phi, 
+						   float phistar1,
 						   int LHCsqrts=8, 
-						   bool withPt = false, double pt = 0.0, 
-						   bool withY = false, double y = 0.0);
+						   bool withPt = false, float pt = 0.0, 
+						   bool withY = false, float y = 0.0);
 
   // Set internal ordering of Z1/Z2
-  void checkZorder(double& z1mass, double& z2mass, double& costhetastar, double& costheta1, double& costheta2, double& phi, double& phistar1);
+  void checkZorder(float& z1mass, float& z2mass, float& costhetastar, float& costheta1, float& costheta2, float& phi, float& phistar1);
 
   TFile *f;
   TH1F *h_mzz;

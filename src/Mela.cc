@@ -2,8 +2,8 @@
  *
  *  MELA 
  *
- *  $Date: 2012/09/14 17:47:37 $
- *  $Revision: 1.2 $
+ *  $Date: 2012/09/14 20:04:45 $
+ *  $Revision: 1.3 $
  */
 
 #include <ZZMatrixElement/MELA/interface/Mela.h>
@@ -59,17 +59,17 @@ void Mela::computeLD(TLorentzVector Z1_lept,  // made names more specific, charg
 		     TLorentzVector Z2_lept,  
 		     TLorentzVector Z2_antiLept,  
 		     // return variables:
-		     double& costhetastar,
-		     double& costheta1, 
-		     double& costheta2,
-		     double& phi,
-		     double& phistar1,
+		     float& costhetastar,
+		     float& costheta1, 
+		     float& costheta2,
+		     float& phi,
+		     float& phistar1,
 		     float& ld, 
 		     float& psig,
 		     float& pbkg) {
   
   //compute angles
-  double m1=0, m2=0, mzz=0;
+  float m1=0, m2=0, mzz=0;
   
   m1=(Z1_lept + Z1_antiLept).M();
   m2=(Z2_lept + Z2_antiLept).M();
@@ -80,7 +80,7 @@ void Mela::computeLD(TLorentzVector Z1_lept,  // made names more specific, charg
   //compute ld
   checkZorder(m1,m2,costhetastar,costheta1,costheta2,phi,phistar1);
 
-  pair<double,double> P = likelihoodDiscriminant(mzz,m1,m2,costhetastar,costheta1,costheta2,phi,phistar1);
+  pair<float,float> P = likelihoodDiscriminant(mzz,m1,m2,costhetastar,costheta1,costheta2,phi,phistar1);
   psig=P.first;
   pbkg=P.second;
   ld = psig/(psig+pbkg);
@@ -91,12 +91,12 @@ void Mela::computeLD(TLorentzVector Z1_lept,  // made names more specific, charg
 
 // Note that consistency is assumed between m1 and costheta1!
 // Since we compute angles with the convention 1 = closest to nominal mZ, a check is performed here that this is the case.
-void Mela::computeLD(double mzz, double m1, double m2, 
-		     double costhetastar,
-		     double costheta1, 
-		     double costheta2,
-		     double phi,
-		     double phistar1,
+void Mela::computeLD(float mzz, float m1, float m2, 
+		     float costhetastar,
+		     float costheta1, 
+		     float costheta2,
+		     float phi,
+		     float phistar1,
 		     float& ld, 
 		     float& psig,
 		     float& pbkg) {
@@ -116,7 +116,7 @@ void Mela::computeLD(double mzz, double m1, double m2,
     abort();
   }
 
-    pair<double,double> P = likelihoodDiscriminant(mzz, m1, m2, costhetastar, costheta1, costheta2, phi, phistar1);
+    pair<float,float> P = likelihoodDiscriminant(mzz, m1, m2, costhetastar, costheta1, costheta2, phi, phistar1);
     psig = P.first;
     pbkg = P.second;
     ld = psig/(psig + pbkg);
@@ -125,11 +125,11 @@ void Mela::computeLD(double mzz, double m1, double m2,
 
 
 
-vector<double> Mela::my8DTemplate(bool normalized,double mZZ, double m1, double m2, double costhetastar, double costheta1, double costheta2, double phi, double phistar1){
+vector<float> Mela::my8DTemplate(bool normalized,float mZZ, float m1, float m2, float costhetastar, float costheta1, float costheta2, float phi, float phistar1){
 
   //multiply the P values
-  double n = h_mzz->GetBinContent(h_mzz->FindBin(mZZ));
-  double Pmzzm1m2 = h_mzzm1m2->GetBinContent(h_mzzm1m2->FindBin(mZZ,m1,m2));
+  float n = h_mzz->GetBinContent(h_mzz->FindBin(mZZ));
+  float Pmzzm1m2 = h_mzzm1m2->GetBinContent(h_mzzm1m2->FindBin(mZZ,m1,m2));
 
   // - - - - - - - - - - - - - - - whitbeck
   // if bin has no events: add 1
@@ -141,28 +141,28 @@ vector<double> Mela::my8DTemplate(bool normalized,double mZZ, double m1, double 
     }
   // - - - - - - - - - - - - - - - 
 
-  double Pmzzcosthetastar = h_mzzcosthetastar->GetBinContent(h_mzzcosthetastar->FindBin(mZZ,costhetastar));
-  double Pmzzcostheta2 = h_mzzcostheta2->GetBinContent(h_mzzcostheta2->FindBin(mZZ,costheta2));
-  double Pmzzcostheta1 = h_mzzcostheta1->GetBinContent(h_mzzcostheta1->FindBin(mZZ,costheta1));
-  double Pmzzphi1 = h_mzzphi1->GetBinContent(h_mzzphi1->FindBin(mZZ,phistar1));
-  double Pmzzphi = h_mzzphi->GetBinContent(h_mzzphi->FindBin(mZZ,phi));
+  float Pmzzcosthetastar = h_mzzcosthetastar->GetBinContent(h_mzzcosthetastar->FindBin(mZZ,costhetastar));
+  float Pmzzcostheta2 = h_mzzcostheta2->GetBinContent(h_mzzcostheta2->FindBin(mZZ,costheta2));
+  float Pmzzcostheta1 = h_mzzcostheta1->GetBinContent(h_mzzcostheta1->FindBin(mZZ,costheta1));
+  float Pmzzphi1 = h_mzzphi1->GetBinContent(h_mzzphi1->FindBin(mZZ,phistar1));
+  float Pmzzphi = h_mzzphi->GetBinContent(h_mzzphi->FindBin(mZZ,phi));
 
   //normalization
-  double binwidth_mzzm1m2 = h_mzzm1m2->GetYaxis()->GetBinWidth(1) * h_mzzm1m2->GetZaxis()->GetBinWidth(1);
-  double binwidth_mzzcosthetastar = h_mzzcosthetastar->GetYaxis()->GetBinWidth(1);
-  double binwidth_mzzcostheta1 = h_mzzcostheta1->GetYaxis()->GetBinWidth(1);
-  double binwidth_mzzcostheta2 = h_mzzcostheta1->GetYaxis()->GetBinWidth(1);
-  double binwidth_mzzphi1 = h_mzzphi1->GetYaxis()->GetBinWidth(1);
-  double binwidth_mzzphi = h_mzzphi->GetYaxis()->GetBinWidth(1);
+  float binwidth_mzzm1m2 = h_mzzm1m2->GetYaxis()->GetBinWidth(1) * h_mzzm1m2->GetZaxis()->GetBinWidth(1);
+  float binwidth_mzzcosthetastar = h_mzzcosthetastar->GetYaxis()->GetBinWidth(1);
+  float binwidth_mzzcostheta1 = h_mzzcostheta1->GetYaxis()->GetBinWidth(1);
+  float binwidth_mzzcostheta2 = h_mzzcostheta1->GetYaxis()->GetBinWidth(1);
+  float binwidth_mzzphi1 = h_mzzphi1->GetYaxis()->GetBinWidth(1);
+  float binwidth_mzzphi = h_mzzphi->GetYaxis()->GetBinWidth(1);
 
-  double Pmzzm1m2_norm = Pmzzm1m2/(n*binwidth_mzzm1m2); 
-  double Pmzzcosthetastar_norm = Pmzzcosthetastar/(n*binwidth_mzzcosthetastar);
-  double Pmzzcostheta1_norm = Pmzzcostheta1/(n*binwidth_mzzcostheta1);
-  double Pmzzcostheta2_norm = Pmzzcostheta2/(n*binwidth_mzzcostheta2);
-  double Pmzzphi1_norm = Pmzzphi1/(n*binwidth_mzzphi1);
-  double Pmzzphi_norm = Pmzzphi/(n*binwidth_mzzphi);
+  float Pmzzm1m2_norm = Pmzzm1m2/(n*binwidth_mzzm1m2); 
+  float Pmzzcosthetastar_norm = Pmzzcosthetastar/(n*binwidth_mzzcosthetastar);
+  float Pmzzcostheta1_norm = Pmzzcostheta1/(n*binwidth_mzzcostheta1);
+  float Pmzzcostheta2_norm = Pmzzcostheta2/(n*binwidth_mzzcostheta2);
+  float Pmzzphi1_norm = Pmzzphi1/(n*binwidth_mzzphi1);
+  float Pmzzphi_norm = Pmzzphi/(n*binwidth_mzzphi);
 
-  vector <double> P;
+  vector <float> P;
   P.push_back(Pmzzm1m2);
   P.push_back(Pmzzcosthetastar);
   P.push_back(Pmzzcostheta1);
@@ -170,7 +170,7 @@ vector<double> Mela::my8DTemplate(bool normalized,double mZZ, double m1, double 
   P.push_back(Pmzzphi);
   P.push_back(Pmzzphi1);
 
-  vector <double> P_norm;
+  vector <float> P_norm;
   P_norm.push_back(Pmzzm1m2_norm);
   P_norm.push_back(Pmzzcosthetastar_norm);
   P_norm.push_back(Pmzzcostheta1_norm);
@@ -192,10 +192,10 @@ vector<double> Mela::my8DTemplate(bool normalized,double mZZ, double m1, double 
     return P;
 }
 
-pair<double,double> Mela::likelihoodDiscriminant (double mZZ, double m1, double m2, double costhetastar, double costheta1, double costheta2, double phi, double phistar1,
+pair<float,float> Mela::likelihoodDiscriminant (float mZZ, float m1, float m2, float costhetastar, float costheta1, float costheta2, float phi, float phistar1,
 						  int LHCsqrts, 
-						  bool withPt, double pt, 
-						  bool withY, double y){
+						  bool withPt, float pt, 
+						  bool withY, float y){
 
   RooRealVar* z1mass_rrv = new RooRealVar("z1mass","m_{Z1}",0.,180.);
   RooRealVar* z2mass_rrv = new RooRealVar("z2mass","m_{Z2}",0.,120.); 
@@ -272,10 +272,10 @@ pair<double,double> Mela::likelihoodDiscriminant (double mZZ, double m1, double 
   phi1_rrv->setVal(phistar1);
   mzz_rrv->setVal(mZZ);
 
-  vector <double> P=my8DTemplate(1, mZZ,  m1,  m2,  costhetastar,  costheta1,  costheta2,  phi,  phistar1);
+  vector <float> P=my8DTemplate(1, mZZ,  m1,  m2,  costhetastar,  costheta1,  costheta2,  phi,  phistar1);
   
-  double Pbackg=-99;
-  double Psig=-99; 
+  float Pbackg=-99;
+  float Psig=-99; 
   if(mZZ>100 && mZZ<180){
     Pbackg = P[0]*P[1]*P[2]*P[3]*P[4]*P[5]*5.0;
     Psig=SMHiggs->getVal(mZZ);
@@ -352,18 +352,18 @@ pair<double,double> Mela::likelihoodDiscriminant (double mZZ, double m1, double 
 
 }
 
-void Mela::checkZorder(double& z1mass, double& z2mass,
-		       double& costhetastar, double& costheta1,
-		       double& costheta2, double& phi, 
-		       double& phistar1){
+void Mela::checkZorder(float& z1mass, float& z2mass,
+		       float& costhetastar, float& costheta1,
+		       float& costheta2, float& phi, 
+		       float& phistar1){
 
-  double tempZ1mass=z1mass;
-  double tempZ2mass=z2mass;
-  double tempH1=costheta1;
-  double tempH2=costheta2;
-  double tempHs=costhetastar;
-  double tempPhi1=phistar1;
-  double tempPhi=phi;
+  float tempZ1mass=z1mass;
+  float tempZ2mass=z2mass;
+  float tempH1=costheta1;
+  float tempH2=costheta2;
+  float tempHs=costhetastar;
+  float tempPhi1=phistar1;
+  float tempPhi=phi;
 
   if(z2mass>z1mass){
     //cout<<"inverted"<<endl;

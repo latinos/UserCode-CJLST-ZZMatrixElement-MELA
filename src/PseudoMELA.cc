@@ -1,5 +1,6 @@
 #include <ZZMatrixElement/MELA/interface/PseudoMELA.h>
 
+#include "computeAngles.h"
 #include "AngularPdfFactory.h"
 #include <RooRealVar.h>
 
@@ -60,28 +61,78 @@ void PseudoMELA::checkZorder(float& z1mass, float& z2mass,
 
 }
 
+void PseudoMELA::eval(TLorentzVector Z1_lept,
+		      TLorentzVector Z1_antiLept,
+		      TLorentzVector Z2_lept,
+		      TLorentzVector Z2_antiLept,
+		      float& ld, 
+		      float& psig,
+		      float& psigALT){
 
-float PseudoMELA::eval(float zzmass, float z1mass, 
-		      float z2mass, float costhetastar, 
-		      float costheta1, float costheta2, 
-		      float phi, float phistar1){
+  //compute angles
+  float m1=0, m2=0, mzz=0;
+  
+  m1=(Z1_lept + Z1_antiLept).M();
+  m2=(Z2_lept + Z2_antiLept).M();
+  mzz=(Z1_lept + Z1_antiLept + Z2_lept + Z2_antiLept).M();
 
-  if(zzmass<100.0 || zzmass>179.9999)
-    return 0.0;
+  if(mzz<100.0 || mzz>179.9999){
+    psig=0.0;
+    psigALT=0.0;
+    ld=0.0;
+  }
 
-    checkZorder(z1mass,z2mass,costhetastar,costheta1,costheta2,phi,phistar1);
+  float costheta1,costheta2,costhetastar,phi,phistar1;
+   
+  mela::computeAngles(Z1_lept,Z1_antiLept,Z2_lept,Z2_antiLept,costheta1,costheta2,phi,costhetastar,phistar1);
 
-    z1mass_rrv->setVal(z1mass);
-    z2mass_rrv->setVal(z2mass);
-    costhetastar_rrv->setVal(costhetastar);
-    costheta1_rrv->setVal(costheta1);
-    costheta2_rrv->setVal(costheta2);
-    phi_rrv->setVal(phi);
-    phistar1_rrv->setVal(phistar1);
+  //compute ld
+  checkZorder(m1,m2,costhetastar,costheta1,costheta2,phi,phistar1);
 
-    mzz_rrv->setVal(zzmass);
+  z1mass_rrv->setVal(m1);
+  z2mass_rrv->setVal(m2);
+  costhetastar_rrv->setVal(costhetastar);
+  costheta1_rrv->setVal(costheta1);
+  costheta2_rrv->setVal(costheta2);
+  phi_rrv->setVal(phi);
+  phistar1_rrv->setVal(phistar1);
+  
+  mzz_rrv->setVal(mzz);
+  
+  psig = SMHiggs->getVal(mzz);
+  psigALT = PSHiggs->getVal(mzz);
+  ld = 1/(1+PSHiggs->getVal(mzz)/SMHiggs->getVal(mzz));
+  
+}
 
-    return 1/(1+PSHiggs->getVal(zzmass)/SMHiggs->getVal(zzmass));
+
+void PseudoMELA::eval(float zzmass, float z1mass, 
+		       float z2mass, float costhetastar, 
+		       float costheta1, float costheta2, 
+		       float phi, float phistar1,
+		       float& ld, float& psig, float& psigALT){
+
+  if(zzmass<100.0 || zzmass>179.9999){
+    psig=0.0;
+    psigALT=0.0;
+    ld=0.0;
+  }
+
+  checkZorder(z1mass,z2mass,costhetastar,costheta1,costheta2,phi,phistar1);
+
+  z1mass_rrv->setVal(z1mass);
+  z2mass_rrv->setVal(z2mass);
+  costhetastar_rrv->setVal(costhetastar);
+  costheta1_rrv->setVal(costheta1);
+  costheta2_rrv->setVal(costheta2);
+  phi_rrv->setVal(phi);
+  phistar1_rrv->setVal(phistar1);
+
+  mzz_rrv->setVal(zzmass);
+
+  psig = SMHiggs->getVal(zzmass);
+  psigALT = PSHiggs->getVal(zzmass);
+  ld = 1/(1+PSHiggs->getVal(zzmass)/SMHiggs->getVal(zzmass));
     
 }
 
