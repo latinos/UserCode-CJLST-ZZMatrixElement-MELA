@@ -1,9 +1,9 @@
 /** \file
  *
- *  MELA 
+ *  See header file for documentation.
  *
- *  $Date: 2012/09/17 19:06:31 $
- *  $Revision: 1.4 $
+ *  $Date: 2012/09/17 20:54:24 $
+ *  $Revision: 1.5 $
  */
 
 #include <ZZMatrixElement/MELA/interface/Mela.h>
@@ -29,6 +29,7 @@
 
 using namespace RooFit;
 
+const float PDGZmass = 91.1876;
 
 Mela::Mela(){ 
 
@@ -54,10 +55,10 @@ Mela::~Mela(){
 }
 
 
-void Mela::computeLD(TLorentzVector Z1_lept,  // made names more specific, charge effect angle calc.
-		     TLorentzVector Z1_antiLept,  
-		     TLorentzVector Z2_lept,  
-		     TLorentzVector Z2_antiLept,  
+void Mela::computeLD(TLorentzVector Z1_lept1, int Z1_lept1Id,
+		     TLorentzVector Z1_lept2, int Z1_lept2Id,
+		     TLorentzVector Z2_lept1, int Z2_lept1Id,
+		     TLorentzVector Z2_lept2, int Z2_lept2Id,
 		     // return variables:
 		     float& costhetastar,
 		     float& costheta1, 
@@ -66,21 +67,28 @@ void Mela::computeLD(TLorentzVector Z1_lept,  // made names more specific, charg
 		     float& phistar1,
 		     float& ld, 
 		     float& psig,
-		     float& pbkg) {
+		     float& pbkg,
+		     bool withPt,
+		     bool withY) {
   
-  //compute angles
-  float m1=0, m2=0, mzz=0;
-  
-  m1=(Z1_lept + Z1_antiLept).M();
-  m2=(Z2_lept + Z2_antiLept).M();
-  mzz=(Z1_lept + Z1_antiLept + Z2_lept + Z2_antiLept).M();
+  //compute angles  
+  float m1=(Z1_lept1 + Z1_lept2).M();
+  float m2=(Z2_lept1 + Z2_lept2).M();
 
-  mela::computeAngles(Z1_lept,Z1_antiLept,Z2_lept,Z2_antiLept,costheta1,costheta2,phi,costhetastar,phistar1);
+  TLorentzVector ZZ = (Z1_lept1 + Z1_lept2 + Z2_lept1 + Z2_lept2);
+  float mzz = ZZ.M();
+  float pt  = ZZ.Pt();
+  float Y   = ZZ.Rapidity(); // Fixme: should probably protect against NaN?
+
+  mela::computeAngles(Z1_lept1, Z1_lept1Id, Z1_lept2, Z1_lept2Id, 
+		      Z2_lept1, Z2_lept1Id, Z2_lept2, Z2_lept2Id,
+		      costhetastar,costheta1,costheta2,phi,phistar1);
 
   //compute ld
   checkZorder(m1,m2,costhetastar,costheta1,costheta2,phi,phistar1);
 
-  pair<float,float> P = likelihoodDiscriminant(mzz,m1,m2,costhetastar,costheta1,costheta2,phi,phistar1);
+  pair<float,float> P = likelihoodDiscriminant(mzz,m1,m2,costhetastar,costheta1,costheta2,phi,phistar1,
+					       withPt, pt, withY, Y);
   psig=P.first;
   pbkg=P.second;
   ld = psig/(psig+pbkg);
@@ -89,9 +97,7 @@ void Mela::computeLD(TLorentzVector Z1_lept,  // made names more specific, charg
 
 
 
-// Note that consistency is assumed between m1 and costheta1!
-// Since we compute angles with the convention 1 = closest to nominal mZ, a check is performed here that this is the case.
-void Mela::computeLD(float mzz, float m1, float m2, 
+void Mela::computeLD(float mzz, float mZ1, float mZ2, 
 		     float costhetastar,
 		     float costheta1, 
 		     float costheta2,
@@ -101,7 +107,7 @@ void Mela::computeLD(float mzz, float m1, float m2,
 		     float& psig,
 		     float& pbkg) {
 
-  // FIXME: skip candidates where LD is irrelevant.
+  // Skip candidates where LD is irrelevant.
   if (mzz<100.){
     ld = 0;
     psig = 0;
@@ -109,17 +115,16 @@ void Mela::computeLD(float mzz, float m1, float m2,
     return;
   }
 
-  // Check that input masses are ordered as expected, consistenly with the definition of angles.
-  const float PDGZmass = 91.1876;
-  if ( fabs(PDGZmass-m1) >= fabs(PDGZmass-m2) + 0.00005 ){
-    cout << "ERROR: Mela::computeLD: inconsistent m1, m2 order " << m1 << " " << m2 << endl;
-    abort();
+  // Check that input masses are ordered according to the expected convention (that is expected to have 
+  // been followed for angles)
+  if (fabs(PDGZmass-mZ1) >= fabs(PDGZmass-mZ2)) {
+    swap(mZ1,mZ2);
   }
 
-    pair<float,float> P = likelihoodDiscriminant(mzz, m1, m2, costhetastar, costheta1, costheta2, phi, phistar1);
-    psig = P.first;
-    pbkg = P.second;
-    ld = psig/(psig + pbkg);
+  pair<float,float> P = likelihoodDiscriminant(mzz, mZ1, mZ2, costhetastar, costheta1, costheta2, phi, phistar1);
+  psig = P.first;
+  pbkg = P.second;
+  ld = psig/(psig + pbkg);
 
 }
 

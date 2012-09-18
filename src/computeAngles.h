@@ -4,30 +4,25 @@
 /*
  *  MELA - cf. http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/UserCode/sbologne/MELAproject/
  *
- *  This class is adapted from:
- *  UserCode/scasasso/HZZ4lAnalysis/HZZ4lCommon/interface/HiggsCandidateFactory.h tag V00-00-00
- *  $Date: 2012/09/14 20:04:45 $
- *  $Revision: 1.1 $
+ *  $Date: 2012/09/17 19:06:32 $
+ *  $Revision: 1.2 $
  */
 
 #include "TLorentzVector.h"
 
-namespace pat{
-  class CompositeCandidate;
-}
-
 namespace mela {
-
-  //  Compute decay angles for a ZZ system. 
-  //  Leptons are sorted so that M11/M21 are the negative-charged one, for OS pairs.
-  void computeAngles(TLorentzVector p4M11,
-		     TLorentzVector p4M12, 
-		     TLorentzVector p4M21, 
-		     TLorentzVector p4M22, 
+  // Compute decay angles from the lepton four-vectors and pdgIds.  
+  /// Z1_lept1 and  Z1_lept2 are supposed to come from the same Z.
+  /// Zs and leptons are re-ordered internally according to a defined convention:
+  /// Z1 = closest to nominal mZ; lept1 = negative-charged lepton (for OS pairs). 
+  void computeAngles(TLorentzVector Z1_lept1, int Z1_lept1Id,
+		     TLorentzVector Z1_lept2, int Z1_lept2Id,
+		     TLorentzVector Z2_lept1, int Z2_lept1Id,
+		     TLorentzVector Z2_lept2, int Z2_lept2Id,
+		     float& costhetastar, 
 		     float& costheta1, 
 		     float& costheta2, 
 		     float& Phi, 
-		     float& costhetastar, 
 		     float& Phi1);
 }
 #endif

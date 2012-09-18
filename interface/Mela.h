@@ -3,11 +3,11 @@
 
 /** \class Mela
  *
- *  MELA 
+ *  MELA discriminator
  *
  *
- *  $Date: 2012/09/14 20:04:45 $
- *  $Revision: 1.2 $
+ *  $Date: 2012/09/17 19:06:31 $
+ *  $Revision: 1.3 $
  *  \author JHU
  */
 
@@ -26,11 +26,14 @@ public:
 
   ~Mela();
 
-  /// Compute angles and LD from the lepton four-vectors.
-  void computeLD(TLorentzVector Z1_lept,
-		 TLorentzVector Z1_antiLept,
-		 TLorentzVector Z2_lept,
-		 TLorentzVector Z2_antiLept,		 
+  /// Compute angles and LD from the lepton four-vectors and pdgIds.
+  /// Z1_lept1 and  Z1_lept2 are supposed to come from the same Z.
+  /// Zs and leptons are re-ordered internally according to a defined convention:
+  /// Z1 = closest to nominal mZ; lept1 = negative-charged lepton (for OS pairs). 
+  void computeLD(TLorentzVector Z1_lept1, int Z1_lept1Id,
+		 TLorentzVector Z1_lept2, int Z1_lept2Id,
+		 TLorentzVector Z2_lept1, int Z2_lept1Id,
+		 TLorentzVector Z2_lept2, int Z2_lept2Id,
 		 // return variables:
 		 float& costhetastar,
 		 float& costheta1, 
@@ -39,13 +42,15 @@ public:
 		 float& phistar1,
 		 float& ld, 
 		 float& psig,
-		 float& pbkg);
+		 float& pbkg,
+		 bool withPt = false,
+		 bool withY = false);
 
 
 
-  /// Compute LD from masses and angles. 
-  /// Note that the order of m1/m2 must be consistent with the order of theta1/theta2
-  void computeLD(float mZZ, float m1, float m2, 
+  /// Compute LD from masses and angles. It is assumed that the order of theta1/theta2 is the one defined 
+  /// in the method above.
+  void computeLD(float mZZ, float mZ1, float mZ2, 
 		 float costhetastar,
 		 float costheta1, 
 		 float costheta2,
@@ -55,15 +60,15 @@ public:
 		 float& psig,
 		 float& pbkg);
 
-private:	
-  std::vector<float> my8DTemplate(bool normalized, float mZZ, float m1, float m2, 
+private:
+  std::vector<float> my8DTemplate(bool normalized, float mZZ, float mZ1, float mZ2, 
 				   float costhetastar, 
 				   float costheta1, 
 				   float costheta2, 
 				   float phi, 
 				   float phistar1);
 
-  std::pair<float,float> likelihoodDiscriminant (float mZZ, float m1, float m2, 
+  std::pair<float,float> likelihoodDiscriminant (float mZZ, float mZ1, float mZ2, 
 						   float costhetastar, 
 						   float costheta1, 
 						   float costheta2, 

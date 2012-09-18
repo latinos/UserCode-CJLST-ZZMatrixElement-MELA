@@ -1,42 +1,54 @@
 /** \file
  *
  *  MELA - cf. http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/UserCode/sbologne/MELAproject/
- *  This class is adapted from:
- *  UserCode/scasasso/HZZ4lAnalysis/HZZ4lCommon/interface/HiggsCandidateFactory.h tag V00-00-00
  *
- * With the following modifications:
- * - input type changed to pat::CompositeCandidate
- * - leg1() -> daughter(0);
- * - leg2() -> daughter(1);
- * - Angles returned by reference.
- *
- *  $Date: 2012/09/14 20:04:45 $
- *  $Revision: 1.1 $
+ *  $Date: 2012/09/17 19:06:31 $
+ *  $Revision: 1.2 $
  */
 
-#include <DataFormats/PatCandidates/interface/CompositeCandidate.h>
 #include <ZZMatrixElement/MELA/src/computeAngles.h>
-#include <ZZMatrixElement/MELA/interface/Mela.h>
 #include <TLorentzVector.h>
+#include <algorithm>
 
-#include <iostream>
+const float PDGZmass = 91.1876;
+
 using namespace std;
 
-  //  Compute decay angles for a ZZ system. 
-  //  Leptons are sorted so that M11/M21 are the negative-charged one, for OS pairs.
-void mela::computeAngles(TLorentzVector p4M11,
-			 TLorentzVector p4M12, 
-			 TLorentzVector p4M21, 
-			 TLorentzVector p4M22, 
+void mela::computeAngles(TLorentzVector p4M11, int Z1_lept1Id,
+			 TLorentzVector p4M12, int Z1_lept2Id,
+			 TLorentzVector p4M21, int Z2_lept1Id,
+			 TLorentzVector p4M22, int Z2_lept2Id,
+			 float& costhetastar, 
 			 float& costheta1, 
 			 float& costheta2, 
 			 float& Phi, 
-			 float& costhetastar, 
 			 float& Phi1){
 
   //build Z 4-vectors
   TLorentzVector p4Z1 = p4M11 + p4M12;
   TLorentzVector p4Z2 = p4M21 + p4M22;
+
+  // Sort Z1 and Z2 so that Z1 is the closest-to-mZ
+  if (fabs(PDGZmass-p4Z1.M()) > fabs(PDGZmass-p4Z2.M()) ){
+    swap(p4Z1, p4Z2);
+    swap(p4M11, p4M21);
+    swap(p4M12, p4M22);
+  }
+
+  // Sort Z1 leptons so that:
+  if ( (Z1_lept1Id*Z1_lept2Id<0 && Z1_lept1Id<0) || // for OS pairs: lep1 must be the negative one
+       (Z1_lept1Id*Z1_lept2Id>0 && p4M11.Phi()<=p4M12.Phi()) //for SS pairs: use random deterministic convention
+       ) {
+    swap(p4M11, p4M12);
+  }
+  
+  // Same for Z2 leptons
+  if ( (Z2_lept1Id*Z2_lept2Id<0 && Z2_lept1Id<0) ||
+       (Z2_lept1Id*Z2_lept2Id>0 && p4M21.Phi()<=p4M22.Phi()) 
+       ) {
+    swap(p4M21, p4M22);
+  }
+
   
   //build H 4-vectors
   TLorentzVector p4H = p4Z1 + p4Z2; 

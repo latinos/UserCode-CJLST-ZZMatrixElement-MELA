@@ -61,30 +61,33 @@ void SpinTwoMinimalMELA::checkZorder(float& z1mass, float& z2mass,
 
 }
 
-void SpinTwoMinimalMELA::eval(TLorentzVector Z1_lept,
-		       TLorentzVector Z1_antiLept,
-		       TLorentzVector Z2_lept,
-		       TLorentzVector Z2_antiLept,
-		       float& ld, 
-		       float& psig,
-		       float& psigALT){
+void SpinTwoMinimalMELA::eval(TLorentzVector Z1_lept1, int Z1_lept1Id,
+			      TLorentzVector Z1_lept2, int Z1_lept2Id,
+			      TLorentzVector Z2_lept1, int Z2_lept1Id,
+			      TLorentzVector Z2_lept2, int Z2_lept2Id,
+			      float& ld, 
+			      float& psig,
+			      float& psigALT){
 
   //compute angles
-  float m1=0, m2=0, mzz=0;
-  
-  m1=(Z1_lept + Z1_antiLept).M();
-  m2=(Z2_lept + Z2_antiLept).M();
-  mzz=(Z1_lept + Z1_antiLept + Z2_lept + Z2_antiLept).M();
+  float m1=(Z1_lept1 + Z1_lept2).M();
+  float m2=(Z2_lept1 + Z2_lept2).M();
+
+  TLorentzVector ZZ = (Z1_lept1 + Z1_lept2 + Z2_lept1 + Z2_lept2);
+  float mzz = ZZ.M();
 
   if(mzz<100.0 || mzz>179.9999){
     psig=0.0;
     psigALT=0.0;
     ld=0.0;
+    return;
   }
 
   float costheta1,costheta2,costhetastar,phi,phistar1;
 
-  mela::computeAngles(Z1_lept,Z1_antiLept,Z2_lept,Z2_antiLept,costheta1,costheta2,phi,costhetastar,phistar1);
+  mela::computeAngles(Z1_lept1, Z1_lept1Id, Z1_lept2, Z1_lept2Id, 
+		      Z2_lept1, Z2_lept1Id, Z2_lept2, Z2_lept2Id,
+		      costhetastar,costheta1,costheta2,phi,phistar1);
 
   //compute ld
   checkZorder(m1,m2,costhetastar,costheta1,costheta2,phi,phistar1);
