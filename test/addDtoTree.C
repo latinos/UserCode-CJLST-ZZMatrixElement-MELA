@@ -5,7 +5,7 @@ using namespace RooFit;
 void addDtoTree(char* inputFile){
 
 
-  gSystem->Load("/scratch0/hep/whitbeck/4lHelicity/testNewMELAcode/CMSSW_5_2_4/lib/slc5_amd64_gcc462/libZZMatrixElementMELA.so");
+  gSystem->Load("$CMSSW_BASE/lib/slc5_amd64_gcc462/libZZMatrixElementMELA.so");
   gROOT->LoadMacro("../interface/Mela.h+");
   gROOT->LoadMacro("../interface/SpinTwoMinimalMELA.h+");
   gROOT->LoadMacro("../interface/PseudoMELA.h+");
