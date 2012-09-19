@@ -2,8 +2,8 @@
  *
  *  See header file for documentation.
  *
- *  $Date: 2012/09/17 20:54:24 $
- *  $Revision: 1.5 $
+ *  $Date: 2012/09/18 22:50:53 $
+ *  $Revision: 1.6 $
  */
 
 #include <ZZMatrixElement/MELA/interface/Mela.h>
@@ -69,7 +69,8 @@ void Mela::computeLD(TLorentzVector Z1_lept1, int Z1_lept1Id,
 		     float& psig,
 		     float& pbkg,
 		     bool withPt,
-		     bool withY) {
+		     bool withY,
+		     int LHCsqrts) {
   
   //compute angles  
   float m1=(Z1_lept1 + Z1_lept2).M();
@@ -88,7 +89,7 @@ void Mela::computeLD(TLorentzVector Z1_lept1, int Z1_lept1Id,
   checkZorder(m1,m2,costhetastar,costheta1,costheta2,phi,phistar1);
 
   pair<float,float> P = likelihoodDiscriminant(mzz,m1,m2,costhetastar,costheta1,costheta2,phi,phistar1,
-					       withPt, pt, withY, Y);
+					       LHCsqrts, withPt, pt, withY, Y);
   psig=P.first;
   pbkg=P.second;
   ld = psig/(psig+pbkg);
@@ -198,9 +199,9 @@ vector<float> Mela::my8DTemplate(bool normalized,float mZZ, float m1, float m2, 
 }
 
 pair<float,float> Mela::likelihoodDiscriminant (float mZZ, float m1, float m2, float costhetastar, float costheta1, float costheta2, float phi, float phistar1,
-						  int LHCsqrts, 
-						  bool withPt, float pt, 
-						  bool withY, float y){
+						int LHCsqrts, 
+						bool withPt, float pt, 
+						bool withY, float y){
 
   RooRealVar* z1mass_rrv = new RooRealVar("z1mass","m_{Z1}",0.,180.);
   RooRealVar* z2mass_rrv = new RooRealVar("z2mass","m_{Z2}",0.,120.); 

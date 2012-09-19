@@ -6,8 +6,8 @@
  *  MELA discriminator
  *
  *
- *  $Date: 2012/09/17 19:06:31 $
- *  $Revision: 1.3 $
+ *  $Date: 2012/09/18 22:50:52 $
+ *  $Revision: 1.4 $
  *  \author JHU
  */
 
@@ -29,7 +29,8 @@ public:
   /// Compute angles and LD from the lepton four-vectors and pdgIds.
   /// Z1_lept1 and  Z1_lept2 are supposed to come from the same Z.
   /// Zs and leptons are re-ordered internally according to a defined convention:
-  /// Z1 = closest to nominal mZ; lept1 = negative-charged lepton (for OS pairs). 
+  /// Z1 = closest to nominal mZ; lept1 = negative-charged lepton (for OS pairs).
+  /// FSR recollected photons must been added to the corresponding lepton's four-vector by the user.
   void computeLD(TLorentzVector Z1_lept1, int Z1_lept1Id,
 		 TLorentzVector Z1_lept2, int Z1_lept2Id,
 		 TLorentzVector Z2_lept1, int Z2_lept1Id,
@@ -44,7 +45,8 @@ public:
 		 float& psig,
 		 float& pbkg,
 		 bool withPt = false,
-		 bool withY = false);
+		 bool withY = false,
+		 int LHCsqrts = 8);
 
 
 
