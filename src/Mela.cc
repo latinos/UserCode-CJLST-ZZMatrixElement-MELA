@@ -2,8 +2,8 @@
  *
  *  See header file for documentation.
  *
- *  $Date: 2012/09/18 22:50:53 $
- *  $Revision: 1.6 $
+ *  $Date: 2012/09/19 14:20:00 $
+ *  $Revision: 1.7 $
  */
 
 #include <ZZMatrixElement/MELA/interface/Mela.h>
@@ -86,8 +86,6 @@ void Mela::computeLD(TLorentzVector Z1_lept1, int Z1_lept1Id,
 		      costhetastar,costheta1,costheta2,phi,phistar1);
 
   //compute ld
-  checkZorder(m1,m2,costhetastar,costheta1,costheta2,phi,phistar1);
-
   pair<float,float> P = likelihoodDiscriminant(mzz,m1,m2,costhetastar,costheta1,costheta2,phi,phistar1,
 					       LHCsqrts, withPt, pt, withY, Y);
   psig=P.first;
