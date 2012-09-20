@@ -2,8 +2,8 @@
  *
  *  See header file for documentation.
  *
- *  $Date: 2012/09/19 16:50:59 $
- *  $Revision: 1.8 $
+ *  $Date: 2012/09/20 15:31:39 $
+ *  $Revision: 1.9 $
  */
 
 #include <ZZMatrixElement/MELA/interface/Mela.h>
@@ -28,8 +28,6 @@
 #include <string>
 
 using namespace RooFit;
-
-const float PDGZmass = 91.1876;
 
 Mela::Mela(){ 
 
@@ -118,18 +116,6 @@ void Mela::computeLD(float mzz, float mZ1, float mZ2,
     pbkg = 0;
     return;
   }
-
-  // ========================
-  // I don't think this in done correctly.  If m1,m2 are switched then 
-  // so should angles.  This is handled correctly in likelihoodDiscriminant()
-  // Unfortunately, it is up to the user to make sure that m1 correctly
-  // corresponds to theta1 - AJW
-  // ========================
-  // Check that input masses are ordered according to the expected convention (that is expected to have 
-  // been followed for angles)
-  //if (fabs(PDGZmass-mZ1) >= fabs(PDGZmass-mZ2)) {
-  //  swap(mZ1,mZ2);
-  // }
 
   pair<float,float> P = likelihoodDiscriminant(mzz, mZ1, mZ2, 
 					       costhetastar, 
@@ -384,6 +370,9 @@ pair<float,float> Mela::likelihoodDiscriminant (float mZZ, float m1, float m2, f
 
 }
 
+
+// Re-order masses and angles as needed by likelihoodDiscriminant. 
+// This follows a different convention than the usual Z1/Z2 definition!
 void Mela::checkZorder(float& z1mass, float& z2mass,
 		       float& costhetastar, float& costheta1,
 		       float& costheta2, float& phi, 
