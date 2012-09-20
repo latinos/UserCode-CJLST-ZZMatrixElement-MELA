@@ -2,8 +2,8 @@
  *
  *  See header file for documentation.
  *
- *  $Date: 2012/09/19 14:20:00 $
- *  $Revision: 1.7 $
+ *  $Date: 2012/09/19 16:50:59 $
+ *  $Revision: 1.8 $
  */
 
 #include <ZZMatrixElement/MELA/interface/Mela.h>
@@ -104,7 +104,12 @@ void Mela::computeLD(float mzz, float mZ1, float mZ2,
 		     float phistar1,
 		     float& ld, 
 		     float& psig,
-		     float& pbkg) {
+		     float& pbkg,
+		     bool withPt,
+		     float pt4l,
+		     bool withY,
+		     float Y4l,
+		     int LHCsqrts) {
 
   // Skip candidates where LD is irrelevant.
   if (mzz<100.){
@@ -114,13 +119,27 @@ void Mela::computeLD(float mzz, float mZ1, float mZ2,
     return;
   }
 
+  // ========================
+  // I don't think this in done correctly.  If m1,m2 are switched then 
+  // so should angles.  This is handled correctly in likelihoodDiscriminant()
+  // Unfortunately, it is up to the user to make sure that m1 correctly
+  // corresponds to theta1 - AJW
+  // ========================
   // Check that input masses are ordered according to the expected convention (that is expected to have 
   // been followed for angles)
-  if (fabs(PDGZmass-mZ1) >= fabs(PDGZmass-mZ2)) {
-    swap(mZ1,mZ2);
-  }
+  //if (fabs(PDGZmass-mZ1) >= fabs(PDGZmass-mZ2)) {
+  //  swap(mZ1,mZ2);
+  // }
 
-  pair<float,float> P = likelihoodDiscriminant(mzz, mZ1, mZ2, costhetastar, costheta1, costheta2, phi, phistar1);
+  pair<float,float> P = likelihoodDiscriminant(mzz, mZ1, mZ2, 
+					       costhetastar, 
+					       costheta1, 
+					       costheta2, 
+					       phi, 
+					       phistar1,
+					       LHCsqrts,
+					       withPt,pt4l,
+					       withY, Y4l);
   psig = P.first;
   pbkg = P.second;
   ld = psig/(psig + pbkg);
@@ -280,6 +299,10 @@ pair<float,float> Mela::likelihoodDiscriminant (float mZZ, float m1, float m2, f
   phi_rrv->setVal(phi);
   phi1_rrv->setVal(phistar1);
   mzz_rrv->setVal(mZZ);
+  if(withPt)
+    pt_rrv->setVal(pt);
+  if(withY)
+    y_rrv->setVal(y);
 
   vector <float> P=my8DTemplate(1, mZZ,  m1,  m2,  costhetastar,  costheta1,  costheta2,  phi,  phistar1);
   

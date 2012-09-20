@@ -2,7 +2,7 @@
 using namespace RooFit;
 
 
-void addDtoTree(char* inputFile){
+void addDtoTree(char* inputFile,bool withPt=false, bool withY=false,int LHCsqrts=8){
 
 
   gSystem->Load("$CMSSW_BASE/lib/slc5_amd64_gcc462/libZZMatrixElementMELA.so");
@@ -108,10 +108,24 @@ void addDtoTree(char* inputFile){
 
     if(mzz>100. && mzz<1000.){
 
+      myPseudoMELA.eval(l1_minus, 11,
+			l1_plus, -11,
+			l2_minus, 13,
+			l2_plus, -13,
+			pseudoD,psig,pbkg);
+
+      mySpinTwoMinimalMELA.eval(l1_minus, 11,
+				l1_plus, -11,
+				l2_minus, 13,
+				l2_plus, -13,
+				graviD,psig,pbkg);
+
       //MELA LD
-      myMELA.computeLD(l1_minus,l1_plus,l2_minus,l2_plus,hs,h1,h2,phi,phi1,D,psig,pbkg);
-      myPseudoMELA.eval(l1_minus,l1_plus,l2_minus,l2_plus,pseudoD,psig,pbkg);
-      mySpinTwoMinimalMELA.eval(l1_minus,l1_plus,l2_minus,l2_plus,graviD,psig,pbkg);
+      myMELA.computeLD(l1_minus, 11,
+		       l1_plus, -11,
+		       l2_minus, 13,
+		       l2_plus, -13,
+		       hs,h1,h2,phi,phi1,D,psig,pbkg,withPt,withY,LHCsqrts);
 
       newTree->Fill();
       

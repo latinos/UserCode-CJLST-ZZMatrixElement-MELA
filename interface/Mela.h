@@ -6,8 +6,8 @@
  *  MELA discriminator
  *
  *
- *  $Date: 2012/09/18 22:50:52 $
- *  $Revision: 1.4 $
+ *  $Date: 2012/09/19 14:19:20 $
+ *  $Revision: 1.5 $
  *  \author JHU
  */
 
@@ -60,7 +60,12 @@ public:
 		 float phistar1,
 		 float& ld, 
 		 float& psig,
-		 float& pbkg);
+		 float& pbkg,
+		 bool withPt = false,
+		 float pt4l=0.0,
+		 bool withY = false,
+		 float Y4l=0.0,
+		 int LHCsqrts=8);
 
 private:
   std::vector<float> my8DTemplate(bool normalized, float mZZ, float mZ1, float mZ2, 
