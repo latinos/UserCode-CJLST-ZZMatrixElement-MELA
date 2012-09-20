@@ -2,15 +2,13 @@
  *
  *  MELA - cf. http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/UserCode/sbologne/MELAproject/
  *
- *  $Date: 2012/09/17 19:06:31 $
- *  $Revision: 1.2 $
+ *  $Date: 2012/09/18 22:50:53 $
+ *  $Revision: 1.3 $
  */
 
 #include <ZZMatrixElement/MELA/src/computeAngles.h>
 #include <TLorentzVector.h>
 #include <algorithm>
-
-const float PDGZmass = 91.1876;
 
 using namespace std;
 
@@ -27,13 +25,6 @@ void mela::computeAngles(TLorentzVector p4M11, int Z1_lept1Id,
   //build Z 4-vectors
   TLorentzVector p4Z1 = p4M11 + p4M12;
   TLorentzVector p4Z2 = p4M21 + p4M22;
-
-  // Sort Z1 and Z2 so that Z1 is the closest-to-mZ
-  if (fabs(PDGZmass-p4Z1.M()) > fabs(PDGZmass-p4Z2.M()) ){
-    swap(p4Z1, p4Z2);
-    swap(p4M11, p4M21);
-    swap(p4M12, p4M22);
-  }
 
   // Sort Z1 leptons so that:
   if ( (Z1_lept1Id*Z1_lept2Id<0 && Z1_lept1Id<0) || // for OS pairs: lep1 must be the negative one
