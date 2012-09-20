@@ -6,8 +6,8 @@
  *  MELA discriminator
  *
  *
- *  $Date: 2012/09/19 14:19:20 $
- *  $Revision: 1.5 $
+ *  $Date: 2012/09/20 15:31:39 $
+ *  $Revision: 1.6 $
  *  \author JHU
  */
 
@@ -27,10 +27,11 @@ public:
   ~Mela();
 
   /// Compute angles and LD from the lepton four-vectors and pdgIds.
-  /// Z1_lept1 and  Z1_lept2 are supposed to come from the same Z.
-  /// Zs and leptons are re-ordered internally according to a defined convention:
-  /// Z1 = closest to nominal mZ; lept1 = negative-charged lepton (for OS pairs).
   /// FSR recollected photons must been added to the corresponding lepton's four-vector by the user.
+  /// Theta1 is the angle corresponding to Z1.
+  /// Z1_lept1 and  Z1_lept2 are supposed to come from the same Z.
+  /// Leptons are re-ordered internally according to a standard convention:
+  /// lept1 = negative-charged lepton (for OS pairs).
   void computeLD(TLorentzVector Z1_lept1, int Z1_lept1Id,
 		 TLorentzVector Z1_lept2, int Z1_lept2Id,
 		 TLorentzVector Z2_lept1, int Z2_lept1Id,
@@ -50,8 +51,8 @@ public:
 
 
 
-  /// Compute LD from masses and angles. It is assumed that the order of theta1/theta2 is the one defined 
-  /// in the method above.
+  /// Compute LD from masses and angles. 
+  /// The user must ensure that the order of m1/m2 matches the order of theta1/theta2.
   void computeLD(float mZZ, float mZ1, float mZ2, 
 		 float costhetastar,
 		 float costheta1, 
@@ -85,7 +86,7 @@ private:
 						   bool withPt = false, float pt = 0.0, 
 						   bool withY = false, float y = 0.0);
 
-  // Set internal ordering of Z1/Z2
+  // Ordering of Z1/Z2 according to internal convention
   void checkZorder(float& z1mass, float& z2mass, float& costhetastar, float& costheta1, float& costheta2, float& phi, float& phistar1);
 
   TFile *f;
