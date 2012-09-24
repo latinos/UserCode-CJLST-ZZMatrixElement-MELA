@@ -2,8 +2,8 @@
  *
  *  See header file for documentation.
  *
- *  $Date: 2012/09/20 15:31:39 $
- *  $Revision: 1.9 $
+ *  $Date: 2012/09/20 20:49:41 $
+ *  $Revision: 1.10 $
  */
 
 #include <ZZMatrixElement/MELA/interface/Mela.h>
@@ -12,7 +12,7 @@
 
 #include "computeAngles.h"
 #include "AngularPdfFactory.h"
-#include "RooqqZZ_JHU.h"
+#include "RooqqZZ_JHU_ZgammaZZ.h"
 #include "RooTsallis.h"
 #include "RooTsallisExp.h"
 #include "RooRapidityBkg.h"
@@ -52,6 +52,30 @@ Mela::~Mela(){
   delete f;
 }
 
+double Mela::pdfNorm(double mzz){
+
+  double p0;
+  double p1;
+  double p2;
+  double p3;
+  double p4;
+  
+  if(mzz>130){
+    p0 =     -10450.5;
+    p1 =      328.711;
+    p2 =     -3.86514;    
+    p3 =    0.0201766;
+    p4 =  -3.9483e-05;
+  }else{
+    p0 =      131.928;
+    p1 =     -1.89119;
+    p2 =    0.0104286;
+    p3 = -2.65015e-05;
+    p4 =  2.86603e-08;
+  }
+  return p0+p1*mzz+p2*mzz*mzz+p3*mzz*mzz*mzz+p4*mzz*mzz*mzz*mzz;
+
+}
 
 void Mela::computeLD(TLorentzVector Z1_lept1, int Z1_lept1Id,
 		     TLorentzVector Z1_lept2, int Z1_lept2Id,
@@ -217,9 +241,11 @@ pair<float,float> Mela::likelihoodDiscriminant (float mZZ, float m1, float m2, f
   RooRealVar* y_rrv= new RooRealVar("y","Y^{4l}",-4.0,4.0);
   RooRealVar* sqrtS_rrv= new RooRealVar("sqrtS","#sqrt{s}",1000,14000);
   RooRealVar* mzz_rrv= new RooRealVar("mzz","mZZ",80.,1000.);
+  RooRealVar* upFrac_rrv= new RooRealVar("upFrac","upFrac",.5);
+  upFrac_rrv->setConstant(kTRUE);
 
   AngularPdfFactory *SMHiggs = new AngularPdfFactory(z1mass_rrv,z2mass_rrv,costheta1_rrv,costheta2_rrv,phi_rrv,mzz_rrv);
-  RooqqZZ_JHU* SMZZ = new RooqqZZ_JHU("SMZZ","SMZZ",*z1mass_rrv,*z2mass_rrv,*costheta1_rrv,*costheta2_rrv,*phi_rrv,*costhetastar_rrv,*phi1_rrv,*mzz_rrv);
+  RooqqZZ_JHU_ZgammaZZ* SMZZ = new RooqqZZ_JHU_ZgammaZZ("SMZZ","SMZZ",*z1mass_rrv,*z2mass_rrv,*costheta1_rrv,*costheta2_rrv,*phi_rrv,*costhetastar_rrv,*phi1_rrv,*mzz_rrv,*upFrac_rrv);
   SMHiggs->makeSMHiggs();
   SMHiggs->makeParamsConst(true);
 
@@ -294,6 +320,8 @@ pair<float,float> Mela::likelihoodDiscriminant (float mZZ, float m1, float m2, f
   
   float Pbackg=-99;
   float Psig=-99; 
+
+  /*
   if(mZZ>100 && mZZ<180){
     Pbackg = P[0]*P[1]*P[2]*P[3]*P[4]*P[5]*5.0;
     Psig=SMHiggs->getVal(mZZ);
@@ -310,6 +338,10 @@ pair<float,float> Mela::likelihoodDiscriminant (float mZZ, float m1, float m2, f
     Pbackg = SMZZ->getVal()/(SMZZ->createIntegral(RooArgSet(*costhetastar_rrv,*costheta1_rrv,*costheta2_rrv,*phi_rrv,*phi1_rrv))->getVal())*10.0;
     Psig = SMHiggs->PDF->getVal()/(SMHiggs->PDF->createIntegral(RooArgSet(*costheta1_rrv,*costheta2_rrv,*phi_rrv))->getVal());
   }
+  */
+
+  Pbackg = SMZZ->getVal()*1e19;  //(SMZZ->createIntegral(RooArgSet(*costhetastar_rrv,*costheta1_rrv,*costheta2_rrv,*phi_rrv,*phi1_rrv))->getVal())*10.0;
+  Psig = SMHiggs->PDF->getVal(); //(SMHiggs->PDF->createIntegral(RooArgSet(*costheta1_rrv,*costheta2_rrv,*phi_rrv))->getVal());
 
 
   if (withPt) {
