@@ -2,8 +2,8 @@
  *
  *  See header file for documentation.
  *
- *  $Date: 2012/09/20 20:49:41 $
- *  $Revision: 1.10 $
+ *  $Date: 2012/09/24 03:44:44 $
+ *  $Revision: 1.11 $
  */
 
 #include <ZZMatrixElement/MELA/interface/Mela.h>
@@ -340,8 +340,8 @@ pair<float,float> Mela::likelihoodDiscriminant (float mZZ, float m1, float m2, f
   }
   */
 
-  Pbackg = SMZZ->getVal()*1e19;  //(SMZZ->createIntegral(RooArgSet(*costhetastar_rrv,*costheta1_rrv,*costheta2_rrv,*phi_rrv,*phi1_rrv))->getVal())*10.0;
-  Psig = SMHiggs->PDF->getVal(); //(SMHiggs->PDF->createIntegral(RooArgSet(*costheta1_rrv,*costheta2_rrv,*phi_rrv))->getVal());
+  Pbackg = SMZZ->getVal()*1e15/pdfNorm(mZZ);  //(SMZZ->createIntegral(RooArgSet(*costhetastar_rrv,*costheta1_rrv,*costheta2_rrv,*phi_rrv,*phi1_rrv))->getVal())*10.0;
+  Psig = SMHiggs->getVal(mZZ); //(SMHiggs->PDF->createIntegral(RooArgSet(*costheta1_rrv,*costheta2_rrv,*phi_rrv))->getVal());
 
 
   if (withPt) {
