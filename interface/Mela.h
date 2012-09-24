@@ -6,8 +6,8 @@
  *  MELA discriminator
  *
  *
- *  $Date: 2012/09/20 15:31:39 $
- *  $Revision: 1.6 $
+ *  $Date: 2012/09/20 20:56:31 $
+ *  $Revision: 1.7 $
  *  \author JHU
  */
 
@@ -69,6 +69,10 @@ public:
 		 int LHCsqrts=8);
 
 private:
+
+  double pdfNorm(double mzz);
+
+
   std::vector<float> my8DTemplate(bool normalized, float mZZ, float mZ1, float mZ2, 
 				   float costhetastar, 
 				   float costheta1, 
