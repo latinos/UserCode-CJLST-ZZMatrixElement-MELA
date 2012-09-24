@@ -24,7 +24,7 @@ void addDtoTree(char* inputFile,bool withPt=false, bool withY=false,int LHCsqrts
   TFile* sigFile = new TFile(inputFileName);
   TTree* sigTree=0;
     if(sigFile)
-        sigTree = (TTree*) sigFile->Get("passedEvents");
+        sigTree = (TTree*) sigFile->Get("SelectedTree");
     if(!sigTree){
       cout<<"ERROR could not find the tree!"<<endl;
       return;
@@ -34,7 +34,10 @@ void addDtoTree(char* inputFile,bool withPt=false, bool withY=false,int LHCsqrts
   TTree* newTree = new TTree("newTree","angles"); 
 
   float m1,m2,mzz,h1,h2,hs,phi,phi1,psig,pbkg,D,pseudoD,graviD;
+  float pt4l, Y4l;
+  float oldD;
 
+  /*
   double EL1,EL2,EL3,EL4;
   double pXL1,pXL2,pXL3,pXL4;
   double pYL1,pYL2,pYL3,pYL4;
@@ -59,6 +62,19 @@ void addDtoTree(char* inputFile,bool withPt=false, bool withY=false,int LHCsqrts
   sigTree->SetBranchAddress("pZL2",&pZL2);
   sigTree->SetBranchAddress("pZL3",&pZL3);
   sigTree->SetBranchAddress("pZL4",&pZL4);
+  */
+
+  sigTree->SetBranchAddress("Z2Mass",&m1);
+  sigTree->SetBranchAddress("Z1Mass",&m2);
+  sigTree->SetBranchAddress("ZZMass",&mzz);
+  sigTree->SetBranchAddress("costhetastar",&hs);
+  sigTree->SetBranchAddress("helcosthetaZ1",&h1);
+  sigTree->SetBranchAddress("helcosthetaZ2",&h2);
+  sigTree->SetBranchAddress("helphi",&phi);
+  sigTree->SetBranchAddress("phistarZ1",&phi1);
+  sigTree->SetBranchAddress("ZZPt",&pt4l);
+  sigTree->SetBranchAddress("ZZRapidity",&Y4l);
+  sigTree->SetBranchAddress("ZZLD",&oldD);
 
   newTree->Branch("z1mass",&m1,"z1mass/F");
   newTree->Branch("z2mass",&m2,"z2mass/F");
@@ -68,7 +84,11 @@ void addDtoTree(char* inputFile,bool withPt=false, bool withY=false,int LHCsqrts
   newTree->Branch("costhetastar",&hs,"costhetastar/F");
   newTree->Branch("phi",&phi,"phi/F");  
   newTree->Branch("phistar1",&phi1,"phistar1/F");
+  newTree->Branch("ZZPt",&pt4l,"ZZpt/F");
+  newTree->Branch("ZZRapidity",&Y4l,"ZZRapidity/F");
   
+  newTree->Branch("ZZLD",&oldD,"ZZLD/F");
+
   newTree->Branch("Psig",&psig,"Psig/F");  
   newTree->Branch("Pbkg",&pbkg,"Pbkg/F");  
 
@@ -76,7 +96,7 @@ void addDtoTree(char* inputFile,bool withPt=false, bool withY=false,int LHCsqrts
   newTree->Branch("pseudoMelaLD",&pseudoD,"pseudoMelaLD/F");  
   newTree->Branch("spinTwoMinimalMelaLD",&graviD,"spinTwoMinimalMelaLD/F");  
 
-  for(int iEvt=0; iEvt<10000/*sigTree->GetEntries()*/; iEvt++){
+  for(int iEvt=0; iEvt<sigTree->GetEntries(); iEvt++){
 
     if(iEvt%1000==0) 
       cout << "event: " << iEvt << endl;
@@ -84,7 +104,8 @@ void addDtoTree(char* inputFile,bool withPt=false, bool withY=false,int LHCsqrts
     sigTree->GetEntry(iEvt);
 
     // ---------------- calculate angles ================
-
+    // ---------------- from 4-vectors
+    /*
     TLorentzVector l1_minus(pXL1,pYL1,pZL1,EL1);
     TLorentzVector l1_plus(pXL2,pYL2,pZL2,EL2);
 
@@ -105,9 +126,13 @@ void addDtoTree(char* inputFile,bool withPt=false, bool withY=false,int LHCsqrts
       m2 = p4Z1.M();
     }
     mzz = p4H.M();
+    */
+    // --------------------------------
 
-    if(mzz>100. && mzz<1000.){
+    if(mzz>120. && mzz<130.){
 
+      // calculate discriminants from 4-vectors
+      /* 
       myPseudoMELA.eval(l1_minus, 11,
 			l1_plus, -11,
 			l2_minus, 13,
@@ -126,6 +151,26 @@ void addDtoTree(char* inputFile,bool withPt=false, bool withY=false,int LHCsqrts
 		       l2_minus, 13,
 		       l2_plus, -13,
 		       hs,h1,h2,phi,phi1,D,psig,pbkg,withPt,withY,LHCsqrts);
+      */
+
+      // calculate discriminants from masses/angles
+
+      /*
+      cout << "===================== " << endl;
+      cout << "mzz: " << mzz << endl;
+      cout << "m1: " << m1 << endl;
+      cout << "m2: " << m2 << endl;
+      cout << "h1: " << h1 << endl;
+      cout << "h2: " << h2 << endl;
+      cout << "phi: " << phi << endl;
+      cout << "phi1: " << phi1 << endl;
+      */
+    
+      myMELA.computeLD(mzz,m1,m2,hs,h1,h2,phi,phi1,D,psig,pbkg,withPt,pt4l,withY,Y4l,8);
+
+      mySpinTwoMinimalMELA.eval(mzz,m1,m2,hs,h1,h2,phi,phi1,graviD,psig,pbkg);
+      
+      myPseudoMELA.eval(mzz,m1,m2,hs,h1,h2,phi,phi1,pseudoD,psig,pbkg);
 
       newTree->Fill();
       
