@@ -89,7 +89,7 @@ Double_t RooqqZZ_JHU_ZgammaZZ::evaluate() const
     
 //    double jacobian = 1./(mZZj);
 //    double jacobian = 4.*m1j*m2j;
-    double jacobian = 1.;
+//    double jacobian = 1.;
 //    return jacobian*totval ; 
     return totval;
 } 
@@ -282,6 +282,9 @@ Double_t RooqqZZ_JHU_ZgammaZZ::partonicXS(double m1_c, double m2_c, double h1_c,
     double gamma1 = 1./sqrt(1 - beta1*beta1);
     double gamma2 = 1./sqrt(1 - beta2*beta2);
     
+	// fix to remove compiler warnings
+	if(gamma1||gamma2){}
+	
     double EE = sqrt(4.*Pi*alpha);
     double el = -EE;
     double eq = (-1./3.)*EE;
@@ -347,6 +350,9 @@ Double_t RooqqZZ_JHU_ZgammaZZ::integratePartonicXS_Dh2DphDPh1_1(double m1_c, dou
     double h2 = h2_c;
     double phi = phi_c;
     double Phi1 = Phi1_c;
+
+	// fix to remove compiler warnings
+	if(phi){}
     
         // extra definitions needed
 //    double shs = Sqrt(1-hs*hs); // sin Theta
@@ -362,6 +368,9 @@ Double_t RooqqZZ_JHU_ZgammaZZ::integratePartonicXS_Dh2DphDPh1_1(double m1_c, dou
     double theta2 = acos(h2);    
     double Theta = acos(hs);  
     
+	// fix to remove compiler warnings
+	if(theta2){}
+	
     if (flipAxis){
             //        hs *= -1.;
         Theta += TMath::Pi();
@@ -381,6 +390,9 @@ Double_t RooqqZZ_JHU_ZgammaZZ::integratePartonicXS_Dh2DphDPh1_1(double m1_c, dou
     double gamma1 = 1./sqrt(1 - beta1*beta1);
     double gamma2 = 1./sqrt(1 - beta2*beta2);
     
+	// fix to remove compiler warnings
+	if(gamma1||gamma2){}
+	
     double EE = sqrt(4.*Pi*alpha);
     double el = -EE;
     double eq = (-1./3.)*EE;
@@ -433,6 +445,9 @@ Double_t RooqqZZ_JHU_ZgammaZZ::integratePartonicXS_Dh1DphDPh1_2(double m1_c, dou
     double phi = phi_c;
     double Phi1 = Phi1_c;
     
+	// fix to remove compiler warnings
+	if(phi){}
+	
         // extra definitions needed
         //    double shs = Sqrt(1-hs*hs); // sin Theta
         //    double sh1 = Sqrt(1-h1*h1); // sin theta1
@@ -447,6 +462,9 @@ Double_t RooqqZZ_JHU_ZgammaZZ::integratePartonicXS_Dh1DphDPh1_2(double m1_c, dou
     double theta2 = acos(h2);    
     double Theta = acos(hs);  
     
+	// fix to remove compiler warnings
+	if(theta1){}
+	
     if (flipAxis){
             //        hs *= -1.;
         Theta += TMath::Pi();
@@ -466,6 +484,9 @@ Double_t RooqqZZ_JHU_ZgammaZZ::integratePartonicXS_Dh1DphDPh1_2(double m1_c, dou
     double gamma1 = 1./sqrt(1 - beta1*beta1);
     double gamma2 = 1./sqrt(1 - beta2*beta2);
     
+	// fix to remove compiler warnings
+	if(gamma1 || gamma2){}
+	
     double EE = sqrt(4.*Pi*alpha);
     double el = -EE;
     double eq = (-1./3.)*EE;
@@ -516,6 +537,9 @@ Double_t RooqqZZ_JHU_ZgammaZZ::integratePartonicXS_Dh1Dh2Dph_3(double m1_c, doub
     double phi = phi_c;
     double Phi1 = Phi1_c;
         
+	// fix to remove compiler warnings
+	if(phi){}
+		
     /*
      std::cout << "-----------" << std::endl;
      std::cout << "h1 = " << h1 << "; " << std::endl;
@@ -539,6 +563,9 @@ Double_t RooqqZZ_JHU_ZgammaZZ::integratePartonicXS_Dh1Dh2Dph_3(double m1_c, doub
     double theta2 = acos(h2);    
     double Theta = acos(hs);  
     
+	// fix to remove compiler warnings
+	if(theta1||theta2){}
+	
     if (flipAxis){
             //        hs *= -1.;
         Theta += TMath::Pi();
@@ -559,6 +586,9 @@ Double_t RooqqZZ_JHU_ZgammaZZ::integratePartonicXS_Dh1Dh2Dph_3(double m1_c, doub
     double gamma1 = 1./sqrt(1 - beta1*beta1);
     double gamma2 = 1./sqrt(1 - beta2*beta2);
     
+	// fix to remove compiler warnings
+	if(gamma1||gamma2){}
+	
     double EE = sqrt(4.*Pi*alpha);
     double el = -EE;
     double eq = (-1./3.)*EE;
@@ -633,6 +663,9 @@ Double_t RooqqZZ_JHU_ZgammaZZ::integratePartonicXS_Dh1Dh2DPh1_4(double m1_c, dou
     double theta2 = acos(h2);    
     double Theta = acos(hs);  
     
+	// fix to remove compiler warnings
+	if(theta1||theta2){}
+	
     if (flipAxis){
             //        hs *= -1.;
         Theta += TMath::Pi();
@@ -653,6 +686,9 @@ Double_t RooqqZZ_JHU_ZgammaZZ::integratePartonicXS_Dh1Dh2DPh1_4(double m1_c, dou
     double gamma1 = 1./sqrt(1 - beta1*beta1);
     double gamma2 = 1./sqrt(1 - beta2*beta2);
     
+	// fix to remove compiler warnings
+	if(gamma1||gamma2){}
+	
     double EE = sqrt(4.*Pi*alpha);
     double el = -EE;
     double eq = (-1./3.)*EE;
@@ -703,6 +739,9 @@ Double_t RooqqZZ_JHU_ZgammaZZ::integratePartonicXS_Dh1Dh2DphDPh1_5(double m1_c, 
     double phi = phi_c;
     double Phi1 = Phi1_c;
     
+	// fix to remove compiler warnings
+	if(phi){}
+	
         // extra definitions needed
         //    double shs = Sqrt(1-hs*hs); // sin Theta
         //    double sh1 = Sqrt(1-h1*h1); // sin theta1
@@ -717,6 +756,9 @@ Double_t RooqqZZ_JHU_ZgammaZZ::integratePartonicXS_Dh1Dh2DphDPh1_5(double m1_c, 
     double theta2 = acos(h2);    
     double Theta = acos(hs);  
     
+	// fix to remove compiler warnings
+	if(theta1||theta2){}
+	
     if (flipAxis){
             //        hs *= -1.;
         Theta += TMath::Pi();
@@ -736,6 +778,9 @@ Double_t RooqqZZ_JHU_ZgammaZZ::integratePartonicXS_Dh1Dh2DphDPh1_5(double m1_c, 
     double gamma1 = 1./sqrt(1 - beta1*beta1);
     double gamma2 = 1./sqrt(1 - beta2*beta2);
     
+	// fix to remove comiler warnings
+	if(gamma1||gamma2){}
+	
     double EE = sqrt(4.*Pi*alpha);
     double el = -EE;
     double eq = (-1./3.)*EE;
