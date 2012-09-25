@@ -6,8 +6,8 @@
  *  SpinTwoMinimalMELA discriminator 
  *
  *
- *  $Date: 2012/09/18 22:50:53 $
- *  $Revision: 1.2 $
+ *  $Date: 2012/09/25 01:39:24 $
+ *  $Revision: 1.3 $
  *  \author JHU
  */
 
@@ -26,7 +26,7 @@ public:
 
   ~SpinTwoMinimalMELA(){};
 
-  void eval(TLorentzVector Z1_lept1, int Z1_lept1Id,
+  void computeKD(TLorentzVector Z1_lept1, int Z1_lept1Id,
 	    TLorentzVector Z1_lept2, int Z1_lept2Id,
 	    TLorentzVector Z2_lept1, int Z2_lept1Id,
 	    TLorentzVector Z2_lept2, int Z2_lept2Id,
@@ -34,7 +34,7 @@ public:
 	    float& psig,
 	    float& pbkg);
   
-  void eval(float zzmass, float z1mass, float z2mass, 
+  void computeKD(float zzmass, float z1mass, float z2mass, 
 	    float costhetstar, 
 	    float costheta1, 
 	    float costheta2, 

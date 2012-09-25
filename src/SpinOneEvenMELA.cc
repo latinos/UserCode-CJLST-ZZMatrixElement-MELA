@@ -61,7 +61,7 @@ void SpinOneEvenMELA::checkZorder(float& z1mass, float& z2mass,
 
 }
 
-void SpinOneEvenMELA::eval(TLorentzVector Z1_lept1, int Z1_lept1Id,
+void SpinOneEvenMELA::computeKD(TLorentzVector Z1_lept1, int Z1_lept1Id,
 			      TLorentzVector Z1_lept2, int Z1_lept2Id,
 			      TLorentzVector Z2_lept1, int Z2_lept1Id,
 			      TLorentzVector Z2_lept2, int Z2_lept2Id,
@@ -109,7 +109,7 @@ void SpinOneEvenMELA::eval(TLorentzVector Z1_lept1, int Z1_lept1Id,
 }
 
 
-void SpinOneEvenMELA::eval(float zzmass, float z1mass, 
+void SpinOneEvenMELA::computeKD(float zzmass, float z1mass, 
 		       float z2mass, float costhetastar, 
 		       float costheta1, float costheta2, 
 		       float phi, float phistar1,
