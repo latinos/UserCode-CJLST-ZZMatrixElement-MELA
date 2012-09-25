@@ -1,11 +1,11 @@
-#include <ZZMatrixElement/MELA/interface/SpinTwoMinimalMELA.h>
+#include <ZZMatrixElement/MELA/interface/SpinOneEvenMELA.h>
 
 #include "computeAngles.h"
 #include "AngularPdfFactory.h"
-#include "TensorPdfFactory.h"
+#include "VectorPdfFactory.h"
 #include <RooRealVar.h>
 
-SpinTwoMinimalMELA::SpinTwoMinimalMELA(){
+SpinOneEvenMELA::SpinOneEvenMELA(){
 
   z1mass_rrv = new RooRealVar("z1mass","m_{Z1}",0,180);
   z2mass_rrv = new RooRealVar("z2mass","m_{Z2}",0,120);
@@ -20,15 +20,15 @@ SpinTwoMinimalMELA::SpinTwoMinimalMELA(){
   SMHiggs->makeSMHiggs();
   SMHiggs->makeParamsConst(true);
 
-  minGrav = new TensorPdfFactory(z1mass_rrv,z2mass_rrv,costhetastar_rrv,costheta1_rrv,costheta2_rrv,phi_rrv,phistar1_rrv,mzz_rrv);
+  sigAlt = new VectorPdfFactory(z1mass_rrv,z2mass_rrv,costhetastar_rrv,costheta1_rrv,costheta2_rrv,phi_rrv,phistar1_rrv,mzz_rrv);
 
-  minGrav->makeMinGrav();
-  minGrav->makeParamsConst(true);
+  sigAlt->makeZprime();
+  sigAlt->makeParamsConst(true);
 
 }
 
 
-void SpinTwoMinimalMELA::checkZorder(float& z1mass, float& z2mass,
+void SpinOneEvenMELA::checkZorder(float& z1mass, float& z2mass,
 			    float& costhetastar, float& costheta1,
 			    float& costheta2, float& phi,
 			    float& phistar1){
@@ -61,7 +61,7 @@ void SpinTwoMinimalMELA::checkZorder(float& z1mass, float& z2mass,
 
 }
 
-void SpinTwoMinimalMELA::eval(TLorentzVector Z1_lept1, int Z1_lept1Id,
+void SpinOneEvenMELA::eval(TLorentzVector Z1_lept1, int Z1_lept1Id,
 			      TLorentzVector Z1_lept2, int Z1_lept2Id,
 			      TLorentzVector Z2_lept1, int Z2_lept1Id,
 			      TLorentzVector Z2_lept2, int Z2_lept2Id,
@@ -103,13 +103,13 @@ void SpinTwoMinimalMELA::eval(TLorentzVector Z1_lept1, int Z1_lept1Id,
   mzz_rrv->setVal(mzz);
   
   psig = SMHiggs->getVal(mzz);
-  psigALT = minGrav->getVal(mzz);
-  kd = 1/(1+minGrav->getVal(mzz)/SMHiggs->getVal(mzz));
+  psigALT = sigAlt->getVal(mzz);
+  kd = 1/(1+sigAlt->getVal(mzz)/SMHiggs->getVal(mzz));
   
 }
 
 
-void SpinTwoMinimalMELA::eval(float zzmass, float z1mass, 
+void SpinOneEvenMELA::eval(float zzmass, float z1mass, 
 		       float z2mass, float costhetastar, 
 		       float costheta1, float costheta2, 
 		       float phi, float phistar1,
@@ -134,8 +134,8 @@ void SpinTwoMinimalMELA::eval(float zzmass, float z1mass,
   mzz_rrv->setVal(zzmass);
 
   psig = SMHiggs->getVal(zzmass);
-  psigALT = minGrav->getVal(zzmass);
-  kd = 1/(1+minGrav->getVal(zzmass)/SMHiggs->getVal(zzmass));
+  psigALT = sigAlt->getVal(zzmass);
+  kd = 1/(1+sigAlt->getVal(zzmass)/SMHiggs->getVal(zzmass));
     
 }
 

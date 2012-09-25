@@ -4,7 +4,6 @@ using namespace RooFit;
 
 void addDtoTree(char* inputFile,bool withPt=false, bool withY=false,int LHCsqrts=8){
 
-
   gSystem->Load("$CMSSW_BASE/lib/slc5_amd64_gcc462/libZZMatrixElementMELA.so");
   gROOT->LoadMacro("../interface/Mela.h+");
   gROOT->LoadMacro("../interface/SpinTwoMinimalMELA.h+");
@@ -37,11 +36,12 @@ void addDtoTree(char* inputFile,bool withPt=false, bool withY=false,int LHCsqrts
   float pt4l, Y4l;
   float oldD;
 
-  /*
+  /*-------- UFL TREES --------
   double EL1,EL2,EL3,EL4;
   double pXL1,pXL2,pXL3,pXL4;
   double pYL1,pYL2,pYL3,pYL4;
   double pZL1,pZL2,pZL3,pZL4;
+  double lomeD,oldD,mcfm_HZZ,mcfm_ZZ;
 
   sigTree->SetBranchAddress("EL1",&EL1);
   sigTree->SetBranchAddress("EL2",&EL2);
@@ -62,10 +62,16 @@ void addDtoTree(char* inputFile,bool withPt=false, bool withY=false,int LHCsqrts
   sigTree->SetBranchAddress("pZL2",&pZL2);
   sigTree->SetBranchAddress("pZL3",&pZL3);
   sigTree->SetBranchAddress("pZL4",&pZL4);
-  */
 
-  sigTree->SetBranchAddress("Z2Mass",&m1);
-  sigTree->SetBranchAddress("Z1Mass",&m2);
+  sigTree->SetBranchAddress("lomeD",&lomeD);
+  sigTree->SetBranchAddress("mcfm_HZZ",&mcfm_HZZ);
+  sigTree->SetBranchAddress("mcfm_ZZ",&mcfm_ZZ);
+  sigTree->SetBranchAddress("melaLD",&oldD);
+  ------------------------------*/
+
+  // -------- CJLST TREES ---------------
+  sigTree->SetBranchAddress("Z2Mass",&m2);
+  sigTree->SetBranchAddress("Z1Mass",&m1);
   sigTree->SetBranchAddress("ZZMass",&mzz);
   sigTree->SetBranchAddress("costhetastar",&hs);
   sigTree->SetBranchAddress("helcosthetaZ1",&h1);
@@ -75,6 +81,8 @@ void addDtoTree(char* inputFile,bool withPt=false, bool withY=false,int LHCsqrts
   sigTree->SetBranchAddress("ZZPt",&pt4l);
   sigTree->SetBranchAddress("ZZRapidity",&Y4l);
   sigTree->SetBranchAddress("ZZLD",&oldD);
+  //---------------------------------------*/
+
 
   newTree->Branch("z1mass",&m1,"z1mass/F");
   newTree->Branch("z2mass",&m2,"z2mass/F");
@@ -84,10 +92,14 @@ void addDtoTree(char* inputFile,bool withPt=false, bool withY=false,int LHCsqrts
   newTree->Branch("costhetastar",&hs,"costhetastar/F");
   newTree->Branch("phi",&phi,"phi/F");  
   newTree->Branch("phistar1",&phi1,"phistar1/F");
+
   newTree->Branch("ZZPt",&pt4l,"ZZpt/F");
   newTree->Branch("ZZRapidity",&Y4l,"ZZRapidity/F");
   
   newTree->Branch("ZZLD",&oldD,"ZZLD/F");
+  //newTree->Branch("lomeD",&lomeD,"lomeD/D");
+  //newTree->Branch("mcfm_HZZ",&mcfm_HZZ,"mcfm_HZZ/D");
+  //newTree->Branch("mcfm_ZZ",&mcfm_ZZ,"mcfm_ZZ/D");
 
   newTree->Branch("Psig",&psig,"Psig/F");  
   newTree->Branch("Pbkg",&pbkg,"Pbkg/F");  
@@ -103,9 +115,9 @@ void addDtoTree(char* inputFile,bool withPt=false, bool withY=false,int LHCsqrts
 
     sigTree->GetEntry(iEvt);
 
-    // ---------------- calculate angles ================
-    // ---------------- from 4-vectors
     /*
+    // ---------------- calculate angles ================
+    // ---------------- from 4-vectors  
     TLorentzVector l1_minus(pXL1,pYL1,pZL1,EL1);
     TLorentzVector l1_plus(pXL2,pYL2,pZL2,EL2);
 
@@ -127,12 +139,13 @@ void addDtoTree(char* inputFile,bool withPt=false, bool withY=false,int LHCsqrts
     }
     mzz = p4H.M();
     */
+
     // --------------------------------
 
-    if(mzz>120. && mzz<130.){
+    if(mzz>350. && mzz<450.){
 
       // calculate discriminants from 4-vectors
-      /* 
+      /*
       myPseudoMELA.eval(l1_minus, 11,
 			l1_plus, -11,
 			l2_minus, 13,
@@ -146,15 +159,14 @@ void addDtoTree(char* inputFile,bool withPt=false, bool withY=false,int LHCsqrts
 				graviD,psig,pbkg);
 
       //MELA LD
-      myMELA.computeLD(l1_minus, 11,
+      myMELA.computeKD(l1_minus, 11,
 		       l1_plus, -11,
 		       l2_minus, 13,
 		       l2_plus, -13,
 		       hs,h1,h2,phi,phi1,D,psig,pbkg,withPt,withY,LHCsqrts);
-      */
 
       // calculate discriminants from masses/angles
-
+      */
       /*
       cout << "===================== " << endl;
       cout << "mzz: " << mzz << endl;
@@ -165,12 +177,12 @@ void addDtoTree(char* inputFile,bool withPt=false, bool withY=false,int LHCsqrts
       cout << "phi: " << phi << endl;
       cout << "phi1: " << phi1 << endl;
       */
-    
-      myMELA.computeLD(mzz,m1,m2,hs,h1,h2,phi,phi1,D,psig,pbkg,withPt,pt4l,withY,Y4l,8);
 
-      mySpinTwoMinimalMELA.eval(mzz,m1,m2,hs,h1,h2,phi,phi1,graviD,psig,pbkg);
+      //mySpinTwoMinimalMELA.eval(mzz,m1,m2,hs,h1,h2,phi,phi1,graviD,psig,pbkg);
       
-      myPseudoMELA.eval(mzz,m1,m2,hs,h1,h2,phi,phi1,pseudoD,psig,pbkg);
+      //myPseudoMELA.eval(mzz,m1,m2,hs,h1,h2,phi,phi1,pseudoD,psig,pbkg);
+
+      myMELA.computeKD(mzz,m1,m2,hs,h1,h2,phi,phi1,D,psig,pbkg,withPt,pt4l,withY,Y4l,8);
 
       newTree->Fill();
       

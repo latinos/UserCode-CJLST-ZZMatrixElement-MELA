@@ -1,9 +1,9 @@
-#ifndef MELA_SpinTwoMinimalMela_h
-#define MELA_SpinTwoMinimalMela_h
+#ifndef MELA_SpinOneOddMela_h
+#define MELA_SpinOneOddMela_h
 
-/** \class SpinTwoMinimalMela
+/** \class SpinOneOddMela
  *
- *  SpinTwoMinimalMELA discriminator 
+ *  SpinOneOddMELA discriminator 
  *
  *
  *  $Date: 2012/09/18 22:50:53 $
@@ -14,17 +14,17 @@
 #include <TLorentzVector.h>
 
 class AngularPdfFactory;
-class TensorPdfFactory;
+class VectorPdfFactory;
 class RooRealVar;
 
 
-class SpinTwoMinimalMELA{
+class SpinOneOddMELA{
 
 public:
 
-  SpinTwoMinimalMELA();
+  SpinOneOddMELA();
 
-  ~SpinTwoMinimalMELA(){};
+  ~SpinOneOddMELA(){};
 
   void eval(TLorentzVector Z1_lept1, int Z1_lept1Id,
 	    TLorentzVector Z1_lept2, int Z1_lept2Id,
@@ -60,7 +60,7 @@ private:
   RooRealVar* mzz_rrv;
 
   AngularPdfFactory *SMHiggs;
-  TensorPdfFactory *minGrav;   
+  VectorPdfFactory *sigAlt;   
 
 };
 

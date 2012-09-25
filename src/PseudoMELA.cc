@@ -65,7 +65,7 @@ void PseudoMELA::eval(TLorentzVector Z1_lept1, int Z1_lept1Id,
 		      TLorentzVector Z1_lept2, int Z1_lept2Id,
 		      TLorentzVector Z2_lept1, int Z2_lept1Id,
 		      TLorentzVector Z2_lept2, int Z2_lept2Id,
-		      float& ld, 
+		      float& kd, 
 		      float& psig,
 		      float& psigALT){
 
@@ -79,7 +79,7 @@ void PseudoMELA::eval(TLorentzVector Z1_lept1, int Z1_lept1Id,
   if(mzz<100.0 || mzz>179.9999){
     psig=0.0;
     psigALT=0.0;
-    ld=0.0;
+    kd=0.0;
     return;
   }
 
@@ -89,7 +89,7 @@ void PseudoMELA::eval(TLorentzVector Z1_lept1, int Z1_lept1Id,
 		      Z2_lept1, Z2_lept1Id, Z2_lept2, Z2_lept2Id,
 		      costhetastar,costheta1,costheta2,phi,phistar1);
 
-  //compute ld
+  //compute kd
   checkZorder(m1,m2,costhetastar,costheta1,costheta2,phi,phistar1);
 
   z1mass_rrv->setVal(m1);
@@ -104,7 +104,7 @@ void PseudoMELA::eval(TLorentzVector Z1_lept1, int Z1_lept1Id,
   
   psig = SMHiggs->getVal(mzz);
   psigALT = PSHiggs->getVal(mzz);
-  ld = 1/(1+PSHiggs->getVal(mzz)/SMHiggs->getVal(mzz));
+  kd = 1/(1+PSHiggs->getVal(mzz)/SMHiggs->getVal(mzz));
   
 }
 
@@ -113,12 +113,12 @@ void PseudoMELA::eval(float zzmass, float z1mass,
 		       float z2mass, float costhetastar, 
 		       float costheta1, float costheta2, 
 		       float phi, float phistar1,
-		       float& ld, float& psig, float& psigALT){
+		       float& kd, float& psig, float& psigALT){
 
-  if(zzmass<100.0 || zzmass>179.9999){
+  if(zzmass<100.0 || zzmass>179.){
     psig=0.0;
     psigALT=0.0;
-    ld=0.0;
+    kd=0.0;
   }
 
   checkZorder(z1mass,z2mass,costhetastar,costheta1,costheta2,phi,phistar1);
@@ -135,7 +135,7 @@ void PseudoMELA::eval(float zzmass, float z1mass,
 
   psig = SMHiggs->getVal(zzmass);
   psigALT = PSHiggs->getVal(zzmass);
-  ld = 1/(1+PSHiggs->getVal(zzmass)/SMHiggs->getVal(zzmass));
+  kd = 1/(1+PSHiggs->getVal(zzmass)/SMHiggs->getVal(zzmass));
     
 }
 

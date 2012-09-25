@@ -2,8 +2,8 @@
  *
  *  See header file for documentation.
  *
- *  $Date: 2012/09/24 03:44:44 $
- *  $Revision: 1.11 $
+ *  $Date: 2012/09/24 13:57:32 $
+ *  $Revision: 1.12 $
  */
 
 #include <ZZMatrixElement/MELA/interface/Mela.h>
@@ -29,12 +29,14 @@
 
 using namespace RooFit;
 
-Mela::Mela(){ 
+Mela::Mela(bool usePowhegTemplate){ 
+
+  usePowhegTemplate_=usePowhegTemplate;
 
   edm::FileInPath fip("ZZMatrixElement/MELA/data/my8DTemplateNotNorm.root");
   string fullPath = fip.fullPath();
 
-  // Original code from LDProducer::beginJob
+  // Original code from KDProducer::beginJob
   f = new TFile(fullPath.c_str(),"READ");
   h_mzz= (TH1F*)(f->Get("h_mzz"));
   h_mzzm1m2= (TH3F*)(f->Get("h_mzzm1m2"));
@@ -52,32 +54,81 @@ Mela::~Mela(){
   delete f;
 }
 
-double Mela::pdfNorm(double mzz){
+double Mela::sigPdfNorm(double mzz){
 
+  double p0 =     -16.3523;
+  double p1 =     0.545736;
+  double p2 =  -0.00228891;
+  double p3 =  5.06627e-06;
+  double p4 = -6.12505e-09;
+  double p5 =  3.83126e-12;
+  double p6 =  -9.7065e-16;
+
+  double poly = p0+
+    p1*mzz+
+    p2*mzz*mzz+
+    p3*mzz*mzz*mzz+
+    p4*mzz*mzz*mzz*mzz+
+    p5*mzz*mzz*mzz*mzz*mzz+
+    p6*mzz*mzz*mzz*mzz*mzz*mzz;
+
+  return exp(poly);
+
+}
+
+double Mela::bkgPdfNorm(double mzz){
+
+  mzz++;
+    
   double p0;
   double p1;
   double p2;
   double p3;
   double p4;
-  
-  if(mzz>130){
-    p0 =     -10450.5;
-    p1 =      328.711;
-    p2 =     -3.86514;    
-    p3 =    0.0201766;
-    p4 =  -3.9483e-05;
+  double p5;
+  double p6;
+  if(mzz<182){
+ 
+    p0 =  1.36714e-09;
+    p1 = -6.38091e-11;
+    p2 =  1.22195e-12;
+    p3 = -1.23122e-14;
+    p4 =  6.89716e-17;
+    p5 = -2.03987e-19;
+    p6 =  2.49154e-22;
+
+  }else if(mzz<210){
+
+    p0 =  -4.83519e-08;
+    p1 =   9.61952e-10;
+    p2 =   -7.1795e-12;
+    p3 =   2.38262e-14;
+    p4 =  -2.96631e-17;
+    p5 = 0.0; 
+    p6 = 0.0;
+
   }else{
-    p0 =      131.928;
-    p1 =     -1.89119;
-    p2 =    0.0104286;
-    p3 = -2.65015e-05;
-    p4 =  2.86603e-08;
+
+    p0 =  1.15125e-11  ;
+    p1 =  1.21307e-14  ;
+    p2 =  -3.1029e-16  ;
+    p3 =  1.01661e-18  ;
+    p4 = -1.48631e-21  ;
+    p5 =   1.0428e-24  ;
+    p6 = -2.85659e-28  ; 
+
   }
-  return p0+p1*mzz+p2*mzz*mzz+p3*mzz*mzz*mzz+p4*mzz*mzz*mzz*mzz;
+  return p0+
+    p1*mzz+
+    p2*mzz*mzz+
+    p3*mzz*mzz*mzz+
+    p4*mzz*mzz*mzz*mzz+
+    p5*mzz*mzz*mzz*mzz*mzz+
+    p6*mzz*mzz*mzz*mzz*mzz*mzz;
 
 }
 
-void Mela::computeLD(TLorentzVector Z1_lept1, int Z1_lept1Id,
+void Mela::computeKD(TLorentzVector Z1_lept1, int Z1_lept1Id,
 		     TLorentzVector Z1_lept2, int Z1_lept2Id,
 		     TLorentzVector Z2_lept1, int Z2_lept1Id,
 		     TLorentzVector Z2_lept2, int Z2_lept2Id,
@@ -87,7 +138,7 @@ void Mela::computeLD(TLorentzVector Z1_lept1, int Z1_lept1Id,
 		     float& costheta2,
 		     float& phi,
 		     float& phistar1,
-		     float& ld, 
+		     float& kd, 
 		     float& psig,
 		     float& pbkg,
 		     bool withPt,
@@ -107,24 +158,24 @@ void Mela::computeLD(TLorentzVector Z1_lept1, int Z1_lept1Id,
 		      Z2_lept1, Z2_lept1Id, Z2_lept2, Z2_lept2Id,
 		      costhetastar,costheta1,costheta2,phi,phistar1);
 
-  //compute ld
+  //compute kd
   pair<float,float> P = likelihoodDiscriminant(mzz,m1,m2,costhetastar,costheta1,costheta2,phi,phistar1,
 					       LHCsqrts, withPt, pt, withY, Y);
   psig=P.first;
   pbkg=P.second;
-  ld = psig/(psig+pbkg);
+  kd = psig/(psig+pbkg);
   
 }
 
 
 
-void Mela::computeLD(float mzz, float mZ1, float mZ2, 
+void Mela::computeKD(float mzz, float mZ1, float mZ2, 
 		     float costhetastar,
 		     float costheta1, 
 		     float costheta2,
 		     float phi,
 		     float phistar1,
-		     float& ld, 
+		     float& kd, 
 		     float& psig,
 		     float& pbkg,
 		     bool withPt,
@@ -133,9 +184,9 @@ void Mela::computeLD(float mzz, float mZ1, float mZ2,
 		     float Y4l,
 		     int LHCsqrts) {
 
-  // Skip candidates where LD is irrelevant.
+  // Skip candidates where KD is irrelevant.
   if (mzz<100.){
-    ld = 0;
+    kd = 0;
     psig = 0;
     pbkg = 0;
     return;
@@ -152,7 +203,7 @@ void Mela::computeLD(float mzz, float mZ1, float mZ2,
 					       withY, Y4l);
   psig = P.first;
   pbkg = P.second;
-  ld = psig/(psig + pbkg);
+  kd = psig/(psig + pbkg);
 
 }
 
@@ -166,7 +217,7 @@ vector<float> Mela::my8DTemplate(bool normalized,float mZZ, float m1, float m2, 
 
   // - - - - - - - - - - - - - - - whitbeck
   // if bin has no events: add 1
-  // safety feature to prevent LD = 1 as a
+  // safety feature to prevent KD = 1 as a
   // result of low statistics
 
   if(Pmzzm1m2==0){
@@ -321,28 +372,31 @@ pair<float,float> Mela::likelihoodDiscriminant (float mZZ, float m1, float m2, f
   float Pbackg=-99;
   float Psig=-99; 
 
-  /*
-  if(mZZ>100 && mZZ<180){
-    Pbackg = P[0]*P[1]*P[2]*P[3]*P[4]*P[5]*5.0;
-    Psig=SMHiggs->getVal(mZZ);
-  }
-  if(mZZ>180&&mZZ<=2*91.188){
-    z1mass_rrv->setVal(mZZ/2.-1e-9);
-    z2mass_rrv->setVal(mZZ/2.-1e-9);
-    Pbackg = SMZZ->getVal()/(SMZZ->createIntegral(RooArgSet(*costhetastar_rrv,*costheta1_rrv,*costheta2_rrv,*phi_rrv,*phi1_rrv))->getVal())*10.0;
-    Psig = SMHiggs->PDF->getVal()/(SMHiggs->PDF->createIntegral(RooArgSet(*costheta1_rrv,*costheta2_rrv,*phi_rrv))->getVal());
-  }
-  if(mZZ>2*91.188){
-    z1mass_rrv->setVal(91.188);
-    z2mass_rrv->setVal(91.188);
-    Pbackg = SMZZ->getVal()/(SMZZ->createIntegral(RooArgSet(*costhetastar_rrv,*costheta1_rrv,*costheta2_rrv,*phi_rrv,*phi1_rrv))->getVal())*10.0;
-    Psig = SMHiggs->PDF->getVal()/(SMHiggs->PDF->createIntegral(RooArgSet(*costheta1_rrv,*costheta2_rrv,*phi_rrv))->getVal());
-  }
-  */
+  if(usePowhegTemplate_){
+    // using template background calculation
+    if(mZZ>100 && mZZ<180){
+      Pbackg = P[0]*P[1]*P[2]*P[3]*P[4]*P[5]*5.0;
+      Psig=SMHiggs->getVal(mZZ);
+    }
+    if(mZZ>180&&mZZ<=2*91.188){
+      z1mass_rrv->setVal(mZZ/2.-1e-9);
+      z2mass_rrv->setVal(mZZ/2.-1e-9);
+      Pbackg = SMZZ->getVal()/(SMZZ->createIntegral(RooArgSet(*costhetastar_rrv,*costheta1_rrv,*costheta2_rrv,*phi_rrv,*phi1_rrv))->getVal())*10.0;
+      Psig = SMHiggs->PDF->getVal()/(SMHiggs->PDF->createIntegral(RooArgSet(*costheta1_rrv,*costheta2_rrv,*phi_rrv))->getVal());
+    }
+    if(mZZ>2*91.188){
+      z1mass_rrv->setVal(91.188);
+      z2mass_rrv->setVal(91.188);
+      Pbackg = SMZZ->getVal()/(SMZZ->createIntegral(RooArgSet(*costhetastar_rrv,*costheta1_rrv,*costheta2_rrv,*phi_rrv,*phi1_rrv))->getVal())*10.0;
+      Psig = SMHiggs->PDF->getVal()/(SMHiggs->PDF->createIntegral(RooArgSet(*costheta1_rrv,*costheta2_rrv,*phi_rrv))->getVal());
+    }
+  }else{
 
-  Pbackg = SMZZ->getVal()*1e15/pdfNorm(mZZ);  //(SMZZ->createIntegral(RooArgSet(*costhetastar_rrv,*costheta1_rrv,*costheta2_rrv,*phi_rrv,*phi1_rrv))->getVal())*10.0;
-  Psig = SMHiggs->getVal(mZZ); //(SMHiggs->PDF->createIntegral(RooArgSet(*costheta1_rrv,*costheta2_rrv,*phi_rrv))->getVal());
+    // using analytic background calculation
+    Pbackg = SMZZ->getVal()*1e-4/bkgPdfNorm(mZZ); 
+    Psig = SMHiggs->PDF->getVal()/sigPdfNorm(mZZ);
 
+  }
 
   if (withPt) {
     Pbackg *= bkgPt->getVal()/(bkgPt->createIntegral(RooArgSet(*pt_rrv))->getVal());
@@ -395,8 +449,21 @@ pair<float,float> Mela::likelihoodDiscriminant (float mZZ, float m1, float m2, f
   delete sigY;
   delete bkgY;
 
-  if(Psig<0 || Pbackg<0)
-    cout<<"LDProducer.h Error: LD not defined for this mzz (maybe mZZ<100 ?)"<<endl;
+  if(Psig<0 || Pbackg<0){
+    cout<<"Mela::likelihoodDiscriminant() Error: KD not defined for this mzz (maybe mZZ<100 ?)"<<endl;
+    cout << "=========================" << endl;
+    cout << "psig: " << Psig << endl;
+    cout << "pbkg: " << Pbackg << endl;
+    cout << " - - - - - - - - - - - - " << endl;
+    cout << "mzz: " << mZZ << endl;
+    cout << "m1: " << m1 << endl;
+    cout << "m2: " << m2 << endl;
+    cout << "costheta1: " << costheta1 << endl;
+    cout << "costheta2: " << costheta2 << endl;
+    cout << "costhetastar: " << costhetastar << endl;
+    cout << "phi: " << phi << endl;
+    cout << "phi1: " << phistar1 << endl;
+  }
 
   return make_pair(Psig,Pbackg);
 

@@ -6,8 +6,8 @@
  *  PseudoMELA discriminator 
  *
  *
- *  $Date: 2012/09/17 19:06:31 $
- *  $Revision: 1.2 $
+ *  $Date: 2012/09/18 22:50:53 $
+ *  $Revision: 1.3 $
  *  \author JHU
  */
 
@@ -29,7 +29,7 @@ public:
 	    TLorentzVector Z1_lept2, int Z1_lept2Id,
 	    TLorentzVector Z2_lept1, int Z2_lept1Id,
 	    TLorentzVector Z2_lept2, int Z2_lept2Id,
-	    float& ld, 
+	    float& kd, 
 	    float& psig,
 	    float& pbkg);
   
@@ -39,7 +39,7 @@ public:
 	    float costheta2, 
 	    float phi, 
 	    float phistar1,
-	    float& ld, 
+	    float& kd, 
 	    float& psig, 
 	    float& psigALT);
 

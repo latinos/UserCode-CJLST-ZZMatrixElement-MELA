@@ -6,8 +6,8 @@
  *  MELA discriminator
  *
  *
- *  $Date: 2012/09/20 20:56:31 $
- *  $Revision: 1.7 $
+ *  $Date: 2012/09/24 12:15:07 $
+ *  $Revision: 1.8 $
  *  \author JHU
  */
 
@@ -22,17 +22,17 @@ class TH3F;
 
 class Mela { 
 public:
-  Mela();
+  Mela(bool usePowhegTemplate=false);
 
   ~Mela();
 
-  /// Compute angles and LD from the lepton four-vectors and pdgIds.
+  /// Compute angles and KD from the lepton four-vectors and pdgIds.
   /// FSR recollected photons must been added to the corresponding lepton's four-vector by the user.
   /// Theta1 is the angle corresponding to Z1.
   /// Z1_lept1 and  Z1_lept2 are supposed to come from the same Z.
   /// Leptons are re-ordered internally according to a standard convention:
   /// lept1 = negative-charged lepton (for OS pairs).
-  void computeLD(TLorentzVector Z1_lept1, int Z1_lept1Id,
+  void computeKD(TLorentzVector Z1_lept1, int Z1_lept1Id,
 		 TLorentzVector Z1_lept2, int Z1_lept2Id,
 		 TLorentzVector Z2_lept1, int Z2_lept1Id,
 		 TLorentzVector Z2_lept2, int Z2_lept2Id,
@@ -42,7 +42,7 @@ public:
 		 float& costheta2,
 		 float& phi,
 		 float& phistar1,
-		 float& ld, 
+		 float& kd, 
 		 float& psig,
 		 float& pbkg,
 		 bool withPt = false,
@@ -51,15 +51,15 @@ public:
 
 
 
-  /// Compute LD from masses and angles. 
+  /// Compute KD from masses and angles. 
   /// The user must ensure that the order of m1/m2 matches the order of theta1/theta2.
-  void computeLD(float mZZ, float mZ1, float mZ2, 
+  void computeKD(float mZZ, float mZ1, float mZ2, 
 		 float costhetastar,
 		 float costheta1, 
 		 float costheta2,
 		 float phi,
 		 float phistar1,
-		 float& ld, 
+		 float& kd, 
 		 float& psig,
 		 float& pbkg,
 		 bool withPt = false,
@@ -70,7 +70,8 @@ public:
 
 private:
 
-  double pdfNorm(double mzz);
+  double sigPdfNorm(double mzz);
+  double bkgPdfNorm(double mzz);
 
 
   std::vector<float> my8DTemplate(bool normalized, float mZZ, float mZ1, float mZ2, 
@@ -101,6 +102,8 @@ private:
   TH2F *h_mzzcostheta2;
   TH2F *h_mzzphi1;
   TH2F *h_mzzphi;
+  
+  bool usePowhegTemplate_;
  
 };
 
