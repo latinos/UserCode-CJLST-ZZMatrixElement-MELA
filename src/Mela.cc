@@ -2,8 +2,8 @@
  *
  *  See header file for documentation.
  *
- *  $Date: 2012/09/24 13:57:32 $
- *  $Revision: 1.12 $
+ *  $Date: 2012/09/25 01:39:24 $
+ *  $Revision: 1.13 $
  */
 
 #include <ZZMatrixElement/MELA/interface/Mela.h>
@@ -151,6 +151,15 @@ void Mela::computeKD(TLorentzVector Z1_lept1, int Z1_lept1Id,
 
   TLorentzVector ZZ = (Z1_lept1 + Z1_lept2 + Z2_lept1 + Z2_lept2);
   float mzz = ZZ.M();
+
+  // Skip candidates where KD is irrelevant.
+  if (mzz<100.){
+    kd = 0;
+    psig = 0;
+    pbkg = 0;
+    return;
+  }
+
   float pt  = ZZ.Pt();
   float Y   = ZZ.Rapidity(); // Fixme: should probably protect against NaN?
 
