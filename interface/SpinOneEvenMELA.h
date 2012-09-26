@@ -6,8 +6,8 @@
  *  SpinOneEvenMELA discriminator 
  *
  *
- *  $Date: 2012/09/25 01:39:24 $
- *  $Revision: 1.1 $
+ *  $Date: 2012/09/25 01:52:11 $
+ *  $Revision: 1.2 $
  *  \author JHU
  */
 
@@ -24,7 +24,7 @@ public:
 
   SpinOneEvenMELA();
 
-  ~SpinOneEvenMELA(){};
+  ~SpinOneEvenMELA();
 
   void computeKD(TLorentzVector Z1_lept1, int Z1_lept1Id,
 	    TLorentzVector Z1_lept2, int Z1_lept2Id,

@@ -6,8 +6,8 @@
  *  PseudoMELA discriminator 
  *
  *
- *  $Date: 2012/09/25 01:39:24 $
- *  $Revision: 1.4 $
+ *  $Date: 2012/09/25 01:52:11 $
+ *  $Revision: 1.5 $
  *  \author JHU
  */
 
@@ -23,7 +23,7 @@ public:
 
   PseudoMELA();
 
-  ~PseudoMELA(){};
+  ~PseudoMELA();
 
   void computeKD(TLorentzVector Z1_lept1, int Z1_lept1Id,
 	    TLorentzVector Z1_lept2, int Z1_lept2Id,

@@ -27,6 +27,21 @@ SpinOneOddMELA::SpinOneOddMELA(){
 
 }
 
+SpinOneOddMELA::~SpinOneOddMELA(){
+
+  delete z1mass_rrv;
+  delete z2mass_rrv;
+  delete costheta1_rrv;
+  delete costheta2_rrv;
+  delete phi_rrv;
+  delete costhetastar_rrv;
+  delete phistar1_rrv;
+  delete mzz_rrv;
+
+  delete SMHiggs;
+  delete sigAlt;
+
+}
 
 void SpinOneOddMELA::checkZorder(float& z1mass, float& z2mass,
 			    float& costhetastar, float& costheta1,
