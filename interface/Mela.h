@@ -6,13 +6,15 @@
  *  MELA discriminator
  *
  *
- *  $Date: 2012/09/24 12:15:07 $
- *  $Revision: 1.8 $
+ *  $Date: 2012/09/25 01:39:24 $
+ *  $Revision: 1.9 $
  *  \author JHU
  */
 
 #include <vector>
 #include <TLorentzVector.h>
+#include <RooRealVar.h>
+#include "../src/AngularPdfFactory.h"
 
 class TFile; 
 class TH1F; 
@@ -22,7 +24,7 @@ class TH3F;
 
 class Mela { 
 public:
-  Mela(bool usePowhegTemplate=false);
+  Mela(bool usePowhegTemplate=false, int LHCsqrts=8);
 
   ~Mela();
 
@@ -105,6 +107,34 @@ private:
   
   bool usePowhegTemplate_;
  
+  RooRealVar* z1mass_rrv;
+  RooRealVar* z2mass_rrv;
+  RooRealVar* costhetastar_rrv; 
+  RooRealVar* costheta1_rrv;
+  RooRealVar* costheta2_rrv;
+  RooRealVar* phi_rrv;
+  RooRealVar* phi1_rrv;
+  RooRealVar* pt_rrv;
+  RooRealVar* y_rrv;
+  RooRealVar* sqrtS_rrv;
+  RooRealVar* mzz_rrv;
+  RooRealVar* upFrac_rrv;
+  
+  AngularPdfFactory* SMHiggs;
+  RooAbsPdf* SMZgammaZZ;
+  RooAbsPdf* SMZZ;
+
+  vector<RooRealVar*> ptparamsS;
+  vector<RooRealVar*> ptparamsB;
+  RooArgSet* allparamsS;
+  RooArgSet* allparamsB;
+
+  RooAbsPdf* sigY; 
+  RooAbsPdf* bkgY;
+  
+  RooAbsPdf* sigPt;
+  RooAbsPdf* bkgPt;
+
 };
 
 

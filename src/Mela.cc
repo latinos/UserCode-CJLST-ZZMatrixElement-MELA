@@ -13,6 +13,7 @@
 #include "computeAngles.h"
 #include "AngularPdfFactory.h"
 #include "RooqqZZ_JHU_ZgammaZZ.h"
+#include "RooqqZZ_JHU.h"
 #include "RooTsallis.h"
 #include "RooTsallisExp.h"
 #include "RooRapidityBkg.h"
@@ -29,7 +30,7 @@
 
 using namespace RooFit;
 
-Mela::Mela(bool usePowhegTemplate){ 
+Mela::Mela(bool usePowhegTemplate, int LHCsqrts){ 
 
   usePowhegTemplate_=usePowhegTemplate;
 
@@ -46,12 +47,117 @@ Mela::Mela(bool usePowhegTemplate){
   h_mzzphi1= (TH2F*)(f->Get("h_mzzphi1")); // This is phistar1
   h_mzzphi= (TH2F*)(f->Get("h_mzzphi"));
 
+  z1mass_rrv = new RooRealVar("z1mass","m_{Z1}",0.,180.);
+  z2mass_rrv = new RooRealVar("z2mass","m_{Z2}",0.,120.); 
+  costhetastar_rrv = new RooRealVar("costhetastar","cos#theta^{*}",-1.,1.);  
+  costheta1_rrv = new RooRealVar("costheta1","cos#theta_{1}",-1.,1.);  
+  costheta2_rrv = new RooRealVar("costheta2","cos#theta_{2}",-1.,1.);
+  phi_rrv= new RooRealVar("phi","#Phi",-3.1415,3.1415);
+  phi1_rrv= new RooRealVar("phi1","#Phi_{1}",-3.1415,3.1415);
+  pt_rrv= new RooRealVar("pt","p_{T}^{4l}",0.,1000);
+  y_rrv= new RooRealVar("y","Y^{4l}",-4.0,4.0);
+  sqrtS_rrv= new RooRealVar("sqrtS","#sqrt{s}",1000,14000);
+  mzz_rrv= new RooRealVar("mzz","mZZ",80.,1000.);
+  upFrac_rrv= new RooRealVar("upFrac","upFrac",.5);
+  upFrac_rrv->setConstant(kTRUE);
+
+  SMHiggs = new AngularPdfFactory(z1mass_rrv,z2mass_rrv,costheta1_rrv,costheta2_rrv,phi_rrv,mzz_rrv);
+  SMZgammaZZ = new RooqqZZ_JHU_ZgammaZZ("SMZgammaZZ","SMZgammaZZ",*z1mass_rrv,*z2mass_rrv,*costheta1_rrv,*costheta2_rrv,*phi_rrv,*costhetastar_rrv,*phi1_rrv,*mzz_rrv,*upFrac_rrv);
+  SMZZ = new RooqqZZ_JHU("SMZZ","SMZZ",*z1mass_rrv,*z2mass_rrv,*costheta1_rrv,*costheta2_rrv,*phi_rrv,*costhetastar_rrv,*phi1_rrv,*mzz_rrv);
+  
+  SMHiggs->makeSMHiggs();
+  SMHiggs->makeParamsConst(true);
+  
+  // PDFs for Pt and Y
+
+  static const int NptparamsS = 17;
+  static const int NptparamsB = 11;
+
+  string rrvnamesB[NptparamsB] = {"m","n0","n1","n2","ndue","bb0","bb1","bb2","T0","T1","T2"};
+  allparamsB = new RooArgSet();
+  for (int i = 0; i < NptparamsB; i++) {
+    ptparamsB.push_back(new RooRealVar(rrvnamesB[i].c_str(),rrvnamesB[i].c_str(),-10000.,10000.));
+    allparamsB->add(*ptparamsB[i]);
+  }
+
+  string rrvnamesS[NptparamsS] = {"ms","ns0","ns1","ns2","ndues","bbs0","bbs1","bbs2","Ts0","Ts1","Ts2","bbdues0","bbdues1","bbdues2","fexps0","fexps1","fexps2"};
+  allparamsS = new RooArgSet();
+  for (int i = 0; i < NptparamsS; i++) {
+    ptparamsS.push_back(new RooRealVar(rrvnamesS[i].c_str(),rrvnamesS[i].c_str(),-10000.,10000.));
+    allparamsS->add(*ptparamsS[i]);
+  }
+ 
+  char fileName[200];
+  sprintf(fileName,"ZZMatrixElement/MELA/data/allParamsSig_%dTeV.txt",LHCsqrts);
+  edm::FileInPath TsallisParams_Sig(fileName);
+  fullPath = TsallisParams_Sig.fullPath();
+
+  sigPt = new RooTsallisExp("sigPt","sigPt",*pt_rrv,*mzz_rrv,
+					   *ptparamsS[0],*ptparamsS[1],*ptparamsS[2],
+					   *ptparamsS[3],*ptparamsS[4],*ptparamsS[5],
+					   *ptparamsS[6],*ptparamsS[7],*ptparamsS[8],
+					   *ptparamsS[9],*ptparamsS[10],*ptparamsS[11],
+					   *ptparamsS[12],*ptparamsS[13],*ptparamsS[14],
+					   *ptparamsS[15],*ptparamsS[16]);
+
+  allparamsS->readFromFile(fullPath.c_str(),0);
+
+  sprintf(fileName,"ZZMatrixElement/MELA/data/allParamsBkg_%dTeV.txt",LHCsqrts);
+  edm::FileInPath TsallisParam_Bkg(fileName);
+  fullPath = TsallisParam_Bkg.fullPath();
+
+  bkgPt = new RooTsallis("bkgPt","bkgPt",*pt_rrv,*mzz_rrv,
+				     *ptparamsB[0],*ptparamsB[1],*ptparamsB[2],
+				     *ptparamsB[3],*ptparamsB[4],*ptparamsB[5],
+				     *ptparamsB[6],*ptparamsB[7],*ptparamsB[8],
+				     *ptparamsB[9],*ptparamsB[10]);
+  allparamsB->readFromFile(fullPath.c_str(),0);
+
+  sigY = new RooRapiditySig("sigY", "sigY", *y_rrv, *mzz_rrv, *sqrtS_rrv);
+  bkgY = new RooRapidityBkg("bkgY", "bkgY", *y_rrv, *mzz_rrv, *sqrtS_rrv);
+
+
+  // ------
+
   RooMsgService::instance().getStream(1).removeTopic(NumIntegration);
 
 }
 
 Mela::~Mela(){ 
   delete f;
+
+  delete z1mass_rrv; 
+  delete z2mass_rrv; 
+  delete costhetastar_rrv;
+  delete costheta1_rrv;
+  delete costheta2_rrv;
+  delete phi_rrv;
+  delete phi1_rrv;
+  delete y_rrv;
+  delete pt_rrv;
+  delete sqrtS_rrv;
+  delete mzz_rrv;
+  delete upFrac_rrv;
+
+  delete SMHiggs;
+  delete SMZgammaZZ;
+  delete SMZZ;
+  
+  for(unsigned int i=0; i<ptparamsS.size(); i++){
+    delete ptparamsS[i];
+  }
+  for(unsigned int i=0; i<ptparamsB.size(); i++){
+    delete ptparamsB[i];
+  }
+  delete allparamsB;
+  delete allparamsS;
+  
+  delete sigY;
+  delete bkgY;
+
+  delete bkgPt;
+  delete sigPt;
+
 }
 
 double Mela::sigPdfNorm(double mzz){
@@ -151,15 +257,6 @@ void Mela::computeKD(TLorentzVector Z1_lept1, int Z1_lept1Id,
 
   TLorentzVector ZZ = (Z1_lept1 + Z1_lept2 + Z2_lept1 + Z2_lept2);
   float mzz = ZZ.M();
-
-  // Skip candidates where KD is irrelevant.
-  if (mzz<100.){
-    kd = 0;
-    psig = 0;
-    pbkg = 0;
-    return;
-  }
-
   float pt  = ZZ.Pt();
   float Y   = ZZ.Rapidity(); // Fixme: should probably protect against NaN?
 
@@ -290,76 +387,6 @@ pair<float,float> Mela::likelihoodDiscriminant (float mZZ, float m1, float m2, f
 						bool withPt, float pt, 
 						bool withY, float y){
 
-  RooRealVar* z1mass_rrv = new RooRealVar("z1mass","m_{Z1}",0.,180.);
-  RooRealVar* z2mass_rrv = new RooRealVar("z2mass","m_{Z2}",0.,120.); 
-  RooRealVar* costhetastar_rrv = new RooRealVar("costhetastar","cos#theta^{*}",-1.,1.);  
-  RooRealVar* costheta1_rrv = new RooRealVar("costheta1","cos#theta_{1}",-1.,1.);  
-  RooRealVar* costheta2_rrv = new RooRealVar("costheta2","cos#theta_{2}",-1.,1.);
-  RooRealVar* phi_rrv= new RooRealVar("phi","#Phi",-3.1415,3.1415);
-  RooRealVar* phi1_rrv= new RooRealVar("phi1","#Phi_{1}",-3.1415,3.1415);
-  RooRealVar* pt_rrv= new RooRealVar("pt","p_{T}^{4l}",0.,1000);
-  RooRealVar* y_rrv= new RooRealVar("y","Y^{4l}",-4.0,4.0);
-  RooRealVar* sqrtS_rrv= new RooRealVar("sqrtS","#sqrt{s}",1000,14000);
-  RooRealVar* mzz_rrv= new RooRealVar("mzz","mZZ",80.,1000.);
-  RooRealVar* upFrac_rrv= new RooRealVar("upFrac","upFrac",.5);
-  upFrac_rrv->setConstant(kTRUE);
-
-  AngularPdfFactory *SMHiggs = new AngularPdfFactory(z1mass_rrv,z2mass_rrv,costheta1_rrv,costheta2_rrv,phi_rrv,mzz_rrv);
-  RooqqZZ_JHU_ZgammaZZ* SMZZ = new RooqqZZ_JHU_ZgammaZZ("SMZZ","SMZZ",*z1mass_rrv,*z2mass_rrv,*costheta1_rrv,*costheta2_rrv,*phi_rrv,*costhetastar_rrv,*phi1_rrv,*mzz_rrv,*upFrac_rrv);
-  SMHiggs->makeSMHiggs();
-  SMHiggs->makeParamsConst(true);
-
-  // shapes for pt and y ============
-
-  static const int NptparamsS = 17;
-  static const int NptparamsB = 11;
-
-  string rrvnamesB[NptparamsB] = {"m","n0","n1","n2","ndue","bb0","bb1","bb2","T0","T1","T2"};
-  RooRealVar *ptparamsB[NptparamsB];
-  RooArgSet* allparamsB = new RooArgSet();
-  for (int i = 0; i < NptparamsB; i++) {
-    ptparamsB[i] = new RooRealVar(rrvnamesB[i].c_str(),rrvnamesB[i].c_str(),-10000.,10000.);
-    allparamsB->add(*ptparamsB[i]);
-  }
-
-  string rrvnamesS[NptparamsS] = {"ms","ns0","ns1","ns2","ndues","bbs0","bbs1","bbs2","Ts0","Ts1","Ts2","bbdues0","bbdues1","bbdues2","fexps0","fexps1","fexps2"};
-  RooRealVar *ptparamsS[NptparamsS];
-  RooArgSet* allparamsS = new RooArgSet();
-  for (int i = 0; i < NptparamsS; i++) {
-    ptparamsS[i] = new RooRealVar(rrvnamesS[i].c_str(),rrvnamesS[i].c_str(),-10000.,10000.);
-    allparamsS->add(*ptparamsS[i]);
-  }
- 
-  char fileName[200];
-  sprintf(fileName,"ZZMatrixElement/MELA/data/allParamsSig_%dTeV.txt",LHCsqrts);
-  edm::FileInPath TsallisParams_Sig(fileName);
-  string fullPath = TsallisParams_Sig.fullPath();
-
-  RooTsallisExp* sigPt = new RooTsallisExp("sigPt","sigPt",*pt_rrv,*mzz_rrv,
-					   *ptparamsS[0],*ptparamsS[1],*ptparamsS[2],
-					   *ptparamsS[3],*ptparamsS[4],*ptparamsS[5],
-					   *ptparamsS[6],*ptparamsS[7],*ptparamsS[8],
-					   *ptparamsS[9],*ptparamsS[10],*ptparamsS[11],
-					   *ptparamsS[12],*ptparamsS[13],*ptparamsS[14],
-					   *ptparamsS[15],*ptparamsS[16]);
-
-  allparamsS->readFromFile(fullPath.c_str(),0);
-
-  sprintf(fileName,"ZZMatrixElement/MELA/data/allParamsBkg_%dTeV.txt",LHCsqrts);
-  edm::FileInPath TsallisParam_Bkg(fileName);
-  fullPath = TsallisParam_Bkg.fullPath();
-
-  RooTsallis* bkgPt = new RooTsallis("bkgPt","bkgPt",*pt_rrv,*mzz_rrv,
-				     *ptparamsB[0],*ptparamsB[1],*ptparamsB[2],
-				     *ptparamsB[3],*ptparamsB[4],*ptparamsB[5],
-				     *ptparamsB[6],*ptparamsB[7],*ptparamsB[8],
-				     *ptparamsB[9],*ptparamsB[10]);
-  allparamsB->readFromFile(fullPath.c_str(),0);
-
-  RooRapiditySig* sigY = new RooRapiditySig("sigY", "sigY", *y_rrv, *mzz_rrv, *sqrtS_rrv);
-  RooRapidityBkg* bkgY = new RooRapidityBkg("bkgY", "bkgY", *y_rrv, *mzz_rrv, *sqrtS_rrv);
-
-  // ================================
 
   checkZorder(m1,m2,costhetastar,costheta1,costheta2,phi,phistar1);
   
@@ -402,7 +429,7 @@ pair<float,float> Mela::likelihoodDiscriminant (float mZZ, float m1, float m2, f
   }else{
 
     // using analytic background calculation
-    Pbackg = SMZZ->getVal()*1e-4/bkgPdfNorm(mZZ); 
+    Pbackg = SMZgammaZZ->getVal()*1e-4/bkgPdfNorm(mZZ); 
     Psig = SMHiggs->PDF->getVal()/sigPdfNorm(mZZ);
 
   }
@@ -427,36 +454,6 @@ pair<float,float> Mela::likelihoodDiscriminant (float mZZ, float m1, float m2, f
 	cout << " uh oh... Probability of " << varName[iVar] << " is zero." << endl;
   }
   // - - - - - - - - - - - - - - - - - - - - - 
-
-  // the rrv's and pdf's should all be made members so that objects don't have to be created and deleted every call ~ AJW
-
-  delete z1mass_rrv; 
-  delete z2mass_rrv; 
-  delete costhetastar_rrv;
-  delete costheta1_rrv;
-  delete costheta2_rrv;
-  delete phi_rrv;
-  delete phi1_rrv;
-  delete y_rrv;
-  delete pt_rrv;
-  delete sqrtS_rrv;
-  delete mzz_rrv; 
-  delete SMZZ;
-  delete SMHiggs;
-  delete allparamsB;
-  delete allparamsS;
-
-  for(int i=0; i<NptparamsB; i++){
-    delete ptparamsB[i]; 
-  }
-  for(int i=0; i<NptparamsS; i++){
-    delete ptparamsS[i]; 
-  }
-  
-  delete sigPt;
-  delete bkgPt;
-  delete sigY;
-  delete bkgY;
 
   if(Psig<0 || Pbackg<0){
     cout<<"Mela::likelihoodDiscriminant() Error: KD not defined for this mzz (maybe mZZ<100 ?)"<<endl;
