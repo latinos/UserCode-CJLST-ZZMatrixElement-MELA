@@ -6,20 +6,22 @@
  *  MELA discriminator
  *
  *
- *  $Date: 2012/09/25 01:39:24 $
- *  $Revision: 1.9 $
+ *  $Date: 2012/09/26 19:38:12 $
+ *  $Revision: 1.10 $
  *  \author JHU
  */
 
 #include <vector>
 #include <TLorentzVector.h>
-#include <RooRealVar.h>
-#include "../src/AngularPdfFactory.h"
 
 class TFile; 
 class TH1F; 
 class TH2F;
 class TH3F;
+class RooRealVar;
+class RooAbsPdf;
+class RooArgSet;
+class AngularPdfFactory;
 
 
 class Mela { 
@@ -124,8 +126,8 @@ private:
   RooAbsPdf* SMZgammaZZ;
   RooAbsPdf* SMZZ;
 
-  vector<RooRealVar*> ptparamsS;
-  vector<RooRealVar*> ptparamsB;
+  std::vector<RooRealVar*> ptparamsS;
+  std::vector<RooRealVar*> ptparamsB;
   RooArgSet* allparamsS;
   RooArgSet* allparamsB;
 

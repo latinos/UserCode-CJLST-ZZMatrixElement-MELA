@@ -2,8 +2,8 @@
  *
  *  See header file for documentation.
  *
- *  $Date: 2012/09/25 01:39:24 $
- *  $Revision: 1.13 $
+ *  $Date: 2012/09/26 19:38:12 $
+ *  $Revision: 1.15 $
  */
 
 #include <ZZMatrixElement/MELA/interface/Mela.h>
@@ -18,6 +18,9 @@
 #include "RooTsallisExp.h"
 #include "RooRapidityBkg.h"
 #include "RooRapiditySig.h"
+
+#include <RooRealVar.h>
+#include "AngularPdfFactory.h" 
 
 #include <RooMsgService.h>
 #include <TFile.h>
