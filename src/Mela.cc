@@ -2,8 +2,8 @@
  *
  *  See header file for documentation.
  *
- *  $Date: 2012/09/26 19:38:12 $
- *  $Revision: 1.15 $
+ *  $Date: 2012/09/25 01:39:24 $
+ *  $Revision: 1.13 $
  */
 
 #include <ZZMatrixElement/MELA/interface/Mela.h>
@@ -18,9 +18,6 @@
 #include "RooTsallisExp.h"
 #include "RooRapidityBkg.h"
 #include "RooRapiditySig.h"
-
-#include <RooRealVar.h>
-#include "AngularPdfFactory.h" 
 
 #include <RooMsgService.h>
 #include <TFile.h>
@@ -411,6 +408,10 @@ pair<float,float> Mela::likelihoodDiscriminant (float mZZ, float m1, float m2, f
   float Pbackg=-99;
   float Psig=-99; 
 
+  RooAbsReal *tempIntegral_SMHiggs=0, *tempIntegral_SMZZ=0;
+  RooAbsReal *tempIntegral_bkgPt=0, *tempIntegral_sigPt=0;
+  RooAbsReal *tempIntegral_bkgY=0, *tempIntegral_sigY=0;
+
   if(usePowhegTemplate_){
     // using template background calculation
     if(mZZ>100 && mZZ<180){
@@ -420,31 +421,52 @@ pair<float,float> Mela::likelihoodDiscriminant (float mZZ, float m1, float m2, f
     if(mZZ>180&&mZZ<=2*91.188){
       z1mass_rrv->setVal(mZZ/2.-1e-9);
       z2mass_rrv->setVal(mZZ/2.-1e-9);
-      Pbackg = SMZZ->getVal()/(SMZZ->createIntegral(RooArgSet(*costhetastar_rrv,*costheta1_rrv,*costheta2_rrv,*phi_rrv,*phi1_rrv))->getVal())*10.0;
-      Psig = SMHiggs->PDF->getVal()/(SMHiggs->PDF->createIntegral(RooArgSet(*costheta1_rrv,*costheta2_rrv,*phi_rrv))->getVal());
+      tempIntegral_SMZZ = SMZZ->createIntegral(RooArgSet(*costhetastar_rrv,*costheta1_rrv,*costheta2_rrv,*phi_rrv,*phi1_rrv));
+      Pbackg = SMZZ->getVal()/tempIntegral_SMZZ->getVal()*10.0;
+      tempIntegral_SMHiggs=SMHiggs->PDF->createIntegral(RooArgSet(*costheta1_rrv,*costheta2_rrv,*phi_rrv));
+      Psig = SMHiggs->PDF->getVal()/tempIntegral_SMHiggs->getVal();
     }
     if(mZZ>2*91.188){
       z1mass_rrv->setVal(91.188);
       z2mass_rrv->setVal(91.188);
-      Pbackg = SMZZ->getVal()/(SMZZ->createIntegral(RooArgSet(*costhetastar_rrv,*costheta1_rrv,*costheta2_rrv,*phi_rrv,*phi1_rrv))->getVal())*10.0;
-      Psig = SMHiggs->PDF->getVal()/(SMHiggs->PDF->createIntegral(RooArgSet(*costheta1_rrv,*costheta2_rrv,*phi_rrv))->getVal());
+      tempIntegral_SMZZ=SMZZ->createIntegral(RooArgSet(*costhetastar_rrv,*costheta1_rrv,*costheta2_rrv,*phi_rrv,*phi1_rrv));
+      Pbackg = SMZZ->getVal()/tempIntegral_SMZZ->getVal()*10.0;
+      tempIntegral_SMHiggs=SMHiggs->PDF->createIntegral(RooArgSet(*costheta1_rrv,*costheta2_rrv,*phi_rrv));
+      Psig = SMHiggs->PDF->getVal()/tempIntegral_SMHiggs->getVal();
     }
   }else{
-
+    
     // using analytic background calculation
     Pbackg = SMZgammaZZ->getVal()*1e-4/bkgPdfNorm(mZZ); 
     Psig = SMHiggs->PDF->getVal()/sigPdfNorm(mZZ);
-
+    
   }
 
   if (withPt) {
-    Pbackg *= bkgPt->getVal()/(bkgPt->createIntegral(RooArgSet(*pt_rrv))->getVal());
-    Psig *= sigPt->getVal()/(sigPt->createIntegral(RooArgSet(*pt_rrv))->getVal());
+    //cout << "withPt ";
+    tempIntegral_bkgPt=bkgPt->createIntegral(RooArgSet(*pt_rrv));
+    Pbackg *= bkgPt->getVal()/tempIntegral_bkgPt->getVal();
+    //cout << Pbackg << " " ;
+    tempIntegral_sigPt=sigPt->createIntegral(RooArgSet(*pt_rrv));
+    Psig *= sigPt->getVal()/tempIntegral_sigPt->getVal();
+    //cout << Psig << " " << endl;
   }
   if(withY) {
-    Pbackg *= bkgY->getVal()/(bkgY->createIntegral(RooArgSet(*y_rrv))->getVal());
-    Psig *= sigY->getVal()/(sigY->createIntegral(RooArgSet(*y_rrv))->getVal());
+    //cout << "withY ";
+    tempIntegral_bkgY=bkgY->createIntegral(RooArgSet(*y_rrv));
+    Pbackg *= bkgY->getVal()/tempIntegral_bkgY->getVal();
+    //cout << Pbackg << " " ;
+    tempIntegral_sigY=sigY->createIntegral(RooArgSet(*y_rrv));
+    Psig *= sigY->getVal()/tempIntegral_sigY->getVal();
+    //cout << Psig << endl;
   }
+
+  delete tempIntegral_SMZZ;
+  delete tempIntegral_SMHiggs;
+  delete tempIntegral_sigPt;
+  delete tempIntegral_bkgPt;
+  delete tempIntegral_sigY;
+  delete tempIntegral_bkgY;
 
   // - - - - - - - - - - - - - - - - - - - - - Whitbeck 
   // check whether P[i] is zero and print warning
