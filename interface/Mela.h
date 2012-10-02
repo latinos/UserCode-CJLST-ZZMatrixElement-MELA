@@ -6,8 +6,8 @@
  *  MELA discriminator
  *
  *
- *  $Date: 2012/09/26 19:38:12 $
- *  $Revision: 1.10 $
+ *  $Date: 2012/09/26 20:14:43 $
+ *  $Revision: 1.11 $
  *  \author JHU
  */
 
@@ -50,8 +50,7 @@ public:
 		 float& psig,
 		 float& pbkg,
 		 bool withPt = false,
-		 bool withY = false,
-		 int LHCsqrts = 8);
+		 bool withY = false);
 
 
 
@@ -69,8 +68,7 @@ public:
 		 bool withPt = false,
 		 float pt4l=0.0,
 		 bool withY = false,
-		 float Y4l=0.0,
-		 int LHCsqrts=8);
+		 float Y4l=0.0);
 
 private:
 
@@ -91,7 +89,6 @@ private:
 						   float costheta2, 
 						   float phi, 
 						   float phistar1,
-						   int LHCsqrts=8, 
 						   bool withPt = false, float pt = 0.0, 
 						   bool withY = false, float y = 0.0);
 

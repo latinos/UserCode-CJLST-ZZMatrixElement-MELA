@@ -2,8 +2,8 @@
  *
  *  See header file for documentation.
  *
- *  $Date: 2012/09/27 12:20:14 $
- *  $Revision: 1.17 $
+ *  $Date: 2012/09/27 17:08:27 $
+ *  $Revision: 1.18 $
  */
 
 #include <ZZMatrixElement/MELA/interface/Mela.h>
@@ -248,8 +248,7 @@ void Mela::computeKD(TLorentzVector Z1_lept1, int Z1_lept1Id,
 		     float& psig,
 		     float& pbkg,
 		     bool withPt,
-		     bool withY,
-		     int LHCsqrts) {
+		     bool withY) {
   
   //compute angles  
   float m1=(Z1_lept1 + Z1_lept2).M();
@@ -275,7 +274,7 @@ void Mela::computeKD(TLorentzVector Z1_lept1, int Z1_lept1Id,
 
   //compute kd
   pair<float,float> P = likelihoodDiscriminant(mzz,m1,m2,costhetastar,costheta1,costheta2,phi,phistar1,
-					       LHCsqrts, withPt, pt, withY, Y);
+					       withPt, pt, withY, Y);
   psig=P.first;
   pbkg=P.second;
   kd = psig/(psig+pbkg);
@@ -296,8 +295,7 @@ void Mela::computeKD(float mzz, float mZ1, float mZ2,
 		     bool withPt,
 		     float pt4l,
 		     bool withY,
-		     float Y4l,
-		     int LHCsqrts) {
+		     float Y4l) {
 
   // Skip candidates where KD is irrelevant.
   if (mzz<100.){
@@ -313,7 +311,6 @@ void Mela::computeKD(float mzz, float mZ1, float mZ2,
 					       costheta2, 
 					       phi, 
 					       phistar1,
-					       LHCsqrts,
 					       withPt,pt4l,
 					       withY, Y4l);
   psig = P.first;
@@ -392,7 +389,6 @@ vector<float> Mela::my8DTemplate(bool normalized,float mZZ, float m1, float m2, 
 }
 
 pair<float,float> Mela::likelihoodDiscriminant (float mZZ, float m1, float m2, float costhetastar, float costheta1, float costheta2, float phi, float phistar1,
-						int LHCsqrts, 
 						bool withPt, float pt, 
 						bool withY, float y){
 
