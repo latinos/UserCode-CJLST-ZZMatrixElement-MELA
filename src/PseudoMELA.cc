@@ -135,6 +135,7 @@ void PseudoMELA::computeKD(float zzmass, float z1mass,
     psig=0.0;
     psigALT=0.0;
     kd=0.0;
+    return;
   }
 
   checkZorder(z1mass,z2mass,costhetastar,costheta1,costheta2,phi,phistar1);
