@@ -150,7 +150,7 @@ void SpinTwoMinimalMELA::computeKD(float zzmass, float z1mass,
 
   psig = SMHiggs->getVal(zzmass);
   psigALT = minGrav->getVal(zzmass);
-  kd = 1/(1+minGrav->getVal(zzmass)/SMHiggs->getVal(zzmass));
+  kd = 1/(1+psigALT/psig);
     
 }
 

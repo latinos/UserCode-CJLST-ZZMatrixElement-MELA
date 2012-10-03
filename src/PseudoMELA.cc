@@ -120,7 +120,7 @@ void PseudoMELA::computeKD(TLorentzVector Z1_lept1, int Z1_lept1Id,
   
   psig = SMHiggs->getVal(mzz);
   psigALT = PSHiggs->getVal(mzz);
-  kd = 1/(1+PSHiggs->getVal(mzz)/SMHiggs->getVal(mzz));
+  kd = 1/(1+psigALT/psig);
   
 }
 
@@ -151,7 +151,7 @@ void PseudoMELA::computeKD(float zzmass, float z1mass,
 
   psig = SMHiggs->getVal(zzmass);
   psigALT = PSHiggs->getVal(zzmass);
-  kd = 1/(1+PSHiggs->getVal(zzmass)/SMHiggs->getVal(zzmass));
+  kd = 1/(1+psigALT/psig);
     
 }
 
