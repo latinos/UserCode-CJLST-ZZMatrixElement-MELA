@@ -119,7 +119,7 @@ void SpinOneOddMELA::computeKD(TLorentzVector Z1_lept1, int Z1_lept1Id,
   
   psig = SMHiggs->getVal(mzz);
   psigALT = sigAlt->getVal(mzz);
-  kd = 1/(1+psigALT/psig);
+  kd = 1/(1+psigAlt/psig);
   
 }
 
@@ -134,6 +134,7 @@ void SpinOneOddMELA::computeKD(float zzmass, float z1mass,
     psig=0.0;
     psigALT=0.0;
     kd=0.0;
+    return;
   }
 
   checkZorder(z1mass,z2mass,costhetastar,costheta1,costheta2,phi,phistar1);
@@ -150,7 +151,7 @@ void SpinOneOddMELA::computeKD(float zzmass, float z1mass,
 
   psig = SMHiggs->getVal(zzmass);
   psigALT = sigAlt->getVal(zzmass);
-  kd = 1/(1+psigALT/psig);
+  kd = 1/(1+psigAlt/psig);
     
 }
 
