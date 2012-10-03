@@ -119,7 +119,7 @@ void SpinTwoMinimalMELA::computeKD(TLorentzVector Z1_lept1, int Z1_lept1Id,
   
   psig = SMHiggs->getVal(mzz);
   psigALT = minGrav->getVal(mzz);
-  kd = 1/(1+psigAlt/psig);
+  kd = 1/(1+psigALT/psig);
   
 }
 
