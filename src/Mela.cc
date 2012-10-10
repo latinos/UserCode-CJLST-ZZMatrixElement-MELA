@@ -2,8 +2,8 @@
  *
  *  See header file for documentation.
  *
- *  $Date: 2012/09/27 17:08:27 $
- *  $Revision: 1.18 $
+ *  $Date: 2012/10/02 12:50:39 $
+ *  $Revision: 1.19 $
  */
 
 #include <ZZMatrixElement/MELA/interface/Mela.h>
@@ -162,13 +162,16 @@ Mela::~Mela(){
 
 double Mela::sigPdfNorm(double mzz){
 
-  double p0 =     -16.3523;
-  double p1 =     0.545736;
-  double p2 =  -0.00228891;
-  double p3 =  5.06627e-06;
-  double p4 = -6.12505e-09;
-  double p5 =  3.83126e-12;
-  double p6 =  -9.7065e-16;
+  double p0 =     -32.4817;
+  double p1 =     0.567046;
+  double p2 =  -0.00266482;
+  double p3 =  7.04049e-06;
+  double p4 = -1.13359e-08;
+  double p5 =  1.15548e-11;
+  double p6 = -7.49017e-15;
+  double p7 =  2.99182e-18;
+  double p8 = -6.71171e-22;
+  double p9 =  6.46859e-26;
 
   double poly = p0+
     p1*mzz+
@@ -176,7 +179,10 @@ double Mela::sigPdfNorm(double mzz){
     p3*mzz*mzz*mzz+
     p4*mzz*mzz*mzz*mzz+
     p5*mzz*mzz*mzz*mzz*mzz+
-    p6*mzz*mzz*mzz*mzz*mzz*mzz;
+    p6*mzz*mzz*mzz*mzz*mzz*mzz+
+    p7*mzz*mzz*mzz*mzz*mzz*mzz*mzz+
+    p8*mzz*mzz*mzz*mzz*mzz*mzz*mzz*mzz+
+    p9*mzz*mzz*mzz*mzz*mzz*mzz*mzz*mzz*mzz;
 
   return exp(poly);
 
@@ -215,13 +221,13 @@ double Mela::bkgPdfNorm(double mzz){
 
   }else{
 
-    p0 =  1.15125e-11  ;
-    p1 =  1.21307e-14  ;
-    p2 =  -3.1029e-16  ;
-    p3 =  1.01661e-18  ;
-    p4 = -1.48631e-21  ;
-    p5 =   1.0428e-24  ;
-    p6 = -2.85659e-28  ; 
+    p0 =  1.93511e-11;
+    p1 = -8.65233e-14;
+    p2 =  1.77038e-16;
+    p3 = -1.95066e-19;
+    p4 =  1.18991e-22;
+    p5 = -3.78025e-26;
+    p6 =  4.87841e-30;
 
   }
   return p0+
