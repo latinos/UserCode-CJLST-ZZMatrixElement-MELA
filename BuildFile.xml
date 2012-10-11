@@ -1,6 +1,7 @@
 <flags ADD_SUBDIR="1" />
 
 <use name="FWCore/ParameterSet"/>
+<use name="HiggsAnalysis/CombinedLimit"/>
 <use name="root"/>
 <use name="rootmath"/>
 <use name="roofit"/>
