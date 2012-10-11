@@ -2,8 +2,8 @@
  *
  *  See header file for documentation.
  *
- *  $Date: 2012/10/02 12:50:39 $
- *  $Revision: 1.19 $
+ *  $Date: 2012/10/10 18:46:05 $
+ *  $Revision: 1.20 $
  */
 
 #include <ZZMatrixElement/MELA/interface/Mela.h>
@@ -448,7 +448,7 @@ pair<float,float> Mela::likelihoodDiscriminant (float mZZ, float m1, float m2, f
   }else{
     
     // using analytic background calculation
-    Pbackg = SMZgammaZZ->getVal()*1e-4/bkgPdfNorm(mZZ); 
+    Pbackg = SMZgammaZZ->getVal()*2e3/bkgPdfNorm(mZZ); 
     Psig = SMHiggs->PDF->getVal()/sigPdfNorm(mZZ);
     
   }
