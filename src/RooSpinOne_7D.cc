@@ -107,6 +107,8 @@ Double_t RooSpinOne_7D::evaluate() const
   // See http://www.pha.jhu.edu/~gritsan/FORM/result_spin1.txt
   Double_t x = (mzz*mzz-m1*m1-m2*m2)/(2.0*m1*m2);
 
+  hs = -hs;
+
   Double_t f00Real =  TMath::Power(mzz,-1)*g1Val*( sqrt(x*x-1) )*(m1*m1-m2*m2); 
   Double_t f00Imag =  0.;
 
@@ -250,6 +252,8 @@ Double_t RooSpinOne_7D::analyticalIntegral(Int_t code, const char* rangeName) co
   // See http://www.pha.jhu.edu/~gritsan/FORM/result_spin1.txt
   
   Double_t x = (mzz*mzz-m1*m1-m2*m2)/(2.0*m1*m2);
+
+  hs = -hs;
 
   Double_t f00Real =  TMath::Power(mzz,-1)*g1Val*( sqrt(x*x-1) )*(m1*m1-m2*m2); 
   Double_t f00Imag =  0.;
