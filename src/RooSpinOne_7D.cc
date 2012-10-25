@@ -13,7 +13,9 @@
 #include <math.h> 
 #include "TMath.h" 
 
-//ClassImp(RooSpinOne_7D) 
+using namespace TMath;
+
+// ClassImp(RooSpinOne_7D) 
   
   RooSpinOne_7D::RooSpinOne_7D(const char *name, const char *title, 
 			       RooAbsReal& _mzz,
@@ -151,13 +153,14 @@ Double_t RooSpinOne_7D::evaluate() const
   Double_t f0p = f0pImag*f0pImag + f0pReal*f0pReal;
   Double_t fm0 = fm0Imag*fm0Imag + fm0Real*fm0Real;
   Double_t f0m = f0mImag*f0mImag + f0mReal*f0mReal;
-  
-  Double_t phipp=atan2(fppImag,fppReal);
-  Double_t phimm=atan2(fmmImag,fmmReal);
-  Double_t phip0=atan2(fp0Imag,fp0Real);
-  Double_t phi0p=atan2(f0pImag,f0pReal);
-  Double_t phim0=atan2(fm0Imag,fm0Real);
-  Double_t phi0m=atan2(f0mImag,f0mReal);
+
+  Double_t phi00=atan2(f00Imag,f00Real);
+  Double_t phipp=atan2(fppImag,fppReal)-phi00;
+  Double_t phimm=atan2(fmmImag,fmmReal)-phi00;
+  Double_t phip0=atan2(fp0Imag,fp0Real)-phi00;
+  Double_t phi0p=atan2(f0pImag,f0pReal)-phi00;
+  Double_t phim0=atan2(fm0Imag,fm0Real)-phi00;
+  Double_t phi0m=atan2(f0mImag,f0mReal)-phi00;
 
   Double_t value=0;
 
@@ -168,19 +171,19 @@ Double_t RooSpinOne_7D::evaluate() const
   value += -(fp0*(-1 + TMath::Power(h2,2))*(1 + TMath::Power(hs,2))*(1 + TMath::Power(h1,2) + 2*h1*R1Val))/32.; 
   value += -(f0m*(-1 + TMath::Power(h1,2))*(1 + TMath::Power(hs,2))*(1 + TMath::Power(h2,2) - 2*h2*R2Val))/32.;
   value += -(f0p*(-1 + TMath::Power(h1,2))*(1 + TMath::Power(hs,2))*(1 + TMath::Power(h2,2) + 2*h2*R2Val))/32.;
-  value += -(fm0*(-1 + TMath::Power(h1,2))*(1 + TMath::Power(hs,2))*(1 + TMath::Power(h2,2) + 2*h2*R2Val))/32.;
+  value += -(fm0*(-1 + TMath::Power(h2,2))*(1 + TMath::Power(hs,2))*(1 + TMath::Power(h1,2) - 2*h1*R1Val))/32.; // fix 
   
   value += -(Sqrt(f00)*Sqrt(fmm)*Sqrt(1 - TMath::Power(h1,2))*Sqrt(1 - TMath::Power(h2,2))*(-1 + TMath::Power(hs,2))*(h1 - R1Val)*(h2 - R2Val)*Cos(Phi - phimm))/8.;
   value += -(Sqrt(f00)*Sqrt(fpp)*Sqrt(1 - TMath::Power(h1,2))*Sqrt(1 - TMath::Power(h2,2))*(-1 + TMath::Power(hs,2))*(h1 + R1Val)*(h2 + R2Val)*Cos(Phi + phipp))/8.;
   value += (Sqrt(f00)*Sqrt(fp0)*Sqrt(1 - TMath::Power(h1,2))*(-1 + TMath::Power(h2,2))*hs*Sqrt(1 - TMath::Power(hs,2))*(h1 + R1Val)*Cos(Phi1 - phip0))/8.;
   value += -(Sqrt(f00)*Sqrt(f0m)*(-1 + TMath::Power(h1,2))*Sqrt(1 - TMath::Power(h2,2))*hs*Sqrt(1 - TMath::Power(hs,2))*(h2 - R2Val)*Cos(Phi - phi0m + Phi1))/8.;
   value += -(Sqrt(f00)*Sqrt(f0p)*(-1 + TMath::Power(h1,2))*Sqrt(1 - TMath::Power(h2,2))*hs*Sqrt(1 - TMath::Power(hs,2))*(h2 + R2Val)*Cos(Phi + phi0p + Phi1))/8.;
-  value += (Sqrt(f00)*Sqrt(fm0)*Sqrt(1 - TMath::Power(h1,2))*(-1 + TMath::Power(h2,2))*hs*Sqrt(1 - TMath::Power(hs,2))*(h1 - R1Val)*Cos(Phi1 + phim0))/16.;
+  value += (Sqrt(f00)*Sqrt(fm0)*Sqrt(1 - TMath::Power(h1,2))*(-1 + TMath::Power(h2,2))*hs*Sqrt(1 - TMath::Power(hs,2))*(h1 - R1Val)*Cos(Phi1 + phim0))/8.; // fix
   
   value += -(Sqrt(fmm)*Sqrt(fpp)*(-1 + TMath::Power(h1,2))*(-1 + TMath::Power(h2,2))*(-1 + TMath::Power(hs,2))*Cos(2*Phi - phimm + phipp))/16.;
   value += -(Sqrt(fmm)*Sqrt(fp0)*(-1 + TMath::Power(h1,2))*Sqrt(1 - TMath::Power(h2,2))*hs*Sqrt(1 - TMath::Power(hs,2))*(h2 - R2Val)*Cos(Phi - Phi1 - phimm + phip0))/16.;
   value += (Sqrt(f0m)*Sqrt(fmm)*Sqrt(1 - TMath::Power(h1,2))*hs*Sqrt(1 - TMath::Power(hs,2))*(h1 - R1Val)*(1 + TMath::Power(h2,2) - 2*h2*R2Val)*Cos(phi0m - Phi1 - phimm))/16.;
-  value += (Sqrt(f0p)*Sqrt(fmm)*Sqrt(1 - TMath::Power(h1,2))*(-1 + TMath::Power(h2,2))*hs*Sqrt(1 - TMath::Power(hs,2))*(h1 - R1Val)*Cos(2*Phi + phi0p + Phi1 - phimm))/32.;
+  value += (Sqrt(f0p)*Sqrt(fmm)*Sqrt(1 - TMath::Power(h1,2))*(-1 + TMath::Power(h2,2))*hs*Sqrt(1 - TMath::Power(hs,2))*(h1 - R1Val)*Cos(2*Phi + phi0p + Phi1 - phimm))/16.; // fix
   value += -(Sqrt(fm0)*Sqrt(fmm)*Sqrt(1 - TMath::Power(h2,2))*hs*Sqrt(1 - TMath::Power(hs,2))*(1 + TMath::Power(h1,2) - 2*h1*R1Val)*(h2 - R2Val)*Cos(Phi + Phi1 + phim0 - phimm))/16.;
   value += -(Sqrt(fp0)*Sqrt(fpp)*Sqrt(1 - TMath::Power(h2,2))*hs*Sqrt(1 - TMath::Power(hs,2))*(1 + TMath::Power(h1,2) + 2*h1*R1Val)*(h2 + R2Val)*Cos(Phi + Phi1 - phip0 + phipp))/16.;
   value += (Sqrt(f0m)*Sqrt(fpp)*Sqrt(1 - TMath::Power(h1,2))*(-1 + TMath::Power(h2,2))*hs*Sqrt(1 - TMath::Power(hs,2))*(h1 + R1Val)*Cos(2*Phi - phi0m + Phi1 + phipp))/16.;
@@ -295,12 +298,13 @@ Double_t RooSpinOne_7D::analyticalIntegral(Int_t code, const char* rangeName) co
   Double_t fm0 = fm0Imag*fm0Imag + fm0Real*fm0Real;
   Double_t f0m = f0mImag*f0mImag + f0mReal*f0mReal;
   
-  Double_t phipp=atan2(fppImag,fppReal);
-  Double_t phimm=atan2(fmmImag,fmmReal);
-  Double_t phip0=atan2(fp0Imag,fp0Real);
-  Double_t phi0p=atan2(f0pImag,f0pReal);
-  Double_t phim0=atan2(fm0Imag,fm0Real);
-  Double_t phi0m=atan2(f0mImag,f0mReal);
+  Double_t phi00=atan2(f00Imag,f00Real);
+  Double_t phipp=atan2(fppImag,fppReal)-phi00;
+  Double_t phimm=atan2(fmmImag,fmmReal)-phi00;
+  Double_t phip0=atan2(fp0Imag,fp0Real)-phi00;
+  Double_t phi0p=atan2(f0pImag,f0pReal)-phi00;
+  Double_t phim0=atan2(fm0Imag,fm0Real)-phi00;
+  Double_t phi0m=atan2(f0mImag,f0mReal)-phi00;
 
   Double_t integral=0;
 
