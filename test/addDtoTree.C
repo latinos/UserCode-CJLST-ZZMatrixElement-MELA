@@ -4,6 +4,7 @@ using namespace RooFit;
 
 void addDtoTree(char* inputFile,int max=-1, int LHCsqrts=8){
 
+  gSystem->Load("/afs/cern.ch/user/y/yygao/public/libmcfm.so");
   gSystem->Load("$CMSSW_BASE/lib/slc5_amd64_gcc462/libZZMatrixElementMELA.so");
   gROOT->LoadMacro("../interface/Mela.h+");
   gROOT->LoadMacro("../interface/SpinTwoMinimalMELA.h+");
@@ -94,14 +95,24 @@ void addDtoTree(char* inputFile,int max=-1, int LHCsqrts=8){
     if(mzz>100.){
 
       mySpinTwoMinimalMELA.computeKD(mzz,m1,m2,hs,h1,h2,phi,phi1,graviD,psig,pbkg);
-      
+
+      //std::cout << "Gravi "<< graviD << " " << psig << " " << pbkg <<std::endl;
+
       myPseudoMELA.computeKD(mzz,m1,m2,hs,h1,h2,phi,phi1,pseudoD,psig,pbkg);
+
+      //std::cout << "Pseudo "<< pseudoD << " " << psig << " " << pbkg <<std::endl;
       
-      myMELA_ICHEP.computeKD(mzz,m1,m2,hs,h1,h2,phi,phi1,D_postICHEP,psig,pbkg,false,pt4l,false,Y4l,8);
+      myMELA_ICHEP.computeKD(mzz,m1,m2,hs,h1,h2,phi,phi1,D_postICHEP,psig,pbkg,false,pt4l,false,Y4l);
 
-      myMELA.computeKD(mzz,m1,m2,hs,h1,h2,phi,phi1,D_PtY,psig,pbkg,true,pt4l,true,Y4l,8);
+      //std::cout << "ICHEP "<< D_postICHEP << " " << psig << " " << pbkg <<std::endl;
 
-      myMELA.computeKD(mzz,m1,m2,hs,h1,h2,phi,phi1,D,psig,pbkg,false,pt4l,false,Y4l,8);
+      myMELA.computeKD(mzz,m1,m2,hs,h1,h2,phi,phi1,D_PtY,psig,pbkg,true,pt4l,true,Y4l);
+
+      //std::cout << "PTY "<< D_PtY << " " << psig << " " << pbkg <<std::endl;
+
+      myMELA.computeKD(mzz,m1,m2,hs,h1,h2,phi,phi1,D,psig,pbkg,false,pt4l,false,Y4l);
+
+      //std::cout << "Nominal "<< D << " " << psig << " " << pbkg <<std::endl;
 
       newTree->Fill();
       
