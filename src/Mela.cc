@@ -2,17 +2,19 @@
  *
  *  See header file for documentation.
  *
- *  $Date: 2012/10/10 18:46:05 $
- *  $Revision: 1.20 $
+ *  $Date: 2012/10/11 19:20:05 $
+ *  $Revision: 1.21 $
  */
 
 #include <ZZMatrixElement/MELA/interface/Mela.h>
+#include <ZZMatrixElement/MELA/interface/ZZMatrixElement.h>
 #include <DataFormats/GeometryVector/interface/Pi.h>
 #include <FWCore/ParameterSet/interface/FileInPath.h>
 
 #include "computeAngles.h"
 #include "AngularPdfFactory.h"
-#include "RooqqZZ_JHU_ZgammaZZ.h"
+#include "TensorPdfFactory.h"
+#include "RooqqZZ_JHU_ZgammaZZ_fast.h"
 #include "RooqqZZ_JHU.h"
 #include "RooTsallis.h"
 #include "RooTsallisExp.h"
@@ -62,12 +64,24 @@ Mela::Mela(bool usePowhegTemplate, int LHCsqrts){
   upFrac_rrv->setConstant(kTRUE);
 
   SMHiggs = new AngularPdfFactory(z1mass_rrv,z2mass_rrv,costheta1_rrv,costheta2_rrv,phi_rrv,mzz_rrv);
-  SMZgammaZZ = new RooqqZZ_JHU_ZgammaZZ("SMZgammaZZ","SMZgammaZZ",*z1mass_rrv,*z2mass_rrv,*costheta1_rrv,*costheta2_rrv,*phi_rrv,*costhetastar_rrv,*phi1_rrv,*mzz_rrv,*upFrac_rrv);
+  SMZgammaZZ = new RooqqZZ_JHU_ZgammaZZ_fast("SMZgammaZZ","SMZgammaZZ",*z1mass_rrv,*z2mass_rrv,*costheta1_rrv,*costheta2_rrv,*phi_rrv,*costhetastar_rrv,*phi1_rrv,*mzz_rrv,*upFrac_rrv);
   SMZZ = new RooqqZZ_JHU("SMZZ","SMZZ",*z1mass_rrv,*z2mass_rrv,*costheta1_rrv,*costheta2_rrv,*phi_rrv,*costhetastar_rrv,*phi1_rrv,*mzz_rrv);
   
   SMHiggs->makeSMHiggs();
   SMHiggs->makeParamsConst(true);
   
+
+  PSHiggs = new AngularPdfFactory(z1mass_rrv,z2mass_rrv,costheta1_rrv,costheta2_rrv,phi_rrv,mzz_rrv);
+
+  PSHiggs->makePSHiggs();
+  PSHiggs->makeParamsConst(true);
+
+
+  minGrav = new TensorPdfFactory(z1mass_rrv,z2mass_rrv,costhetastar_rrv,costheta1_rrv,costheta2_rrv,phi_rrv,phi1_rrv,mzz_rrv);
+
+  minGrav->makeMinGrav();
+  minGrav->makeParamsConst(true);
+
   // PDFs for Pt and Y
 
   static const int NptparamsS = 17;
@@ -121,6 +135,11 @@ Mela::Mela(bool usePowhegTemplate, int LHCsqrts){
 
   RooMsgService::instance().getStream(1).removeTopic(NumIntegration);
 
+  edm::FileInPath HiggsWidthFile("Higgs/Higgs_CS_and_Width/txtFiles/8TeV-ggH.txt");
+  std::string path = HiggsWidthFile.fullPath();
+  //std::cout << path.substr(0,path.length()-12) << std::endl;
+  ZZME = new  ZZMatrixElement(path.substr(0,path.length()-12 ).c_str(),1000.*LHCsqrts/2.,TVar::VerbosityLevel::INFO);
+
 }
 
 Mela::~Mela(){ 
@@ -142,7 +161,11 @@ Mela::~Mela(){
   delete SMHiggs;
   delete SMZgammaZZ;
   delete SMZZ;
+  delete PSHiggs;
+  delete minGrav;
   
+  delete ZZME;
+
   for(unsigned int i=0; i<ptparamsS.size(); i++){
     delete ptparamsS[i];
   }
@@ -281,6 +304,7 @@ void Mela::computeKD(TLorentzVector Z1_lept1, int Z1_lept1Id,
   //compute kd
   pair<float,float> P = likelihoodDiscriminant(mzz,m1,m2,costhetastar,costheta1,costheta2,phi,phistar1,
 					       withPt, pt, withY, Y);
+
   psig=P.first;
   pbkg=P.second;
   kd = psig/(psig+pbkg);
@@ -319,6 +343,8 @@ void Mela::computeKD(float mzz, float mZ1, float mZ2,
 					       phistar1,
 					       withPt,pt4l,
 					       withY, Y4l);
+
+
   psig = P.first;
   pbkg = P.second;
   kd = psig/(psig + pbkg);
@@ -543,5 +569,112 @@ void Mela::checkZorder(float& z1mass, float& z2mass,
 
   }else
     return;
+
+}
+void Mela::computeP(float mZZ, float mZ1, float mZ2, 
+		    float costhetastar,
+		    float costheta1, 
+		    float costheta2,
+		    float phi,
+		    float phistar1,
+		    //signal probabilities
+		    float& p0plus_melaNorm,   // higgs, analytic distribution          
+		    float& p0plus_mela,   // higgs, analytic distribution          
+		    float& p0minus_mela,  // pseudoscalar, analytic distribution 
+		    float& p0plus_VAJHU,  // higgs, vector algebra, JHUgen
+		    float& p0minus_VAJHU, // pseudoscalar, vector algebra, JHUgen
+		    float& p0plus_VAMCFM,// higgs, vector algebra, MCFM
+		    float& p1_mela,  // zprime, analytic distribution 
+		    float& p1_VAJHU, // zprime, vector algebra, JHUgen,
+		    float& p2_mela , // graviton, analytic distribution 
+		    float& p2_VAJHU, // graviton, vector algebra, JHUgen,
+		    //backgrounds
+		    float& bkg_mela,  // background,  analytic distribution 
+		    float& bkg_VAMCFM, // background, vector algebra, MCFM
+		    //pt/rapidity
+		    float& p0_pt, // multiplicative probability for signal pt
+		    float& p0_y, // multiplicative probability for signal y
+		    float& bkg_pt, // multiplicative probability for bkg pt
+		    float& bkg_y, // multiplicative probability for bkg y
+		    //optional input parameters
+		    float pt4l,
+		    float Y4l,
+		    int flavor // 1:4e, 2:4mu, 3:2e2mu (for interference effects)
+		    ){
+  
+
+  //initialize variables
+  checkZorder(mZ1,mZ2,costhetastar,costheta1,costheta2,phi,phistar1);
+
+
+  //std mela variables (will initialize RooRealVars for other PDfs too)
+  pair<float,float> P = likelihoodDiscriminant(mZZ, mZ1, mZ2, 
+					       costhetastar, 
+					       costheta1, 
+					       costheta2, 
+					       phi, 
+					       phistar1,
+					       false,0.0,
+					       false,0.0);
+
+  p0plus_melaNorm = P.first;
+  bkg_mela    = P.second;
+  p0plus_mela = SMHiggs->getVal(mZZ);
+
+  // pseudo mela
+  p0minus_mela = PSHiggs->getVal(mZZ);
+
+  // Z'
+  p1_mela =0.0 ; // not implemented yet.
+  
+  //graviMela
+  p2_mela = minGrav->getVal(mZZ);
+
+
+  //compute pt/Y probabilities:
+  pt_rrv->setVal(pt4l);
+  y_rrv->setVal(Y4l);
+
+  RooAbsReal *tempIntegral_bkgPt=0, *tempIntegral_sigPt=0;
+  RooAbsReal *tempIntegral_bkgY=0, *tempIntegral_sigY=0;
+
+  tempIntegral_bkgPt=bkgPt->createIntegral(RooArgSet(*pt_rrv));
+  bkg_pt = bkgPt->getVal()/tempIntegral_bkgPt->getVal();
+  delete tempIntegral_bkgPt;
+  tempIntegral_sigPt=sigPt->createIntegral(RooArgSet(*pt_rrv));
+  p0_pt = sigPt->getVal()/tempIntegral_sigPt->getVal();
+  delete tempIntegral_sigPt;
+
+  tempIntegral_bkgY=bkgY->createIntegral(RooArgSet(*y_rrv));
+  bkg_y = bkgY->getVal()/tempIntegral_bkgY->getVal();
+  delete tempIntegral_bkgY;
+  tempIntegral_sigY=sigY->createIntegral(RooArgSet(*y_rrv));
+  p0_y = sigY->getVal()/tempIntegral_sigY->getVal();
+  delete tempIntegral_sigY;
+
+
+  // vector algebra
+  double dummy1,dummy2,dummy3;
+  double dXsec_ZZ_MCFM,dXsec_HZZ_MCFM,dXsec_HZZ_JHU,dXsec_PSHZZ_JHU,dXsec_VZZ_JHU,dXsec_TZZ_JHU; // temporary probabilities (FORTRAN functions will need double, not float)
+  ZZME->computeXS(mZZ,mZ1,mZ2,
+		  costhetastar,costheta1,costheta2,
+		  phi,phistar1,
+		  flavor,
+		  //output variables
+		  dXsec_ZZ_MCFM,
+		  dXsec_HZZ_MCFM,
+		  dXsec_HZZ_JHU,
+		  dXsec_PSHZZ_JHU,
+		  dXsec_VZZ_JHU,
+		  dXsec_TZZ_JHU,
+		  dummy1,dummy2,dummy3);   // discriminants are not used 
+
+  bkg_VAMCFM=dXsec_ZZ_MCFM;
+  p0plus_VAMCFM=dXsec_HZZ_MCFM;
+  p0plus_VAJHU=dXsec_HZZ_JHU;
+  p0minus_VAJHU=dXsec_PSHZZ_JHU;
+  p1_VAJHU=dXsec_VZZ_JHU;
+  p2_VAJHU=dXsec_TZZ_JHU;
+		  
 
 }
