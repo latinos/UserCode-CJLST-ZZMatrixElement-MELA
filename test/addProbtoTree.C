@@ -15,7 +15,7 @@
 using namespace RooFit;
 
 
-void addProbtoTree(char* inputFile, int flavor = 1 ,int max=-1, int LHCsqrts=8){
+void addProbtoTree(char* inputFile,int flavor, int max=-1, int LHCsqrts=8){
   //flavor: 1:4e, 2:4mu, 3:2e2mu
 
 
@@ -23,13 +23,13 @@ void addProbtoTree(char* inputFile, int flavor = 1 ,int max=-1, int LHCsqrts=8){
   gSystem->Load("$CMSSW_BASE/lib/slc5_amd64_gcc462/libZZMatrixElementMELA.so");
   gROOT->LoadMacro("../interface/Mela.h+");
 
-  Mela myMELA;
-  Mela myMELA_ICHEP(true);
+  Mela myMELA(false,LHCsqrts);
+  Mela myMELA_ICHEP(true,LHCsqrts);
 
   RooMsgService::instance().getStream(1).removeTopic(NumIntegration);
 
-  char inputFileName[100];
-  char outputFileName[150];
+  char inputFileName[500];
+  char outputFileName[500];
   sprintf(inputFileName,"%s.root",inputFile);
   sprintf(outputFileName,"%s_withProbabilities.root",inputFile);
 
@@ -42,8 +42,6 @@ void addProbtoTree(char* inputFile, int flavor = 1 ,int max=-1, int LHCsqrts=8){
       return;
     }
 
-  TFile* newFile = new TFile(outputFileName,"RECREATE");
-  TTree* newTree = new TTree("newTree","SelectedTree"); 
 
   float m1,m2,mzz,h1,h2,hs,phi,phi1;                                    //angles
   float psig,pbkg,D,oldD;                                                    //legacy probabilities
@@ -64,24 +62,28 @@ void addProbtoTree(char* inputFile, int flavor = 1 ,int max=-1, int LHCsqrts=8){
   sigTree->SetBranchAddress("ZZRapidity",&Y4l);
   sigTree->SetBranchAddress("ZZLD",&oldD);
 
+
+
   float weight;
   sigTree->SetBranchAddress("MC_weight_noxsec",&weight);
   //---------------------------------------*/
 
+  TFile* newFile = new TFile(outputFileName,"RECREATE");
+  TTree* newTree = sigTree->CloneTree(0);//new TTree("newTree","SelectedTree"); 
 
-  newTree->Branch("Z1Mass",&m1,"Z1Mass/F");
-  newTree->Branch("Z2Mass",&m2,"Z2Mass/F");
-  newTree->Branch("ZZMass",&mzz,"ZZMass/F");
-  newTree->Branch("helcosthetaZ1",&h1,"helcosthetaZ1/F"); 
-  newTree->Branch("helcosthetaZ2",&h2,"helcosthetaZ2/F");
-  newTree->Branch("costhetastar",&hs,"costhetastar/F");
-  newTree->Branch("helphi",&phi,"helphi/F");  
-  newTree->Branch("phistarZ1",&phi1,"phistarZ1/F");
+//   newTree->Branch("Z1Mass",&m1,"Z1Mass/F");
+//   newTree->Branch("Z2Mass",&m2,"Z2Mass/F");
+//   newTree->Branch("ZZMass",&mzz,"ZZMass/F");
+//   newTree->Branch("helcosthetaZ1",&h1,"helcosthetaZ1/F"); 
+//   newTree->Branch("helcosthetaZ2",&h2,"helcosthetaZ2/F");
+//   newTree->Branch("costhetastar",&hs,"costhetastar/F");
+//   newTree->Branch("helphi",&phi,"helphi/F");  
+//   newTree->Branch("phistarZ1",&phi1,"phistarZ1/F");
 
-  newTree->Branch("ZZPt",&pt4l,"ZZpt/F");
-  newTree->Branch("ZZRapidity",&Y4l,"ZZRapidity/F");
+//   newTree->Branch("ZZPt",&pt4l,"ZZpt/F");
+//   newTree->Branch("ZZRapidity",&Y4l,"ZZRapidity/F");
   
-  newTree->Branch("MC_weight_noxsec",&weight,"MC_weight_noxsec/F");
+//   newTree->Branch("MC_weight_noxsec",&weight,"MC_weight_noxsec/F");
 
   newTree->Branch("p0_mela_postICHEP",&psig,"p0_mela_postICHEP/F");
   newTree->Branch("pbkg_mela_postICHEP",&pbkg,"p0_mela_postICHEP/F");
@@ -145,15 +147,15 @@ void addProbtoTree(char* inputFile, int flavor = 1 ,int max=-1, int LHCsqrts=8){
 		      );
 
       
-//       std::cout << "Gravi "  <<  p0plus_mela/(p0plus_mela +  p2_mela) << " " <<  p0plus_mela  << " " <<p2_mela  <<std::endl;
-//       std::cout << "Pseudo " << p0plus_mela /(p0plus_mela +  p0minus_mela) << " " <<p0plus_mela  << " " <<p0minus_mela  <<std::endl;
-//       std::cout << "ICHEP "  << psig /(psig +  pbkg) << " "<< p0plus_mela  << " " <<p0minus_mela  <<std::endl;
-//       std::cout << "PTY "    << p0_pt*p0_y*p0plus_melaNorm /(p0_pt*p0_y*p0plus_melaNorm +  bkg_pt*bkg_y*bkg_mela) << " " <<p0_pt*p0_y*p0plus_melaNorm  << " " <<  bkg_pt*bkg_y*bkg_mela <<std::endl;
-//       std::cout << "Nominal "<< p0plus_melaNorm /(p0plus_melaNorm +  bkg_mela) << " " <<p0plus_melaNorm  << " " <<  bkg_mela <<std::endl;
+// //       std::cout << "Gravi "  <<  p0plus_mela/(p0plus_mela +  p2_mela) << " " <<  p0plus_mela  << " " <<p2_mela  <<std::endl;
+// //       std::cout << "Pseudo " << p0plus_mela /(p0plus_mela +  p0minus_mela) << " " <<p0plus_mela  << " " <<p0minus_mela  <<std::endl;
+// //       std::cout << "ICHEP "  << psig /(psig +  pbkg) << " "<< p0plus_mela  << " " <<p0minus_mela  <<std::endl;
+// //       std::cout << "PTY "    << p0_pt*p0_y*p0plus_melaNorm /(p0_pt*p0_y*p0plus_melaNorm +  bkg_pt*bkg_y*bkg_mela) << " " <<p0_pt*p0_y*p0plus_melaNorm  << " " <<  bkg_pt*bkg_y*bkg_mela <<std::endl;
+// //       std::cout << "Nominal "<< p0plus_melaNorm /(p0plus_melaNorm +  bkg_mela) << " " <<p0plus_melaNorm  << " " <<  bkg_mela <<std::endl;
 
-//       std::cout << "ME "     << p0plus_VAJHU/(p0plus_VAJHU + 10.*bkg_VAMCFM) << " " << p0plus_VAJHU <<" " << bkg_VAMCFM<<std::endl;
-//       std::cout << "pME "     << p0plus_VAJHU/(p0plus_VAJHU + 6.*p0minus_VAJHU) << " " << p0plus_VAJHU <<" " <<p0minus_VAJHU <<std::endl;
-//       std::cout << "graviME "     << p0plus_VAJHU/(p0plus_VAJHU + 1.2*p2_VAJHU) << " " << p0plus_VAJHU <<" " << p2_VAJHU<<std::endl;
+// //       std::cout << "ME "     << p0plus_VAJHU/(p0plus_VAJHU + 10.*bkg_VAMCFM) << " " << p0plus_VAJHU <<" " << bkg_VAMCFM<<std::endl;
+// //       std::cout << "pME "     << p0plus_VAJHU/(p0plus_VAJHU + 6.*p0minus_VAJHU) << " " << p0plus_VAJHU <<" " <<p0minus_VAJHU <<std::endl;
+// //       std::cout << "graviME "     << p0plus_VAJHU/(p0plus_VAJHU + 1.2*p2_VAJHU) << " " << p0plus_VAJHU <<" " << p2_VAJHU<<std::endl;
 
 
       newTree->Fill();
