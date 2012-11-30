@@ -6,8 +6,8 @@
  *  MELA discriminator
  *
  *
- *  $Date: 2012/11/21 12:43:40 $
- *  $Revision: 1.13 $
+ *  $Date: 2012/11/30 05:18:49 $
+ *  $Revision: 1.14 $
  *  \author JHU
  */
 
@@ -24,6 +24,7 @@ class RooArgSet;
 class AngularPdfFactory;
 class TensorPdfFactory;
 class ZZMatrixElement;
+class TGraph;
 
 
 class Mela { 
@@ -84,6 +85,7 @@ public:
 		//backgrounds
 		float& bkg_mela,  // background,  analytic distribution 
 		float& bkg_VAMCFM, // background, vector algebra, MCFM
+		float& bkg_VAMCFMNorm, // background, vector algebra, MCFM, Normalized 
 		//pt/rapidity
 		float& p0_pt, // multiplicative probability for signal pt
 		float& p0_y, // multiplicative probability for signal y
@@ -179,6 +181,8 @@ private:
   
   RooAbsPdf* sigPt;
   RooAbsPdf* bkgPt;
+
+  TGraph* vaScale;
 
 };
 

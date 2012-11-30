@@ -9,8 +9,10 @@
 // ME:             p0plus_VAJHU/(p0plus_VAJHU + 10.*bkg_VAMCFM) 
 // pME:            p0plus_VAJHU/(p0plus_VAJHU + 6.*p0minus_VAJHU)
 // graviME:        p0plus_VAJHU/(p0plus_VAJHU + 1.2*p2_VAJHU) 
-
-
+// VAKD            p0plus_VAJHU/( bkg_VAMCFMNorm +  p0plus_VAJHU ); // =normalized ME
+//
+// 
+//
 
 using namespace RooFit;
 
@@ -46,8 +48,9 @@ void addProbtoTree(char* inputFile,int flavor, int max=-1, int LHCsqrts=8){
   float m1,m2,mzz,h1,h2,hs,phi,phi1;                                    //angles
   float psig,pbkg,D,oldD;                                                    //legacy probabilities
   float	p0plus_melaNorm,p0plus_mela,p0minus_mela,p0plus_VAJHU,p0minus_VAJHU,p0plus_VAMCFM,p1_mela,p1_VAJHU,p2_mela,p2_VAJHU; // new signal probablities
-  float bkg_mela, bkg_VAMCFM;                                           // new background probabilities
+  float bkg_mela, bkg_VAMCFM,bkg_VAMCFMNorm;                                           // new background probabilities
   float pt4l, Y4l ,p0_pt,p0_y,p0_y,bkg_pt,bkg_y;                        // rapidity/pt
+  float VAKD=0;                         // MCFM/JHUGen kinimetatic discriminant
 
   // -------- CJLST TREES ---------------
   sigTree->SetBranchAddress("Z2Mass",&m2);
@@ -101,11 +104,13 @@ void addProbtoTree(char* inputFile,int flavor, int max=-1, int LHCsqrts=8){
   //backgrounds
   newTree->Branch("bkg_mela",&bkg_mela,"bkg_mela/F");  // background,  analytic distribution 
   newTree->Branch("bkg_VAMCFM",&bkg_VAMCFM,"bkg_VAMCFM/F");  // background, vector algebra, MCFM
+  newTree->Branch("bkg_VAMCFMNorm",&bkg_VAMCFMNorm,"bkg_VAMCFMNorm/F");  // background, vector algebra, MCFM Normalized
   //pt/rapidity
   newTree->Branch("p0_pt",&p0_pt,"p0_pt/F");  // multiplicative probability for signal pt
   newTree->Branch("p0_y",&p0_y,"p0_y/F");  // multiplicative probability for signal y
   newTree->Branch("bkg_pt",&bkg_pt,"bkg_pt/F");  // multiplicative probability for bkg pt
   newTree->Branch("bkg_y",&bkg_y,"bkg_y/F");  // multiplicative probability for bkg y
+  newTree->Branch("VAKD",&VAKD,"VAKD/F");  // discriminant
   
   for(int iEvt=0; iEvt<(max<0?sigTree->GetEntries():max); iEvt++){
     
@@ -137,6 +142,7 @@ void addProbtoTree(char* inputFile,int flavor, int max=-1, int LHCsqrts=8){
 		      //backgrounds
 		      bkg_mela,  // background,  analytic distribution 
 		      bkg_VAMCFM, // background, vector algebra, MCFM
+		      bkg_VAMCFMNorm, // background, vector algebra, MCFM Norm
 		      //pt/rapidity
 		      p0_pt, // multiplicative probability for signal pt
 		      p0_y, // multiplicative probability for signal y
@@ -146,6 +152,7 @@ void addProbtoTree(char* inputFile,int flavor, int max=-1, int LHCsqrts=8){
 		      pt4l,Y4l,flavor // 1:4e, 2:4mu, 3:2e2mu (for interference effects)
 		      );
 
+      VAKD = p0plus_VAJHU/( bkg_VAMCFMNorm +  p0plus_VAJHU );
       
 // //       std::cout << "Gravi "  <<  p0plus_mela/(p0plus_mela +  p2_mela) << " " <<  p0plus_mela  << " " <<p2_mela  <<std::endl;
 // //       std::cout << "Pseudo " << p0plus_mela /(p0plus_mela +  p0minus_mela) << " " <<p0plus_mela  << " " <<p0minus_mela  <<std::endl;
@@ -157,7 +164,7 @@ void addProbtoTree(char* inputFile,int flavor, int max=-1, int LHCsqrts=8){
 // //       std::cout << "pME "     << p0plus_VAJHU/(p0plus_VAJHU + 6.*p0minus_VAJHU) << " " << p0plus_VAJHU <<" " <<p0minus_VAJHU <<std::endl;
 // //       std::cout << "graviME "     << p0plus_VAJHU/(p0plus_VAJHU + 1.2*p2_VAJHU) << " " << p0plus_VAJHU <<" " << p2_VAJHU<<std::endl;
 
-
+	
       newTree->Fill();
       
     }

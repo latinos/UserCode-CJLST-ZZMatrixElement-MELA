@@ -2,8 +2,8 @@
  *
  *  See header file for documentation.
  *
- *  $Date: 2012/11/21 12:46:41 $
- *  $Revision: 1.22 $
+ *  $Date: 2012/11/30 05:18:50 $
+ *  $Revision: 1.23 $
  */
 
 #include <ZZMatrixElement/MELA/interface/Mela.h>
@@ -26,6 +26,7 @@
 #include <TH1F.h>
 #include <TH2F.h>
 #include <TH3F.h>
+#include <TGraph.h>
 #include <vector>
 
 #include <string>
@@ -139,7 +140,12 @@ Mela::Mela(bool usePowhegTemplate, int LHCsqrts){
   std::string path = HiggsWidthFile.fullPath();
   //std::cout << path.substr(0,path.length()-12) << std::endl;
   ZZME = new  ZZMatrixElement(path.substr(0,path.length()-12 ).c_str(),1000.*LHCsqrts/2.,TVar::VerbosityLevel::INFO);
-
+ 
+  edm::FileInPath ScaleFactorFile("ZZMatrixElement/MELA/data/scaleFactors.root");
+  TFile* sf = TFile::Open(ScaleFactorFile.fullPath().c_str(),"r");
+  vaScale = (TGraph*)sf->Get("scaleFactors");
+  sf->Close(); 
+  //vaScale->Print("v");
 }
 
 Mela::~Mela(){ 
@@ -635,6 +641,7 @@ void Mela::computeP(float mZZ, float mZ1, float mZ2,
 		    //backgrounds
 		    float& bkg_mela,  // background,  analytic distribution 
 		    float& bkg_VAMCFM, // background, vector algebra, MCFM
+		    float& bkg_VAMCFMNorm, // background, vector algebra, MCFM Normalized
 		    //pt/rapidity
 		    float& p0_pt, // multiplicative probability for signal pt
 		    float& p0_y, // multiplicative probability for signal y
@@ -720,5 +727,11 @@ void Mela::computeP(float mZZ, float mZ1, float mZ2,
   p1_VAJHU=dXsec_VZZ_JHU;
   p2_VAJHU=dXsec_TZZ_JHU;
 		  
+  if(mZZ > 900)                   
+    bkg_VAMCFMNorm = bkg_VAMCFM * vaScale->Eval(900.);
+  else if (mZZ <  100 )
+    bkg_VAMCFMNorm = bkg_VAMCFM * vaScale->Eval(100.);
+  else
+    bkg_VAMCFMNorm = bkg_VAMCFM * vaScale->Eval(mZZ);
 
 }
