@@ -2,8 +2,8 @@
  *
  *  See header file for documentation.
  *
- *  $Date: 2012/11/30 05:18:50 $
- *  $Revision: 1.23 $
+ *  $Date: 2012/11/30 08:23:44 $
+ *  $Revision: 1.24 $
  */
 
 #include <ZZMatrixElement/MELA/interface/Mela.h>
@@ -143,7 +143,9 @@ Mela::Mela(bool usePowhegTemplate, int LHCsqrts){
  
   edm::FileInPath ScaleFactorFile("ZZMatrixElement/MELA/data/scaleFactors.root");
   TFile* sf = TFile::Open(ScaleFactorFile.fullPath().c_str(),"r");
-  vaScale = (TGraph*)sf->Get("scaleFactors");
+  vaScale_4e    = (TGraph*)sf->Get("scaleFactors_4e");
+  vaScale_4mu   = (TGraph*)sf->Get("scaleFactors_4mu");
+  vaScale_2e2mu = (TGraph*)sf->Get("scaleFactors_2e2mu");
   sf->Close(); 
   //vaScale->Print("v");
 }
@@ -726,12 +728,32 @@ void Mela::computeP(float mZZ, float mZ1, float mZ2,
   p0minus_VAJHU=dXsec_PSHZZ_JHU;
   p1_VAJHU=dXsec_VZZ_JHU;
   p2_VAJHU=dXsec_TZZ_JHU;
-		  
-  if(mZZ > 900)                   
-    bkg_VAMCFMNorm = bkg_VAMCFM * vaScale->Eval(900.);
-  else if (mZZ <  100 )
-    bkg_VAMCFMNorm = bkg_VAMCFM * vaScale->Eval(100.);
-  else
-    bkg_VAMCFMNorm = bkg_VAMCFM * vaScale->Eval(mZZ);
+
+  if(flavor==1){
+    if(mZZ > 900)                   
+      bkg_VAMCFMNorm = bkg_VAMCFM * vaScale_4e->Eval(900.);
+    else if (mZZ <  100 )
+      bkg_VAMCFMNorm = bkg_VAMCFM * vaScale_4e->Eval(100.);
+    else
+      bkg_VAMCFMNorm = bkg_VAMCFM * vaScale_4e->Eval(mZZ);
+  }
+
+  if(flavor==2){
+    if(mZZ > 900)                   
+      bkg_VAMCFMNorm = bkg_VAMCFM * vaScale_4mu->Eval(900.);
+    else if (mZZ <  100 )
+      bkg_VAMCFMNorm = bkg_VAMCFM * vaScale_4mu->Eval(100.);
+    else
+      bkg_VAMCFMNorm = bkg_VAMCFM * vaScale_4mu->Eval(mZZ);
+  }
+
+  if(flavor==3){
+    if(mZZ > 900)                   
+      bkg_VAMCFMNorm = bkg_VAMCFM * vaScale_2e2mu->Eval(900.);
+    else if (mZZ <  100 )
+      bkg_VAMCFMNorm = bkg_VAMCFM * vaScale_2e2mu->Eval(100.);
+    else
+      bkg_VAMCFMNorm = bkg_VAMCFM * vaScale_2e2mu->Eval(mZZ);
+  }
 
 }

@@ -6,8 +6,8 @@
  *  MELA discriminator
  *
  *
- *  $Date: 2012/11/30 05:18:49 $
- *  $Revision: 1.14 $
+ *  $Date: 2012/11/30 08:23:44 $
+ *  $Revision: 1.15 $
  *  \author JHU
  */
 
@@ -182,7 +182,9 @@ private:
   RooAbsPdf* sigPt;
   RooAbsPdf* bkgPt;
 
-  TGraph* vaScale;
+  TGraph* vaScale_4e;
+  TGraph* vaScale_4mu;
+  TGraph* vaScale_2e2mu;
 
 };
 
