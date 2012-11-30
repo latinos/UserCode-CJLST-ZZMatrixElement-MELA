@@ -2,8 +2,8 @@
  *
  *  See header file for documentation.
  *
- *  $Date: 2012/10/11 19:20:05 $
- *  $Revision: 1.21 $
+ *  $Date: 2012/11/21 12:46:41 $
+ *  $Revision: 1.22 $
  */
 
 #include <ZZMatrixElement/MELA/interface/Mela.h>
@@ -262,6 +262,50 @@ double Mela::bkgPdfNorm(double mzz){
     p6*mzz*mzz*mzz*mzz*mzz*mzz;
 
 }
+
+void Mela::computeWeight(float mZZ, float mZ1, float mZ2, 
+			 float costhetastar,
+			 float costheta1, 
+			 float costheta2,
+			 float phi,
+			 float phistar1,
+			 // return variables:
+			 float& w
+			 ){
+
+  // vector algebra
+  double dummy1,dummy2,dummy3,dummy4,dummy5,dummy6,dummy7,dummy8;
+  double dXsec_HZZ_JHU,dXsec_HZZ_JHU_interf; // temporary probabilities (FORTRAN functions will need double  not float)
+  
+  // calculate dXsec for 2e2mu
+  ZZME->computeXS(mZZ,mZ1,mZ2,
+		  costhetastar,costheta1,costheta2,
+		  phi,phistar1,
+		  3,
+		  //output variables
+		  dummy1, dummy2,            // vars not used
+		  dXsec_HZZ_JHU,
+		  dummy3, dummy4, dummy5,    // vars not used
+		  dummy6, dummy7, dummy8);   // vars not used
+
+  // calculate dXsec for 4mu
+  ZZME->computeXS(mZZ,mZ1,mZ2,
+		  costhetastar,costheta1,costheta2,
+		  phi,phistar1,
+		  2,
+		  //output variables
+		  dummy1, dummy2,            // vars not used
+		  dXsec_HZZ_JHU_interf,
+		  dummy3, dummy4, dummy5,    // vars not used
+		  dummy6, dummy7, dummy8);   // vars not used
+  
+  w = dXsec_HZZ_JHU_interf / dXsec_HZZ_JHU;
+
+  // protect against anomalously large weights
+  if (w>4. || w<.25) w=1.;
+
+}
+
 
 void Mela::computeKD(TLorentzVector Z1_lept1, int Z1_lept1Id,
 		     TLorentzVector Z1_lept2, int Z1_lept2Id,

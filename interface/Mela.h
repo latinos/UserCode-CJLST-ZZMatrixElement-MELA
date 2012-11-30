@@ -6,8 +6,8 @@
  *  MELA discriminator
  *
  *
- *  $Date: 2012/10/02 12:50:39 $
- *  $Revision: 1.12 $
+ *  $Date: 2012/11/21 12:43:40 $
+ *  $Revision: 1.13 $
  *  \author JHU
  */
 
@@ -54,6 +54,15 @@ public:
 		 bool withPt = false,
 		 bool withY = false);
 
+  void computeWeight(float mZZ, float mZ1, float mZ2, 
+		     float costhetastar,
+		     float costheta1, 
+		     float costheta2,
+		     float phi,
+		     float phistar1,
+		     // return variables:
+		     float& w
+		     );
 
   void computeP(float mZZ, float mZ1, float mZ2, 
 		float costhetastar,
