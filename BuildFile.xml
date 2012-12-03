@@ -1,6 +1,8 @@
 <flags ADD_SUBDIR="1" />
 
 <flags FFLAGS="-O3 -ffree-form -ffree-line-length-none -Dcompiler=2 "/>
+
+<!--use name="mcfm"/-->
 <Flags LDFLAGS="/afs/cern.ch/user/y/yygao/public/libmcfm.so" />
 
 
@@ -16,4 +18,5 @@
 
 <export>
   <lib   name="1"/>
+  <use name="mcfm"/>
 </export>

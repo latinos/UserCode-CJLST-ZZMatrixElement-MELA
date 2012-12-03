@@ -322,35 +322,35 @@ Double_t RooqqZZ_JHU_ZgammaZZ_fast::partonicXS(double m1_c, double m2_c, double 
     double gqL3= gqL*gqL*gqL;
     double gqR3= gqR*gqR*gqR;   
     double M22 = M2*M2;
-    double M23 = M2*M2*M2;
+    //double M23 = M2*M2*M2;
     double M24 = M2*M2*M2*M2;
-    double M26 = M2*M2*M2*M2*M2*M2;
-    double M28 = M2*M2*M2*M2*M2*M2*M2*M2;
+    //double M26 = M2*M2*M2*M2*M2*M2;
+    //double M28 = M2*M2*M2*M2*M2*M2*M2*M2;
     double M12 = M1*M1;
-    double M13 = M1*M1*M1;
+    //double M13 = M1*M1*M1;
     double M14 = M1*M1*M1*M1;
-    double M16 = M1*M1*M1*M1*M1*M1;
-    double M18 = M1*M1*M1*M1*M1*M1*M1*M1;
+    //double M16 = M1*M1*M1*M1*M1*M1;
+    //double M18 = M1*M1*M1*M1*M1*M1*M1*M1;
     double MZ2 = MZ*MZ;
     double MZ4 = MZ*MZ*MZ*MZ;
     double wZ2 = wZ*wZ;
 
     double sqrts = TMath::Power(s,0.5);
-    double s2 = s*s;
-    double s3 = s*s*s;
+    //double s2 = s*s;
+    //double s3 = s*s*s;
     double sminus2 = 1./(s*s);
     double sminus1 = 1./s;
 
-    double Piminus4 = 1./(Pi*Pi*Pi*Pi);
-    double Piminus6 = 1./(Pi*Pi*Pi*Pi*Pi*Pi);
+    //double Piminus4 = 1./(Pi*Pi*Pi*Pi);
+    //double Piminus6 = 1./(Pi*Pi*Pi*Pi*Pi*Pi);
 
     double costheta  = cos(Theta);
     double sintheta  = sin(Theta);
 
-    double costhetaP2 = costheta*costheta;
-    double costhetaP4 = costheta*costheta*costheta*costheta;
-    double sinthetaP2 = sintheta*sintheta;
-    double sinthetaP4 = sintheta*sintheta*sintheta*sintheta;
+    //double costhetaP2 = costheta*costheta;
+    //double costhetaP4 = costheta*costheta*costheta*costheta;
+    //double sinthetaP2 = sintheta*sintheta;
+    //double sinthetaP4 = sintheta*sintheta*sintheta*sintheta;
 
     double costheta1 = cos(theta1);
     double costheta2 = cos(theta2);
@@ -368,7 +368,7 @@ Double_t RooqqZZ_JHU_ZgammaZZ_fast::partonicXS(double m1_c, double m2_c, double 
     double oneminuscosthetacostheta1 = (-1 + costheta*costheta1);
     double oneminuscosthetacostheta2 = (-1 + costheta*costheta2);
     double onepluscosthetacostheta1 = (1 + costheta*costheta1);
-    double onepluscosthetacostheta2 = (1 + costheta*costheta2);
+    //double onepluscosthetacostheta2 = (1 + costheta*costheta2);
 
     double gR2 = gR*gR;
     double gL2 = gL*gL;
@@ -480,12 +480,12 @@ Double_t RooqqZZ_JHU_ZgammaZZ_fast::integratePartonicXS_Dh2DphDPh1_1(double m1_c
     double gqL3= gqL*gqL*gqL;
     double gqR3= gqR*gqR*gqR;   
     double M22 = M2*M2;
-    double M23 = M2*M2*M2;
+    //double M23 = M2*M2*M2;
     double M24 = M2*M2*M2*M2;
     double M26 = M2*M2*M2*M2*M2*M2;
     double M28 = M2*M2*M2*M2*M2*M2*M2*M2;
     double M12 = M1*M1;
-    double M13 = M1*M1*M1;
+    //double M13 = M1*M1*M1;
     double M14 = M1*M1*M1*M1;
     double M16 = M1*M1*M1*M1*M1*M1;
     double M18 = M1*M1*M1*M1*M1*M1*M1*M1;
@@ -493,14 +493,14 @@ Double_t RooqqZZ_JHU_ZgammaZZ_fast::integratePartonicXS_Dh2DphDPh1_1(double m1_c
     double MZ4 = MZ*MZ*MZ*MZ;
     double wZ2 = wZ*wZ;
 
-    double sqrts = TMath::Power(s,0.5);
+    //double sqrts = TMath::Power(s,0.5);
     double s2 = s*s;
     double s3 = s*s*s;
     double sminus2 = 1./(s*s);
     double sminus1 = 1./s;
 
-    double Piminus4 = 1./(Pi*Pi*Pi*Pi);
-    double Piminus6 = 1./(Pi*Pi*Pi*Pi*Pi*Pi);
+    //double Piminus4 = 1./(Pi*Pi*Pi*Pi);
+    //double Piminus6 = 1./(Pi*Pi*Pi*Pi*Pi*Pi);
 
     double costheta  = cos(Theta);
     double sintheta  = sin(Theta);
@@ -508,25 +508,25 @@ Double_t RooqqZZ_JHU_ZgammaZZ_fast::integratePartonicXS_Dh2DphDPh1_1(double m1_c
     double costhetaP2 = costheta*costheta;
     double costhetaP4 = costheta*costheta*costheta*costheta;
     double sinthetaP2 = sintheta*sintheta;
-    double sinthetaP4 = sintheta*sintheta*sintheta*sintheta;
+    //double sinthetaP4 = sintheta*sintheta*sintheta*sintheta;
 
     double costheta1 = cos(theta1);
-    double costheta2 = cos(theta2);
+    //double costheta2 = cos(theta2);
     double sintheta1 = sin(theta1);
-    double sintheta2 = sin(theta2);
+    //double sintheta2 = sin(theta2);
 
-    double cosphi1   = cos(Phi1);
-    double cosphiplusphi1 = cos(phi + Phi1);
+    //double cosphi1   = cos(Phi1);
+    //double cosphiplusphi1 = cos(phi + Phi1);
 
     double sminusm22P2 = (-s + M22)*(-s + M22);
     double m22minusmz2P2 = (M22 - MZ2)*(M22 - MZ2);
     double m12minusmz2P2 = (M12 - MZ2)*(M12 - MZ2);
-    double sqrtm14m12sm22smm22=TMath::Power(M14 -2*M12*(s + M22) + sminusm22P2,0.5);
+    //double sqrtm14m12sm22smm22=TMath::Power(M14 -2*M12*(s + M22) + sminusm22P2,0.5);
 
-    double oneminuscosthetacostheta1 = (-1 + costheta*costheta1);
-    double oneminuscosthetacostheta2 = (-1 + costheta*costheta2);
-    double onepluscosthetacostheta1 = (1 + costheta*costheta1);
-    double onepluscosthetacostheta2 = (1 + costheta*costheta2);
+    //double oneminuscosthetacostheta1 = (-1 + costheta*costheta1);
+    //double oneminuscosthetacostheta2 = (-1 + costheta*costheta2);
+    //double onepluscosthetacostheta1 = (1 + costheta*costheta1);
+    //double onepluscosthetacostheta2 = (1 + costheta*costheta2);
 
     double gR2 = gR*gR;
     double gL2 = gL*gL;
@@ -628,7 +628,7 @@ Double_t RooqqZZ_JHU_ZgammaZZ_fast::integratePartonicXS_Dh1DphDPh1_2(double m1_c
     double gqL3= gqL*gqL*gqL;
     double gqR3= gqR*gqR*gqR;   
     double M22 = M2*M2;
-    double M23 = M2*M2*M2;
+    //double M23 = M2*M2*M2;
     double M24 = M2*M2*M2*M2;
     double M26 = M2*M2*M2*M2*M2*M2;
     double M28 = M2*M2*M2*M2*M2*M2*M2*M2;
@@ -641,14 +641,14 @@ Double_t RooqqZZ_JHU_ZgammaZZ_fast::integratePartonicXS_Dh1DphDPh1_2(double m1_c
     double MZ4 = MZ*MZ*MZ*MZ;
     double wZ2 = wZ*wZ;
 
-    double sqrts = TMath::Power(s,0.5);
+    //double sqrts = TMath::Power(s,0.5);
     double s2 = s*s;
     double s3 = s*s*s;
     double sminus2 = 1./(s*s);
     double sminus1 = 1./s;
 
-    double Piminus4 = 1./(Pi*Pi*Pi*Pi);
-    double Piminus6 = 1./(Pi*Pi*Pi*Pi*Pi*Pi);
+    //double Piminus4 = 1./(Pi*Pi*Pi*Pi);
+    //double Piminus6 = 1./(Pi*Pi*Pi*Pi*Pi*Pi);
 
     double costheta  = cos(Theta);
     double sintheta  = sin(Theta);
@@ -656,25 +656,25 @@ Double_t RooqqZZ_JHU_ZgammaZZ_fast::integratePartonicXS_Dh1DphDPh1_2(double m1_c
     double costhetaP2 = costheta*costheta;
     double costhetaP4 = costheta*costheta*costheta*costheta;
     double sinthetaP2 = sintheta*sintheta;
-    double sinthetaP4 = sintheta*sintheta*sintheta*sintheta;
+    //double sinthetaP4 = sintheta*sintheta*sintheta*sintheta;
 
-    double costheta1 = cos(theta1);
+    //double costheta1 = cos(theta1);
     double costheta2 = cos(theta2);
-    double sintheta1 = sin(theta1);
+    //double sintheta1 = sin(theta1);
     double sintheta2 = sin(theta2);
 
-    double cosphi1   = cos(Phi1);
-    double cosphiplusphi1 = cos(phi + Phi1);
+    //double cosphi1   = cos(Phi1);
+    //double cosphiplusphi1 = cos(phi + Phi1);
 
     double sminusm22P2 = (-s + M22)*(-s + M22);
     double m22minusmz2P2 = (M22 - MZ2)*(M22 - MZ2);
     double m12minusmz2P2 = (M12 - MZ2)*(M12 - MZ2);
-    double sqrtm14m12sm22smm22=TMath::Power(M14 -2*M12*(s + M22) + sminusm22P2,0.5);
+    //double sqrtm14m12sm22smm22=TMath::Power(M14 -2*M12*(s + M22) + sminusm22P2,0.5);
 
-    double oneminuscosthetacostheta1 = (-1 + costheta*costheta1);
-    double oneminuscosthetacostheta2 = (-1 + costheta*costheta2);
-    double onepluscosthetacostheta1 = (1 + costheta*costheta1);
-    double onepluscosthetacostheta2 = (1 + costheta*costheta2);
+    //double oneminuscosthetacostheta1 = (-1 + costheta*costheta1);
+    //double oneminuscosthetacostheta2 = (-1 + costheta*costheta2);
+    //double onepluscosthetacostheta1 = (1 + costheta*costheta1);
+    //double onepluscosthetacostheta2 = (1 + costheta*costheta2);
 
     double gR2 = gR*gR;
     double gL2 = gL*gL;
@@ -798,9 +798,9 @@ Double_t RooqqZZ_JHU_ZgammaZZ_fast::integratePartonicXS_Dh1Dh2Dph_3(double m1_c,
     double M23 = M2*M2*M2;
     double M24 = M2*M2*M2*M2;
     double M26 = M2*M2*M2*M2*M2*M2;
-    double M28 = M2*M2*M2*M2*M2*M2*M2*M2;
+    //double M28 = M2*M2*M2*M2*M2*M2*M2*M2;
     double M12 = M1*M1;
-    double M13 = M1*M1*M1;
+    //double M13 = M1*M1*M1;
     double M14 = M1*M1*M1*M1;
     double M16 = M1*M1*M1*M1*M1*M1;
     double M18 = M1*M1*M1*M1*M1*M1*M1*M1;
@@ -814,7 +814,7 @@ Double_t RooqqZZ_JHU_ZgammaZZ_fast::integratePartonicXS_Dh1Dh2Dph_3(double m1_c,
     double sminus2 = 1./(s*s);
     double sminus1 = 1./s;
 
-    double Piminus4 = 1./(Pi*Pi*Pi*Pi);
+    //double Piminus4 = 1./(Pi*Pi*Pi*Pi);
     double Piminus6 = 1./(Pi*Pi*Pi*Pi*Pi*Pi);
 
     double costheta  = cos(Theta);
@@ -823,25 +823,25 @@ Double_t RooqqZZ_JHU_ZgammaZZ_fast::integratePartonicXS_Dh1Dh2Dph_3(double m1_c,
     double costhetaP2 = costheta*costheta;
     double costhetaP4 = costheta*costheta*costheta*costheta;
     double sinthetaP2 = sintheta*sintheta;
-    double sinthetaP4 = sintheta*sintheta*sintheta*sintheta;
+    //double sinthetaP4 = sintheta*sintheta*sintheta*sintheta;
 
-    double costheta1 = cos(theta1);
-    double costheta2 = cos(theta2);
-    double sintheta1 = sin(theta1);
-    double sintheta2 = sin(theta2);
+    //double costheta1 = cos(theta1);
+    //double costheta2 = cos(theta2);
+    //double sintheta1 = sin(theta1);
+    //double sintheta2 = sin(theta2);
 
     double cosphi1   = cos(Phi1);
-    double cosphiplusphi1 = cos(phi + Phi1);
+    //double cosphiplusphi1 = cos(phi + Phi1);
 
     double sminusm22P2 = (-s + M22)*(-s + M22);
     double m22minusmz2P2 = (M22 - MZ2)*(M22 - MZ2);
     double m12minusmz2P2 = (M12 - MZ2)*(M12 - MZ2);
     double sqrtm14m12sm22smm22=TMath::Power(M14 -2*M12*(s + M22) + sminusm22P2,0.5);
 
-    double oneminuscosthetacostheta1 = (-1 + costheta*costheta1);
-    double oneminuscosthetacostheta2 = (-1 + costheta*costheta2);
-    double onepluscosthetacostheta1 = (1 + costheta*costheta1);
-    double onepluscosthetacostheta2 = (1 + costheta*costheta2);
+    //double oneminuscosthetacostheta1 = (-1 + costheta*costheta1);
+    //double oneminuscosthetacostheta2 = (-1 + costheta*costheta2);
+    //double onepluscosthetacostheta1 = (1 + costheta*costheta1);
+    //double onepluscosthetacostheta2 = (1 + costheta*costheta2);
 
     double gR2 = gR*gR;
     double gL2 = gL*gL;
@@ -944,17 +944,17 @@ Double_t RooqqZZ_JHU_ZgammaZZ_fast::integratePartonicXS_Dh1Dh2DPh1_4(double m1_c
     double M23 = M2*M2*M2;
     double M24 = M2*M2*M2*M2;
     double M26 = M2*M2*M2*M2*M2*M2;
-    double M28 = M2*M2*M2*M2*M2*M2*M2*M2;
+    //double M28 = M2*M2*M2*M2*M2*M2*M2*M2;
     double M12 = M1*M1;
     double M13 = M1*M1*M1;
     double M14 = M1*M1*M1*M1;
     double M16 = M1*M1*M1*M1*M1*M1;
     double M18 = M1*M1*M1*M1*M1*M1*M1*M1;
     double MZ2 = MZ*MZ;
-    double MZ4 = MZ*MZ*MZ*MZ;
+    //double MZ4 = MZ*MZ*MZ*MZ;
     double wZ2 = wZ*wZ;
 
-    double sqrts = TMath::Power(s,0.5);
+    //double sqrts = TMath::Power(s,0.5);
     double s2 = s*s;
     double s3 = s*s*s;
     double sminus2 = 1./(s*s);
@@ -971,23 +971,23 @@ Double_t RooqqZZ_JHU_ZgammaZZ_fast::integratePartonicXS_Dh1Dh2DPh1_4(double m1_c
     double sinthetaP2 = sintheta*sintheta;
     double sinthetaP4 = sintheta*sintheta*sintheta*sintheta;
 
-    double costheta1 = cos(theta1);
-    double costheta2 = cos(theta2);
-    double sintheta1 = sin(theta1);
-    double sintheta2 = sin(theta2);
+    //double costheta1 = cos(theta1);
+    //double costheta2 = cos(theta2);
+    //double sintheta1 = sin(theta1);
+    //double sintheta2 = sin(theta2);
 
-    double cosphi1   = cos(Phi1);
-    double cosphiplusphi1 = cos(phi + Phi1);
+    //double cosphi1   = cos(Phi1);
+    //double cosphiplusphi1 = cos(phi + Phi1);
 
     double sminusm22P2 = (-s + M22)*(-s + M22);
     double m22minusmz2P2 = (M22 - MZ2)*(M22 - MZ2);
     double m12minusmz2P2 = (M12 - MZ2)*(M12 - MZ2);
-    double sqrtm14m12sm22smm22=TMath::Power(M14 -2*M12*(s + M22) + sminusm22P2,0.5);
+    //double sqrtm14m12sm22smm22=TMath::Power(M14 -2*M12*(s + M22) + sminusm22P2,0.5);
 
-    double oneminuscosthetacostheta1 = (-1 + costheta*costheta1);
-    double oneminuscosthetacostheta2 = (-1 + costheta*costheta2);
-    double onepluscosthetacostheta1 = (1 + costheta*costheta1);
-    double onepluscosthetacostheta2 = (1 + costheta*costheta2);
+    //double oneminuscosthetacostheta1 = (-1 + costheta*costheta1);
+    //double oneminuscosthetacostheta2 = (-1 + costheta*costheta2);
+    //double onepluscosthetacostheta1 = (1 + costheta*costheta1);
+    //double onepluscosthetacostheta2 = (1 + costheta*costheta2);
 
     double gR2 = gR*gR;
     double gL2 = gL*gL;
@@ -1090,12 +1090,12 @@ Double_t RooqqZZ_JHU_ZgammaZZ_fast::integratePartonicXS_Dh1Dh2DphDPh1_5(double m
     double gqL3= gqL*gqL*gqL;
     double gqR3= gqR*gqR*gqR;   
     double M22 = M2*M2;
-    double M23 = M2*M2*M2;
+    //double M23 = M2*M2*M2;
     double M24 = M2*M2*M2*M2;
     double M26 = M2*M2*M2*M2*M2*M2;
-    double M28 = M2*M2*M2*M2*M2*M2*M2*M2;
+    //double M28 = M2*M2*M2*M2*M2*M2*M2*M2;
     double M12 = M1*M1;
-    double M13 = M1*M1*M1;
+    //double M13 = M1*M1*M1;
     double M14 = M1*M1*M1*M1;
     double M16 = M1*M1*M1*M1*M1*M1;
     double M18 = M1*M1*M1*M1*M1*M1*M1*M1;
@@ -1103,40 +1103,40 @@ Double_t RooqqZZ_JHU_ZgammaZZ_fast::integratePartonicXS_Dh1Dh2DphDPh1_5(double m
     double MZ4 = MZ*MZ*MZ*MZ;
     double wZ2 = wZ*wZ;
 
-    double sqrts = TMath::Power(s,0.5);
+    //double sqrts = TMath::Power(s,0.5);
     double s2 = s*s;
     double s3 = s*s*s;
     double sminus2 = 1./(s*s);
     double sminus1 = 1./s;
 
-    double Piminus4 = 1./(Pi*Pi*Pi*Pi);
-    double Piminus6 = 1./(Pi*Pi*Pi*Pi*Pi*Pi);
+    //double Piminus4 = 1./(Pi*Pi*Pi*Pi);
+    //double Piminus6 = 1./(Pi*Pi*Pi*Pi*Pi*Pi);
 
-    double costheta  = cos(Theta);
-    double sintheta  = sin(Theta);
+    //double costheta  = cos(Theta);
+    //double sintheta  = sin(Theta);
 
-    double costhetaP2 = costheta*costheta;
-    double costhetaP4 = costheta*costheta*costheta*costheta;
-    double sinthetaP2 = sintheta*sintheta;
-    double sinthetaP4 = sintheta*sintheta*sintheta*sintheta;
+    //double costhetaP2 = costheta*costheta;
+    //double costhetaP4 = costheta*costheta*costheta*costheta;
+    //double sinthetaP2 = sintheta*sintheta;
+    //double sinthetaP4 = sintheta*sintheta*sintheta*sintheta;
 
-    double costheta1 = cos(theta1);
-    double costheta2 = cos(theta2);
-    double sintheta1 = sin(theta1);
-    double sintheta2 = sin(theta2);
+    //double costheta1 = cos(theta1);
+    //double costheta2 = cos(theta2);
+    //double sintheta1 = sin(theta1);
+    //double sintheta2 = sin(theta2);
 
-    double cosphi1   = cos(Phi1);
-    double cosphiplusphi1 = cos(phi + Phi1);
+    //double cosphi1   = cos(Phi1);
+    //double cosphiplusphi1 = cos(phi + Phi1);
 
     double sminusm22P2 = (-s + M22)*(-s + M22);
     double m22minusmz2P2 = (M22 - MZ2)*(M22 - MZ2);
     double m12minusmz2P2 = (M12 - MZ2)*(M12 - MZ2);
-    double sqrtm14m12sm22smm22=TMath::Power(M14 -2*M12*(s + M22) + sminusm22P2,0.5);
+    //double sqrtm14m12sm22smm22=TMath::Power(M14 -2*M12*(s + M22) + sminusm22P2,0.5);
 
-    double oneminuscosthetacostheta1 = (-1 + costheta*costheta1);
-    double oneminuscosthetacostheta2 = (-1 + costheta*costheta2);
-    double onepluscosthetacostheta1 = (1 + costheta*costheta1);
-    double onepluscosthetacostheta2 = (1 + costheta*costheta2);
+    //double oneminuscosthetacostheta1 = (-1 + costheta*costheta1);
+    //double oneminuscosthetacostheta2 = (-1 + costheta*costheta2);
+    //double onepluscosthetacostheta1 = (1 + costheta*costheta1);
+    //double onepluscosthetacostheta2 = (1 + costheta*costheta2);
 
     double gR2 = gR*gR;
     double gL2 = gL*gL;
