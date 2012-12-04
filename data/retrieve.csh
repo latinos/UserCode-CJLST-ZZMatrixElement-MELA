@@ -4,6 +4,6 @@
 cd `dirname $0`
 
 if (! -e libmcfm.so) then
-  cat download.url | xargs wget -q
+  cat download.url | xargs wget --no-check-certificate -q
 endif
 
