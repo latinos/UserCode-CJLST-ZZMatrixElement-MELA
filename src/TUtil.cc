@@ -125,7 +125,7 @@ bool My_masscuts(double s[][12],TVar::Process process){
 
  double minZmassSqr=10*10;
 
- if(process==TVar::ZZ_2e2m){
+ if(process==TVar::ZZ_2e2m || process==TVar::ZZ_4e || process==TVar::GGZZ_4l){
    if(s[2][3]< minZmassSqr) return true;
    if(s[4][5]< minZmassSqr) return true;
  }
@@ -252,6 +252,11 @@ double SumMatrixElementPDF(TVar::Process process, mcfm_event_type* mcfm_event,do
   if( process==TVar::HZZ_4l)     qqb_hzz_(p4[0],msq[0]);
   if( process==TVar::GGZZ_4l)    gg_zz_  (p4[0],&msqgg);                     
 
+  /*
+    // Below code sums over all production parton flavors according to PDF 
+    // This is disabled as we are not using the intial production information
+    // the blow code is fine for the particle produced by single favor of incoming partons
+
   for(int ii=0;ii<nmsq;ii++){
     for(int jj=0;jj<nmsq;jj++){
       
@@ -265,8 +270,11 @@ double SumMatrixElementPDF(TVar::Process process, mcfm_event_type* mcfm_event,do
     }//ii
     //    cout<<"\n";
   }//jj
-
-  if( process==TVar::ZZ_2e2m) msqjk=msq[3][7]+msq[7][3];
+  */
+  // by default assume only gg productions 
+  msqjk=2*msq[0][0];
+  if( process==TVar::ZZ_2e2m || process == TVar::ZZ_4e) msqjk=msq[3][7]+msq[7][3];
+  // special for the GGZZ 
   if( process==TVar::GGZZ_4l) msqjk=msqgg;      
   
   (*flux)=fbGeV2/(8*xx[0]*xx[1]*EBEAM*EBEAM);
