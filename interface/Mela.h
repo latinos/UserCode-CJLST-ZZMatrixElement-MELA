@@ -6,8 +6,8 @@
  *  MELA discriminator
  *
  *
- *  $Date: 2012/11/30 08:23:44 $
- *  $Revision: 1.15 $
+ *  $Date: 2012/11/30 20:26:22 $
+ *  $Revision: 1.16 $
  *  \author JHU
  */
 
@@ -85,6 +85,7 @@ public:
 		//backgrounds
 		float& bkg_mela,  // background,  analytic distribution 
 		float& bkg_VAMCFM, // background, vector algebra, MCFM
+		float& ggzz_VAMCFM, // background, vector algebra, MCFM for ggZZ
 		float& bkg_VAMCFMNorm, // background, vector algebra, MCFM, Normalized 
 		//pt/rapidity
 		float& p0_pt, // multiplicative probability for signal pt

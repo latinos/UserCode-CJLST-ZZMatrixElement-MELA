@@ -23,6 +23,7 @@ public:
                  TLorentzVector Z2_lept2, int Z2_lept2Id,
                  // return variables:
 		 double& dXsec_ZZ_MCFM,
+		 double& dXsec_GGZZ_MCFM,
 		 double& dXsec_HZZ_MCFM,
 		 double& dXsec_HZZ_JHU,
 		 double& dXsec_PSHZZ_JHU,
@@ -44,6 +45,7 @@ public:
 		 int flavor,
 		 //output variables
 		 double& dXsec_ZZ_MCFM,
+		 double& dXsec_GGZZ_MCFM,
 		 double& dXsec_HZZ_MCFM,
 		 double& dXsec_HZZ_JHU,
 		 double& dXsec_PSHZZ_JHU,

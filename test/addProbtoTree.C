@@ -48,7 +48,7 @@ void addProbtoTree(char* inputFile,int flavor, int max=-1, int LHCsqrts=8){
   float m1,m2,mzz,h1,h2,hs,phi,phi1;                                    //angles
   float psig,pbkg,D,oldD;                                                    //legacy probabilities
   float	p0plus_melaNorm,p0plus_mela,p0minus_mela,p0plus_VAJHU,p0minus_VAJHU,p0plus_VAMCFM,p1_mela,p1_VAJHU,p2_mela,p2_VAJHU; // new signal probablities
-  float bkg_mela, bkg_VAMCFM,bkg_VAMCFMNorm;                                           // new background probabilities
+  float bkg_mela, bkg_VAMCFM, ggzz_VAMCFM, bkg_VAMCFMNorm;                                           // new background probabilities
   float pt4l, Y4l ,p0_pt,p0_y,p0_y,bkg_pt,bkg_y;                        // rapidity/pt
   float VAKD=0;                         // MCFM/JHUGen kinimetatic discriminant
 
@@ -104,6 +104,7 @@ void addProbtoTree(char* inputFile,int flavor, int max=-1, int LHCsqrts=8){
   //backgrounds
   newTree->Branch("bkg_mela",&bkg_mela,"bkg_mela/F");  // background,  analytic distribution 
   newTree->Branch("bkg_VAMCFM",&bkg_VAMCFM,"bkg_VAMCFM/F");  // background, vector algebra, MCFM
+  newTree->Branch("ggzz_VAMCFM",&ggzz_VAMCFM,"ggzz_VAMCFM/F");  // background, vector algebra, MCFM for ggzz
   newTree->Branch("bkg_VAMCFMNorm",&bkg_VAMCFMNorm,"bkg_VAMCFMNorm/F");  // background, vector algebra, MCFM Normalized
   //pt/rapidity
   newTree->Branch("p0_pt",&p0_pt,"p0_pt/F");  // multiplicative probability for signal pt
@@ -142,6 +143,7 @@ void addProbtoTree(char* inputFile,int flavor, int max=-1, int LHCsqrts=8){
 		      //backgrounds
 		      bkg_mela,  // background,  analytic distribution 
 		      bkg_VAMCFM, // background, vector algebra, MCFM
+		      ggzz_VAMCFM, // background, vector algebra, MCFM for ggzz
 		      bkg_VAMCFMNorm, // background, vector algebra, MCFM Norm
 		      //pt/rapidity
 		      p0_pt, // multiplicative probability for signal pt

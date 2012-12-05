@@ -2,8 +2,8 @@
  *
  *  See header file for documentation.
  *
- *  $Date: 2012/11/30 20:26:22 $
- *  $Revision: 1.25 $
+ *  $Date: 2012/12/05 13:23:34 $
+ *  $Revision: 1.26 $
  */
 
 #include <ZZMatrixElement/MELA/interface/Mela.h>
@@ -282,7 +282,7 @@ void Mela::computeWeight(float mZZ, float mZ1, float mZ2,
 			 ){
 
   // vector algebra
-  double dummy1,dummy2,dummy3,dummy4,dummy5,dummy6,dummy7,dummy8;
+  double dummy1,dummy2,dummy3,dummy4,dummy5,dummy6,dummy7,dummy8,dummy9;
   double dXsec_HZZ_JHU,dXsec_HZZ_JHU_interf; // temporary probabilities (FORTRAN functions will need double  not float)
   
   // calculate dXsec for 2e2mu
@@ -291,7 +291,7 @@ void Mela::computeWeight(float mZZ, float mZ1, float mZ2,
 		  phi,phistar1,
 		  3,
 		  //output variables
-		  dummy1, dummy2,            // vars not used
+		  dummy1, dummy2, dummy9,           // vars not used
 		  dXsec_HZZ_JHU,
 		  dummy3, dummy4, dummy5,    // vars not used
 		  dummy6, dummy7, dummy8);   // vars not used
@@ -302,7 +302,7 @@ void Mela::computeWeight(float mZZ, float mZ1, float mZ2,
 		  phi,phistar1,
 		  2,
 		  //output variables
-		  dummy1, dummy2,            // vars not used
+		  dummy1, dummy2, dummy9,      // vars not used
 		  dXsec_HZZ_JHU_interf,
 		  dummy3, dummy4, dummy5,    // vars not used
 		  dummy6, dummy7, dummy8);   // vars not used
@@ -643,6 +643,7 @@ void Mela::computeP(float mZZ, float mZ1, float mZ2,
 		    //backgrounds
 		    float& bkg_mela,  // background,  analytic distribution 
 		    float& bkg_VAMCFM, // background, vector algebra, MCFM
+		    float& ggzz_VAMCFM, // background, vector algebra, MCFM for ggzz
 		    float& bkg_VAMCFMNorm, // background, vector algebra, MCFM Normalized
 		    //pt/rapidity
 		    float& p0_pt, // multiplicative probability for signal pt
@@ -708,13 +709,14 @@ void Mela::computeP(float mZZ, float mZ1, float mZ2,
 
   // vector algebra
   double dummy1,dummy2,dummy3;
-  double dXsec_ZZ_MCFM,dXsec_HZZ_MCFM,dXsec_HZZ_JHU,dXsec_PSHZZ_JHU,dXsec_VZZ_JHU,dXsec_TZZ_JHU; // temporary probabilities (FORTRAN functions will need double, not float)
+  double dXsec_ZZ_MCFM,dXsec_GGZZ_MCFM,dXsec_HZZ_MCFM,dXsec_HZZ_JHU,dXsec_PSHZZ_JHU,dXsec_VZZ_JHU,dXsec_TZZ_JHU; // temporary probabilities (FORTRAN functions will need double, not float)
   ZZME->computeXS(mZZ,mZ1,mZ2,
 		  costhetastar,costheta1,costheta2,
 		  phi,phistar1,
 		  flavor,
 		  //output variables
 		  dXsec_ZZ_MCFM,
+		  dXsec_GGZZ_MCFM,
 		  dXsec_HZZ_MCFM,
 		  dXsec_HZZ_JHU,
 		  dXsec_PSHZZ_JHU,
@@ -723,6 +725,7 @@ void Mela::computeP(float mZZ, float mZ1, float mZ2,
 		  dummy1,dummy2,dummy3);   // discriminants are not used 
 
   bkg_VAMCFM=dXsec_ZZ_MCFM;
+  ggzz_VAMCFM=dXsec_GGZZ_MCFM;
   p0plus_VAMCFM=dXsec_HZZ_MCFM;
   p0plus_VAJHU=dXsec_HZZ_JHU;
   p0minus_VAJHU=dXsec_PSHZZ_JHU;

@@ -72,6 +72,7 @@ void ZZMatrixElement::computeXS(TLorentzVector Z1_lept1, int Z1_lept1Id,
 	       TLorentzVector Z2_lept2, int Z2_lept2Id,
 	       //output variables
 	       double& dXsec_ZZ_MCFM,
+	       double& dXsec_GGZZ_MCFM,
 	       double& dXsec_HZZ_MCFM,
 	       double& dXsec_HZZ_JHU,
 	       double& dXsec_PSHZZ_JHU,
@@ -86,6 +87,7 @@ void ZZMatrixElement::computeXS(TLorentzVector Z1_lept1, int Z1_lept1Id,
   // initialise the differential cross-sections
   //
   dXsec_ZZ_MCFM = 0.;
+  dXsec_GGZZ_MCFM = 0.;
   dXsec_HZZ_MCFM = 0.;
   dXsec_HZZ_JHU = 0.;
   dXsec_PSHZZ_JHU = 0.;
@@ -146,7 +148,8 @@ void ZZMatrixElement::computeXS(TLorentzVector Z1_lept1, int Z1_lept1Id,
   }
   else //2e2mu
     dXsec_ZZ_MCFM = Xcal2.XsecCalc(TVar::ZZ_2e2m,hzz4l_event,verb);
-  
+  // ggZZ
+  dXsec_GGZZ_MCFM = Xcal2.XsecCalc(TVar::GGZZ_4l,hzz4l_event,verb);
   dXsec_HZZ_MCFM = Xcal2.XsecCalc(TVar::HZZ_4l,hzz4l_event,verb);
 
   //
@@ -180,6 +183,7 @@ void ZZMatrixElement::computeXS(float mZZ, float mZ1, float mZ2,
 				int flavor,
 				//output variables
 				double& dXsec_ZZ_MCFM,
+				double& dXsec_GGZZ_MCFM,
 				double& dXsec_HZZ_MCFM,
 				double& dXsec_HZZ_JHU,
 				double& dXsec_PSHZZ_JHU,
@@ -221,6 +225,7 @@ void ZZMatrixElement::computeXS(float mZZ, float mZ1, float mZ2,
 	    p[3], pdg22,
 	    //output variables
 	    dXsec_ZZ_MCFM,
+	    dXsec_GGZZ_MCFM,
 	    dXsec_HZZ_MCFM,
 	    dXsec_HZZ_JHU,
 	    dXsec_PSHZZ_JHU,
