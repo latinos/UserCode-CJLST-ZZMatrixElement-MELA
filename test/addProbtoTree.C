@@ -21,7 +21,7 @@ void addProbtoTree(char* inputFile,int flavor, int max=-1, int LHCsqrts=8){
   //flavor: 1:4e, 2:4mu, 3:2e2mu
 
 
-  gSystem->Load("/afs/cern.ch/user/y/yygao/public/libmcfm.so");
+  gSystem->Load("$CMSSW_BASE/src/ZZMatrixElement/MELA/data/$SCRAM_ARCH/libmcfm.so");
   gSystem->Load("$CMSSW_BASE/lib/slc5_amd64_gcc462/libZZMatrixElementMELA.so");
   gROOT->LoadMacro("../interface/Mela.h+");
 
@@ -112,6 +112,10 @@ void addProbtoTree(char* inputFile,int flavor, int max=-1, int LHCsqrts=8){
   newTree->Branch("bkg_pt",&bkg_pt,"bkg_pt/F");  // multiplicative probability for bkg pt
   newTree->Branch("bkg_y",&bkg_y,"bkg_y/F");  // multiplicative probability for bkg y
   newTree->Branch("VAKD",&VAKD,"VAKD/F");  // discriminant
+
+  //interference weight
+  float interfWeight;
+  newTree->Branch("interfWeight",&interfWeight,"interfWeight/F"); // weight to be used for interference reweighting
   
   for(int iEvt=0; iEvt<(max<0?sigTree->GetEntries():max); iEvt++){
     
@@ -166,6 +170,9 @@ void addProbtoTree(char* inputFile,int flavor, int max=-1, int LHCsqrts=8){
 // //       std::cout << "pME "     << p0plus_VAJHU/(p0plus_VAJHU + 6.*p0minus_VAJHU) << " " << p0plus_VAJHU <<" " <<p0minus_VAJHU <<std::endl;
 // //       std::cout << "graviME "     << p0plus_VAJHU/(p0plus_VAJHU + 1.2*p2_VAJHU) << " " << p0plus_VAJHU <<" " << p2_VAJHU<<std::endl;
 
+      myMELA.computeWeight(mzz, m1, m2, 
+			   hs,h1,h2,phi,phi1,
+			   interfWeight);
 	
       newTree->Fill();
       
