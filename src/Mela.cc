@@ -2,8 +2,8 @@
  *
  *  See header file for documentation.
  *
- *  $Date: 2012/11/30 08:23:44 $
- *  $Revision: 1.24 $
+ *  $Date: 2012/11/30 20:26:22 $
+ *  $Revision: 1.25 $
  */
 
 #include <ZZMatrixElement/MELA/interface/Mela.h>
@@ -139,7 +139,7 @@ Mela::Mela(bool usePowhegTemplate, int LHCsqrts){
   edm::FileInPath HiggsWidthFile("Higgs/Higgs_CS_and_Width/txtFiles/8TeV-ggH.txt");
   std::string path = HiggsWidthFile.fullPath();
   //std::cout << path.substr(0,path.length()-12) << std::endl;
-  ZZME = new  ZZMatrixElement(path.substr(0,path.length()-12 ).c_str(),1000.*LHCsqrts/2.,TVar::VerbosityLevel::INFO);
+  ZZME = new  ZZMatrixElement(path.substr(0,path.length()-12 ).c_str(),1000.*LHCsqrts/2.,TVar::INFO);
  
   edm::FileInPath ScaleFactorFile("ZZMatrixElement/MELA/data/scaleFactors.root");
   TFile* sf = TFile::Open(ScaleFactorFile.fullPath().c_str(),"r");
