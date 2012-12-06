@@ -2,8 +2,8 @@
  *
  *  See header file for documentation.
  *
- *  $Date: 2012/12/05 13:23:34 $
- *  $Revision: 1.26 $
+ *  $Date: 2012/12/05 13:36:24 $
+ *  $Revision: 1.27 $
  */
 
 #include <ZZMatrixElement/MELA/interface/Mela.h>
@@ -30,6 +30,9 @@
 #include <vector>
 
 #include <string>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 using namespace RooFit;
 
@@ -139,6 +142,16 @@ Mela::Mela(bool usePowhegTemplate, int LHCsqrts){
   edm::FileInPath HiggsWidthFile("Higgs/Higgs_CS_and_Width/txtFiles/8TeV-ggH.txt");
   std::string path = HiggsWidthFile.fullPath();
   //std::cout << path.substr(0,path.length()-12) << std::endl;
+
+  // Create symlinks to the required files, if these are not already present (do nothing otherwse)
+  edm::FileInPath mcfmInput1("ZZMatrixElement/MELA/data/input.DAT");
+  edm::FileInPath mcfmInput2("ZZMatrixElement/MELA/data/process.DAT");
+  edm::FileInPath mcfmInput3("ZZMatrixElement/MELA/data/Pdfdata/cteq6l1.tbl");  
+  symlink(mcfmInput1.fullPath().c_str(), "input.DAT");
+  symlink(mcfmInput2.fullPath().c_str(), "process.DAT");
+  mkdir("Pdfdata",S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+  symlink(mcfmInput3.fullPath().c_str(), "Pdfdata/cteq6l1.tbl");
+
   ZZME = new  ZZMatrixElement(path.substr(0,path.length()-12 ).c_str(),1000.*LHCsqrts/2.,TVar::INFO);
  
   edm::FileInPath ScaleFactorFile("ZZMatrixElement/MELA/data/scaleFactors.root");
