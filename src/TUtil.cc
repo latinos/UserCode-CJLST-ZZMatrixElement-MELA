@@ -272,7 +272,7 @@ double SumMatrixElementPDF(TVar::Process process, mcfm_event_type* mcfm_event,do
   }//jj
   */
   // by default assume only gg productions 
-  msqjk=2*msq[0][0];
+  msqjk=msq[5][5];
   if( process==TVar::ZZ_2e2m || process == TVar::ZZ_4e) msqjk=msq[3][7]+msq[7][3];
   // special for the GGZZ 
   if( process==TVar::GGZZ_4l) msqjk=msqgg;      
