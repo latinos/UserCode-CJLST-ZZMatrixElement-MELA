@@ -170,6 +170,8 @@ void addProbtoTree(char* inputFile,int flavor, int max=-1, int LHCsqrts=8){
 // //       std::cout << "pME "     << p0plus_VAJHU/(p0plus_VAJHU + 6.*p0minus_VAJHU) << " " << p0plus_VAJHU <<" " <<p0minus_VAJHU <<std::endl;
 // //       std::cout << "graviME "     << p0plus_VAJHU/(p0plus_VAJHU + 1.2*p2_VAJHU) << " " << p0plus_VAJHU <<" " << p2_VAJHU<<std::endl;
 
+      std::cout << p0plus_VAMCFM << std::endl;
+
       myMELA.computeWeight(mzz, m1, m2, 
 			   hs,h1,h2,phi,phi1,
 			   interfWeight);

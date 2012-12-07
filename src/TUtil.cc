@@ -272,6 +272,10 @@ double SumMatrixElementPDF(TVar::Process process, mcfm_event_type* mcfm_event,do
   }//jj
   */
   // by default assume only gg productions 
+  // FOTRAN convention -5    -4   -3  -2    -1  0 1 2 3 4 5 
+  //     parton flavor bbar cbar sbar ubar dbar g d u s c b
+  // C++ convention     0     1   2    3    4   5 6 7 8 9 10
+  //
   msqjk=msq[5][5];
   if( process==TVar::ZZ_2e2m || process == TVar::ZZ_4e) msqjk=msq[3][7]+msq[7][3];
   // special for the GGZZ 
