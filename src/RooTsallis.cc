@@ -11,7 +11,7 @@
 
 //ClassImp(RooTsallis) 
 
-RooTsallis::RooTsallis(const char *name, const char *title, 
+RooTsallisSM::RooTsallisSM(const char *name, const char *title, 
 			RooAbsReal& _x,
 			RooAbsReal& _mzz,			  
 			RooAbsReal& _m,    
@@ -44,7 +44,7 @@ RooTsallis::RooTsallis(const char *name, const char *title,
  } 
 
 
- RooTsallis::RooTsallis(const RooTsallis& other, const char* name) :  
+ RooTsallisSM::RooTsallisSM(const RooTsallisSM& other, const char* name) :  
    RooAbsPdf(other,name), 
    x("x",this,other.x),		      
    mzz("mzz",this,other.mzz),	    
@@ -64,9 +64,9 @@ RooTsallis::RooTsallis(const char *name, const char *title,
 
 
 
- double RooTsallis::evaluate() const 
+ double RooTsallisSM::evaluate() const 
  { 
-   // cout<<"In rooTsallis::evaluate()"<<endl;
+   // cout<<"In rooTsallisSM::evaluate()"<<endl;
    double T = T0 + mzz*T1 + mzz*mzz*T2;
    double n = n0 + mzz*n1 + mzz*mzz*n2;
    double bb = bb0 + mzz*bb1 + mzz*mzz*bb2;
@@ -77,13 +77,13 @@ RooTsallis::RooTsallis(const char *name, const char *title,
 
 // LET ROOFIT COMPUTE IT
 
-/* int RooTsallis::getAnalyticalIntegral(RooArgSet& allVars, RooArgSet& analVars, const char* rangeName) const
+/* int RooTsallisSM::getAnalyticalIntegral(RooArgSet& allVars, RooArgSet& analVars, const char* rangeName) const
 {
   if (matchArgs(allVars,analVars,x)) return 1 ;
   return 0 ;
 }
 
-double RooTsallis::analyticalIntegral(int code, const char* rangeName) const
+double RooTsallisSM::analyticalIntegral(int code, const char* rangeName) const
 {
   switch(code)
     {

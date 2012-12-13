@@ -18,9 +18,9 @@
 class RooRealVar;
 class RooAbsReal;
  
-class RooTsallis : public RooAbsPdf {
+class RooTsallisSM : public RooAbsPdf {
 public:
-  RooTsallis(const char *name, const char *title,
+  RooTsallisSM(const char *name, const char *title,
 	          RooAbsReal& _x, 
                   RooAbsReal& _mzz,     
         	  RooAbsReal& _m,    
@@ -35,9 +35,9 @@ public:
                   RooAbsReal& _T1,   
 	          RooAbsReal& _T2);  
 
-  RooTsallis(const RooTsallis& other, const char* name=0) ;
-  virtual TObject* clone(const char* newname) const { return new RooTsallis(*this,newname); }
-  inline virtual ~RooTsallis() { }
+  RooTsallisSM(const RooTsallisSM& other, const char* name=0) ;
+  virtual TObject* clone(const char* newname) const { return new RooTsallisSM(*this,newname); }
+  inline virtual ~RooTsallisSM() { }
   /* Int_t getAnalyticalIntegral(RooArgSet& allVars, RooArgSet& analVars, const char* rangeName=0) const ;
      Double_t analyticalIntegral(Int_t code, const char* rangeName=0) const ;*/
 

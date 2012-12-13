@@ -50,6 +50,7 @@ void addProbtoTree(char* inputFile,int flavor, int max=-1, int LHCsqrts=8){
   float	p0plus_melaNorm,p0plus_mela,p0minus_mela,p0plus_VAJHU,p0minus_VAJHU,p0plus_VAMCFM,p1_mela,p1_VAJHU,p2_mela,p2_VAJHU; // new signal probablities
   float bkg_mela, bkg_VAMCFM, ggzz_VAMCFM, bkg_VAMCFMNorm;                                           // new background probabilities
   float pt4l, Y4l ,p0_pt,p0_y,p0_y,bkg_pt,bkg_y;                        // rapidity/pt
+  float p0plus_m4l,bkg_m4l;  //supermela
   float VAKD=0;                         // MCFM/JHUGen kinimetatic discriminant
 
   // -------- CJLST TREES ---------------
@@ -106,6 +107,9 @@ void addProbtoTree(char* inputFile,int flavor, int max=-1, int LHCsqrts=8){
   newTree->Branch("bkg_VAMCFM",&bkg_VAMCFM,"bkg_VAMCFM/F");  // background, vector algebra, MCFM
   newTree->Branch("ggzz_VAMCFM",&ggzz_VAMCFM,"ggzz_VAMCFM/F");  // background, vector algebra, MCFM for ggzz
   newTree->Branch("bkg_VAMCFMNorm",&bkg_VAMCFMNorm,"bkg_VAMCFMNorm/F");  // background, vector algebra, MCFM Normalized
+  //supermela
+  newTree->Branch("p0plus_m4l",&p0plus_m4l,"p0plus_m4l/F"  );  
+  newTree->Branch("bkg_m4l",   &bkg_m4l, "bkg_m4l/F");  
   //pt/rapidity
   newTree->Branch("p0_pt",&p0_pt,"p0_pt/F");  // multiplicative probability for signal pt
   newTree->Branch("p0_y",&p0_y,"p0_y/F");  // multiplicative probability for signal y
@@ -154,6 +158,9 @@ void addProbtoTree(char* inputFile,int flavor, int max=-1, int LHCsqrts=8){
 		      p0_y, // multiplicative probability for signal y
 		      bkg_pt, // multiplicative probability for bkg pt
 		      bkg_y, // multiplicative probability for bkg y
+		      // supermela
+		      p0plus_m4l,  // signal m4l probability as in datacards
+		      bkg_m4l,     // backgroun m4l probability as in datacards
 		      //optional input parameters
 		      pt4l,Y4l,flavor // 1:4e, 2:4mu, 3:2e2mu (for interference effects)
 		      );
@@ -170,7 +177,9 @@ void addProbtoTree(char* inputFile,int flavor, int max=-1, int LHCsqrts=8){
 // //       std::cout << "pME "     << p0plus_VAJHU/(p0plus_VAJHU + 6.*p0minus_VAJHU) << " " << p0plus_VAJHU <<" " <<p0minus_VAJHU <<std::endl;
 // //       std::cout << "graviME "     << p0plus_VAJHU/(p0plus_VAJHU + 1.2*p2_VAJHU) << " " << p0plus_VAJHU <<" " << p2_VAJHU<<std::endl;
 
-      std::cout << p0plus_VAMCFM << std::endl;
+//      std::cout << p0plus_VAMCFM << std::endl;
+
+      std::cout <<  p0plus_m4l << ":"<<  bkg_m4l << std::endl;
 
       myMELA.computeWeight(mzz, m1, m2, 
 			   hs,h1,h2,phi,phi1,

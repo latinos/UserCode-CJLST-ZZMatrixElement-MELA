@@ -6,8 +6,8 @@
  *  MELA discriminator
  *
  *
- *  $Date: 2012/11/30 20:26:22 $
- *  $Revision: 1.16 $
+ *  $Date: 2012/12/05 13:30:12 $
+ *  $Revision: 1.17 $
  *  \author JHU
  */
 
@@ -24,12 +24,13 @@ class RooArgSet;
 class AngularPdfFactory;
 class TensorPdfFactory;
 class ZZMatrixElement;
+class SuperMELA;
 class TGraph;
 
 
 class Mela { 
 public:
-  Mela(bool usePowhegTemplate=false, int LHCsqrts=8);
+  Mela(bool usePowhegTemplate=false, int LHCsqrts=8, float mh=125); // higgs mass for supermela
 
   ~Mela();
 
@@ -92,6 +93,9 @@ public:
 		float& p0_y, // multiplicative probability for signal y
 		float& bkg_pt, // multiplicative probability for bkg pt
 		float& bkg_y, // multiplicative probability for bkg y
+		//supermela
+		float& p0plus_m4l,  // signal m4l probability as in datacards
+		float& bkg_m4l,     // backgroun m4l probability as in datacards
 		//optional input parameters
 		float pt4l=0.0,
 		float Y4l=0.0,
@@ -171,6 +175,7 @@ private:
   RooAbsPdf* SMZZ;
   
   ZZMatrixElement* ZZME;
+  SuperMELA* super;
 
   std::vector<RooRealVar*> ptparamsS;
   std::vector<RooRealVar*> ptparamsB;

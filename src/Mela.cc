@@ -2,12 +2,13 @@
  *
  *  See header file for documentation.
  *
- *  $Date: 2012/12/05 13:36:24 $
- *  $Revision: 1.27 $
+ *  $Date: 2012/12/06 15:52:26 $
+ *  $Revision: 1.28 $
  */
 
 #include <ZZMatrixElement/MELA/interface/Mela.h>
 #include <ZZMatrixElement/MELA/interface/ZZMatrixElement.h>
+#include <ZZMatrixElement/MELA/interface/SuperMELA.h>
 #include <DataFormats/GeometryVector/interface/Pi.h>
 #include <FWCore/ParameterSet/interface/FileInPath.h>
 
@@ -17,6 +18,7 @@
 #include "RooqqZZ_JHU_ZgammaZZ_fast.h"
 #include "RooqqZZ_JHU.h"
 #include "RooTsallis.h"
+//#include "HiggsAnalysis/CombinedLimit/interface/HZZ4LRooPdfs.h"  // replacement for RooTsallis
 #include "RooTsallisExp.h"
 #include "RooRapidityBkg.h"
 #include "RooRapiditySig.h"
@@ -36,7 +38,7 @@
 
 using namespace RooFit;
 
-Mela::Mela(bool usePowhegTemplate, int LHCsqrts){ 
+Mela::Mela(bool usePowhegTemplate, int LHCsqrts, float mh){ 
 
   usePowhegTemplate_=usePowhegTemplate;
 
@@ -124,7 +126,7 @@ Mela::Mela(bool usePowhegTemplate, int LHCsqrts){
   edm::FileInPath TsallisParam_Bkg(fileName);
   fullPath = TsallisParam_Bkg.fullPath();
 
-  bkgPt = new RooTsallis("bkgPt","bkgPt",*pt_rrv,*mzz_rrv,
+  bkgPt = new RooTsallisSM("bkgPt","bkgPt",*pt_rrv,*mzz_rrv,
 				     *ptparamsB[0],*ptparamsB[1],*ptparamsB[2],
 				     *ptparamsB[3],*ptparamsB[4],*ptparamsB[5],
 				     *ptparamsB[6],*ptparamsB[7],*ptparamsB[8],
@@ -142,6 +144,17 @@ Mela::Mela(bool usePowhegTemplate, int LHCsqrts){
   edm::FileInPath HiggsWidthFile("Higgs/Higgs_CS_and_Width/txtFiles/8TeV-ggH.txt");
   std::string path = HiggsWidthFile.fullPath();
   //std::cout << path.substr(0,path.length()-12) << std::endl;
+
+
+  super = new SuperMELA(mh,"4mu",LHCsqrts); // preliminary intialization, we adjust the flavor later
+  char cardpath[500];
+  sprintf(cardpath,"HZZ4L_Combination/CombinationPy/CreateDatacards/SM_inputs_%dTeV/inputs_4mu.txt",LHCsqrts);
+  edm::FileInPath cardfile(cardpath);
+  std::string cpath=cardfile.fullPath();
+  std::cout << cpath.substr(0,cpath.length()-14).c_str()  <<std::endl;
+  super->SetPathToCards(cpath.substr(0,cpath.length()-14).c_str() );
+  super->SetVerbosity(true);
+  super->init();
 
   // Create symlinks to the required files, if these are not already present (do nothing otherwse)
   edm::FileInPath mcfmInput1("ZZMatrixElement/MELA/data/input.DAT");
@@ -161,6 +174,7 @@ Mela::Mela(bool usePowhegTemplate, int LHCsqrts){
   vaScale_2e2mu = (TGraph*)sf->Get("scaleFactors_2e2mu");
   sf->Close(); 
   //vaScale->Print("v");
+
 }
 
 Mela::~Mela(){ 
@@ -663,6 +677,9 @@ void Mela::computeP(float mZZ, float mZ1, float mZ2,
 		    float& p0_y, // multiplicative probability for signal y
 		    float& bkg_pt, // multiplicative probability for bkg pt
 		    float& bkg_y, // multiplicative probability for bkg y
+		    // supermela
+		    float& p0plus_m4l,  // signal m4l probability as in datacards
+		    float& bkg_m4l,     // backgroun m4l probability as in datacards
 		    //optional input parameters
 		    float pt4l,
 		    float Y4l,
@@ -771,5 +788,18 @@ void Mela::computeP(float mZZ, float mZ1, float mZ2,
     else
       bkg_VAMCFMNorm = bkg_VAMCFM * vaScale_2e2mu->Eval(mZZ);
   }
+
+  // supermela
+  switch(flavor){
+  case 1: super->SetDecayChannel("4e")   ;break;
+  case 2: super->SetDecayChannel("4mu")  ;break;
+  case 3: super->SetDecayChannel("2mu2e");break;
+  default: std::cout << " unknown flavor: " << flavor << std::endl; exit(0);
+  }
+  
+  std::pair<double,double> m4lP = super->M4lProb(mZZ);
+  p0plus_m4l = m4lP.first; 
+  bkg_m4l = m4lP.second;
+
 
 }
