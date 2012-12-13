@@ -6,8 +6,8 @@
  *  MELA discriminator
  *
  *
- *  $Date: 2012/12/05 13:30:12 $
- *  $Revision: 1.17 $
+ *  $Date: 2012/12/13 13:19:02 $
+ *  $Revision: 1.18 $
  *  \author JHU
  */
 
@@ -30,7 +30,7 @@ class TGraph;
 
 class Mela { 
 public:
-  Mela(bool usePowhegTemplate=false, int LHCsqrts=8, float mh=125); // higgs mass for supermela
+  Mela(bool usePowhegTemplate=false, int LHCsqrts=8, float mh=126); // higgs mass for supermela
 
   ~Mela();
 
