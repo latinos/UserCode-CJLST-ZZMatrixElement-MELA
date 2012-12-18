@@ -23,7 +23,7 @@ void addProbtoTree(char* inputFile,int flavor, int max=-1, int LHCsqrts=8){
 
   gSystem->Load("$CMSSW_BASE/src/ZZMatrixElement/MELA/data/$SCRAM_ARCH/libmcfm.so");
   gSystem->Load("$CMSSW_BASE/lib/slc5_amd64_gcc462/libZZMatrixElementMELA.so");
-  gROOT->LoadMacro("../interface/Mela.h+");
+  gROOT->LoadMacro("../interface/Mela.h++");
 
   Mela myMELA(false,LHCsqrts);
   Mela myMELA_ICHEP(true,LHCsqrts);
@@ -33,7 +33,7 @@ void addProbtoTree(char* inputFile,int flavor, int max=-1, int LHCsqrts=8){
   char inputFileName[500];
   char outputFileName[500];
   sprintf(inputFileName,"%s.root",inputFile);
-  sprintf(outputFileName,"%s_withProbabilities.root",inputFile);
+  sprintf(outputFileName,"%s_withProbabilities_ABtest.root",inputFile);
 
   TFile* sigFile = new TFile(inputFileName);
   TTree* sigTree=0;
@@ -50,7 +50,7 @@ void addProbtoTree(char* inputFile,int flavor, int max=-1, int LHCsqrts=8){
   float	p0plus_melaNorm,p0plus_mela,p0minus_mela,p0plus_VAJHU,p0minus_VAJHU,p0plus_VAMCFM,p1_mela,p1_VAJHU,p2_mela,p2_VAJHU; // new signal probablities
   float bkg_mela, bkg_VAMCFM, ggzz_VAMCFM, bkg_VAMCFMNorm;                                           // new background probabilities
   float pt4l, Y4l ,p0_pt,p0_y,p0_y,bkg_pt,bkg_y;                        // rapidity/pt
-  float p0plus_m4l,bkg_m4l;  //supermela
+  float p0plus_m4l,bkg_m4l,smd;  //supermela
   float VAKD=0;                         // MCFM/JHUGen kinimetatic discriminant
 
   // -------- CJLST TREES ---------------
@@ -92,7 +92,7 @@ void addProbtoTree(char* inputFile,int flavor, int max=-1, int LHCsqrts=8){
   newTree->Branch("p0_mela_postICHEP",&psig,"p0_mela_postICHEP/F");
   newTree->Branch("pbkg_mela_postICHEP",&pbkg,"p0_mela_postICHEP/F");
 
-  newTree->Branch("p0plus_melaNorm",&p0plus_mela,"p0plus_melaNorm/F");  // higgs, vector algebra, JHUgen
+  newTree->Branch("p0plus_melaNorm",&p0plus_melaNorm,"p0plus_melaNorm/F");  // higgs, vector algebra, JHUgen
   newTree->Branch("p0plus_mela",&p0plus_mela,"p0plus_mela/F");  // higgs, vector algebra, JHUgen
   newTree->Branch("p0minus_mela",&p0minus_mela,"p0minus_mela/F");  // pseudoscalar, vector algebra, JHUgen
   newTree->Branch("p0plus_VAJHU",&p0plus_VAJHU,"p0plus_VAJHU/F");  // higgs, vector algebra, JHUgen
@@ -110,6 +110,7 @@ void addProbtoTree(char* inputFile,int flavor, int max=-1, int LHCsqrts=8){
   //supermela
   newTree->Branch("p0plus_m4l",&p0plus_m4l,"p0plus_m4l/F"  );  
   newTree->Branch("bkg_m4l",   &bkg_m4l, "bkg_m4l/F");  
+  newTree->Branch("superMELA",&smd,"superMELA/F"  );  
   //pt/rapidity
   newTree->Branch("p0_pt",&p0_pt,"p0_pt/F");  // multiplicative probability for signal pt
   newTree->Branch("p0_y",&p0_y,"p0_y/F");  // multiplicative probability for signal y
@@ -125,9 +126,9 @@ void addProbtoTree(char* inputFile,int flavor, int max=-1, int LHCsqrts=8){
     
     if(iEvt>=sigTree->GetEntries()) break;
     
-    if(iEvt%1000==0) 
-      cout << "event: " << iEvt << endl;
-    
+    //    if(iEvt%1000==0) 
+      //  cout << "event: " << iEvt << endl;
+      cout<<"---------\n event: "<<iEvt<<endl;
     sigTree->GetEntry(iEvt);
     
     // --------------------------------
@@ -138,7 +139,7 @@ void addProbtoTree(char* inputFile,int flavor, int max=-1, int LHCsqrts=8){
       myMELA.computeP(mzz, m1, m2, 
 		      hs,h1,h2,phi,phi1,
 		      //signal probabilities
-		      p0plus_melaNorm,   // higgs, analytic distribution, normalized       
+		      p0plus_melaNorm,   // higgs, analytic distribution, normalized (not to unity!)      
 		      p0plus_mela,   // higgs, analytic distribution          
 		      p0minus_mela,  // pseudoscalar, analytic distribution 
 		      p0plus_VAJHU,  // higgs, vector algebra, JHUgen
@@ -167,6 +168,14 @@ void addProbtoTree(char* inputFile,int flavor, int max=-1, int LHCsqrts=8){
 
       VAKD = p0plus_VAJHU/( bkg_VAMCFMNorm +  p0plus_VAJHU );
       
+      if(p0plus_m4l<0 && bkg_m4l<0){//mass out of range, dummy values
+	smd=-1.0;
+      }
+      else{
+	smd=(p0plus_m4l*p0plus_mela)/(p0plus_m4l*p0plus_mela + bkg_mela*bkg_m4l);
+	//	std::cout<<"PSig-SMD="<<p0plus_m4l*p0plus_mela <<"   PBkg="<<bkg_mela*bkg_m4l<<endl;
+      }
+
 // //       std::cout << "Gravi "  <<  p0plus_mela/(p0plus_mela +  p2_mela) << " " <<  p0plus_mela  << " " <<p2_mela  <<std::endl;
 // //       std::cout << "Pseudo " << p0plus_mela /(p0plus_mela +  p0minus_mela) << " " <<p0plus_mela  << " " <<p0minus_mela  <<std::endl;
 // //       std::cout << "ICHEP "  << psig /(psig +  pbkg) << " "<< p0plus_mela  << " " <<p0minus_mela  <<std::endl;
@@ -179,7 +188,7 @@ void addProbtoTree(char* inputFile,int flavor, int max=-1, int LHCsqrts=8){
 
 //      std::cout << p0plus_VAMCFM << std::endl;
 
-      std::cout <<  p0plus_m4l << ":"<<  bkg_m4l << std::endl;
+      //  std::cout <<  p0plus_m4l << ":"<<  bkg_m4l << std::endl;
 
       myMELA.computeWeight(mzz, m1, m2, 
 			   hs,h1,h2,phi,phi1,

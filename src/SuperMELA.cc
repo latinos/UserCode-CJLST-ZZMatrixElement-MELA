@@ -10,7 +10,7 @@ using namespace RooFit;
 
 SuperMELA::SuperMELA(double mH,string channel,int LHCsqrts){
 
-  verbose_=true;
+  verbose_=false;
   sqrts_=LHCsqrts;
   mHVal_=mH;
   mH_rrv_=new RooRealVar("mH","mH",mHVal_,0.0,sqrts_);
@@ -122,7 +122,7 @@ void SuperMELA::init(){
     mean_CB_err_=new RooFormulaVar("mean_CB_err",("("+str_mean_CB_err_m+"+"+str_mean_CB_err_e+")*@0").c_str(),RooArgList(dummyOne));
     sigma_CB_err_=new RooFormulaVar("sigma_CB_err",("("+str_sigma_CB_err_m+"+"+str_mean_CB_err_e+")*@0").c_str(),RooArgList(dummyOne));
   }
-  std::cout<<"Systematic from RooFormulaVar(), Mean and Sigma of CB: "<<mean_CB_err_->getVal()<<"  "<<sigma_CB_err_->getVal()<<endl;
+  //std::cout<<"Systematic from RooFormulaVar(), Mean and Sigma of CB: "<<mean_CB_err_->getVal()<<"  "<<sigma_CB_err_->getVal()<<endl;
 
   char rrvName[96];
   sprintf(rrvName,"CMS_zz4l_n_sig_%s_%d",strChan_.c_str(),int(sqrts_));
@@ -412,8 +412,8 @@ void SuperMELA::calc_mZZ_range(const double mHVal,double &low_M,double &high_M){
 std::pair<double,double>  SuperMELA::M4lProb(double m4l){
   if(m4l<lowMH_ || m4l>highMH_){
     if(verbose_)    std::cout<<"WARNING from void SuperMELA::computeKD ! m4l outside range ["<<lowMH_ <<", "<<highMH_<<"]: "<<m4l<<" . Setting SuperMELA to dummy values."<<std::endl;
-    double Psig =0.0;
-    double Pbkg =0.0;
+    double Psig =-1.0;
+    double Pbkg =-1.0;
     return make_pair(Psig,Pbkg);   
   }
 
@@ -438,8 +438,8 @@ std::pair<double,double>  SuperMELA::M4lProb(double m4l){
 std::pair<double,double>  SuperMELA::M4lProb (std::pair<double, double> m4lPair){
   if( (m4lPair.first<lowMH_  || m4lPair.first>highMH_) ||(m4lPair.second<lowMH_  || m4lPair.second>highMH_)) {
     if(verbose_)    std::cout<<"WARNING from void SuperMELA::computeKD ! m4l outside range ["<<lowMH_ <<", "<<highMH_<<"]: "<<m4lPair.first<<" - "<<m4lPair.second<<" . Setting SuperMELA to dummy values."<<std::endl;
-    double Psig =0.0;
-    double Pbkg =0.0;
+    double Psig =-1.0;
+    double Pbkg =-1.0;
     return make_pair(Psig,Pbkg);   
   }
   
