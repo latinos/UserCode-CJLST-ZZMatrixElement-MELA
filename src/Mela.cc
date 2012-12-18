@@ -2,8 +2,8 @@
  *
  *  See header file for documentation.
  *
- *  $Date: 2012/12/06 15:52:26 $
- *  $Revision: 1.28 $
+ *  $Date: 2012/12/13 13:19:02 $
+ *  $Revision: 1.29 $
  */
 
 #include <ZZMatrixElement/MELA/interface/Mela.h>
@@ -337,7 +337,7 @@ void Mela::computeWeight(float mZZ, float mZ1, float mZ2,
   w = dXsec_HZZ_JHU_interf / dXsec_HZZ_JHU;
 
   // protect against anomalously large weights
-  if (w>4. || w<.25) w=1.;
+  if (w>10.) w=0.;
 
 }
 
