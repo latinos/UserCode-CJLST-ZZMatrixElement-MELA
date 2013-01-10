@@ -147,46 +147,6 @@ public:
     fmZZNorm->FixParameter(6,1.04256e-12);
   };
 
-  void makeqqMinGrav(){  // NEED TO CALCULATE NORMALIZATIONS
-
-    fz1Val->setVal(1.0);
-    fz2Val->setVal(0.0);
-
-    g1Val->setVal(1.0);
-    g5Val->setVal(1.0); 
-
-    modelIndex=0;
- 
-    fmZZNorm=new TF1("fmZZNorm","exp([0]+[1]*x+[2]*x*x+[3]*pow(x,3)+[4]*pow(x,4)+[5]*pow(x,5) +[6]*pow(x,6))",100,180);
-    fmZZNorm->FixParameter(0,-5.22866);
-    fmZZNorm->FixParameter(1,0.170495);
-    fmZZNorm->FixParameter(2,0.000877867);
-    fmZZNorm->FixParameter(3,-4.01876e-07);
-    fmZZNorm->FixParameter(4,-3.02114e-08);
-    fmZZNorm->FixParameter(5,-1.43247e-10);
-    fmZZNorm->FixParameter(6,1.04256e-12);
-  };
-
-  void makeUnpolMinGrav(){  // NEED TO CALCULATE NORMALIZATIONS
-
-    fz1Val->setVal(0.4);
-    fz2Val->setVal(0.4);
-
-    g1Val->setVal(1.0);
-    g5Val->setVal(1.0); 
-
-    modelIndex=0;
- 
-    fmZZNorm=new TF1("fmZZNorm","exp([0]+[1]*x+[2]*x*x+[3]*pow(x,3)+[4]*pow(x,4)+[5]*pow(x,5) +[6]*pow(x,6))",100,180);
-    fmZZNorm->FixParameter(0,-5.22866);
-    fmZZNorm->FixParameter(1,0.170495);
-    fmZZNorm->FixParameter(2,0.000877867);
-    fmZZNorm->FixParameter(3,-4.01876e-07);
-    fmZZNorm->FixParameter(4,-3.02114e-08);
-    fmZZNorm->FixParameter(5,-1.43247e-10);
-    fmZZNorm->FixParameter(6,1.04256e-12);
-  };
-
   void make2hPlus(){  // NEED TO CALCULATE NORMALIZATIONS
 
     fz1Val->setVal(0.0);
