@@ -10,6 +10,38 @@ using namespace RooFit;
 
 SuperMELA::SuperMELA(double mH,string channel,int LHCsqrts){
 
+  mean_CB_err_=0;
+  sigma_CB_err_=0;
+
+  n_CB_=0;
+  alpha_CB_=0;
+  n2_CB_=0;
+  alpha2_CB_=0;
+  mean_CB_=0;
+  meanTOT_CB_=0;
+
+  mean_BW_=0;
+  width_BW_=0;
+
+  sig_CB_=0;
+  sig_BW_=0;
+  sig_FFT_=0;
+
+  a0_qqZZ_=0;
+  a1_qqZZ_=0;
+  a2_qqZZ_=0;
+  a3_qqZZ_=0;
+  a4_qqZZ_=0;
+  a5_qqZZ_=0;
+  a6_qqZZ_=0;
+  a7_qqZZ_=0;
+  a8_qqZZ_=0;
+  a9_qqZZ_=0;
+  a10_qqZZ_=0;
+  a11_qqZZ_=0;
+  a12_qqZZ_=0;
+  a13_qqZZ_=0;
+
   verbose_=false;
   sqrts_=LHCsqrts;
   mHVal_=mH;
@@ -36,12 +68,13 @@ SuperMELA::~SuperMELA(){
   delete a4_qqZZ_; delete  a5_qqZZ_; delete  a6_qqZZ_; delete  a7_qqZZ_; 
   delete a8_qqZZ_; delete  a9_qqZZ_; delete  a10_qqZZ_; delete a11_qqZZ_; 
   delete a12_qqZZ_; delete a13_qqZZ_  ; 
-
-
+  
+  delete mH_rrv_;
 
 }
 
 void SuperMELA::SetDecayChannel(string myChan){
+  if(verbose_) std::cout << "switching from " << strChan_ << " to " << myChan << std::endl;
   if(myChan != strChan_){ // do nothing if it's the same as before
     strChan_=myChan;
     bool newChanOK=checkChannel();
@@ -110,6 +143,11 @@ void SuperMELA::init(){
   RooRealVar  dummyOne("one","one",1.0);
   dummyOne.setConstant(true);
 
+  //delete old stuff before reinitialization
+  if(mean_CB_err_)
+    delete mean_CB_err_;
+  if(sigma_CB_err_)
+    delete sigma_CB_err_;
   if(strChan_=="4mu"){
     mean_CB_err_=new RooFormulaVar("mean_CB_err",("("+str_mean_CB_err_m+")*@0").c_str(),RooArgList(dummyOne));
     sigma_CB_err_=new RooFormulaVar("sigma_CB_err",("("+str_sigma_CB_err_m+")*@0").c_str(),RooArgList(dummyOne));
@@ -124,6 +162,15 @@ void SuperMELA::init(){
   }
   //std::cout<<"Systematic from RooFormulaVar(), Mean and Sigma of CB: "<<mean_CB_err_->getVal()<<"  "<<sigma_CB_err_->getVal()<<endl;
 
+  //delete old stuff before reinitialization                                                                                                                                                                  
+  if(n_CB_)
+    delete n_CB_;
+  if(alpha_CB_)
+    delete alpha_CB_;
+  if(n2_CB_)
+    delete n2_CB_;
+  if(alpha2_CB_)
+    delete alpha2_CB_;
   char rrvName[96];
   sprintf(rrvName,"CMS_zz4l_n_sig_%s_%d",strChan_.c_str(),int(sqrts_));
   n_CB_=new RooFormulaVar(rrvName,str_n_CB.c_str() ,RooArgList(*mH_rrv_));
@@ -136,6 +183,11 @@ void SuperMELA::init(){
 
   RooRealVar corr_mean_sig("CMS_zz4l_mean_sig_corrMH","CMS_zz4l_mean_sig_corrMH",0.0,-10.0,10.0);
   RooRealVar corr_sigma_sig("CMS_zz4l_sigma_sig_corrMH","CMS_zz4l_sigma_sig_corrMH",0.0,-10.0,10.0);
+
+  if(mean_CB_)
+    delete mean_CB_;
+  if(meanTOT_CB_)
+    delete meanTOT_CB_;
   mean_CB_=new RooFormulaVar("CMS_zz4l_mean_m_sig",("("+str_mean_CB+")+@0*@1").c_str(),RooArgList(*mH_rrv_,corr_mean_sig));//this is normalized by  mHVal_
   meanTOT_CB_=new RooFormulaVar("CMS_zz4l_mean_sig","(@0+@1)",RooArgList(*mH_rrv_,*mean_CB_));
 
@@ -146,6 +198,10 @@ void SuperMELA::init(){
 
   //for high-mass one neesd also a gamma RooFormulaVar, 
   //but we don't care if we stop at 180 GeV
+  if(mean_BW_)
+    delete mean_BW_;
+  if(width_BW_)
+    delete width_BW_;
   sprintf(rrvName,"CMS_zz4l_mean_BW_sig_%s_%d",strChan_.c_str(),int(sqrts_));
   mean_BW_=new RooRealVar(rrvName,"CMS_zz4l_mean_BW",mHVal_,100.0,1000.0);
   sprintf(rrvName,"CMS_zz4l_width_BW_sig_%s_%d",strChan_.c_str(),int(sqrts_));
@@ -167,6 +223,12 @@ void SuperMELA::init(){
   }
 
   //  sig_CB_=new RooCBShape("signalCB_ggH","signalCB_ggH",*m4l_rrv_,*meanTOT_CB_,*sigma_CB_,*alpha_CB_,*n_CB_);
+  if(sig_CB_)
+    delete sig_CB_;
+  if(sig_BW_)
+    delete sig_BW_;
+  if(sig_FFT_)
+    delete sig_FFT_;
   sig_CB_ =new RooDoubleCB("signalCB_ggH","signalCB_ggH",*m4l_rrv_,*meanTOT_CB_,*sigma_CB_,*alpha_CB_,*n_CB_,*alpha2_CB_,*n2_CB_);
   sig_BW_ =new RooRelBWUFParam("signalBW_ggH", "signalBW_ggH",*m4l_rrv_,*mean_BW_,*width_BW_);
   sig_FFT_=new RooFFTConvPdf("signal_ggH","BW (X) CB",*m4l_rrv_,*sig_BW_,*sig_CB_,2);
@@ -187,14 +249,14 @@ void SuperMELA::init(){
   norm_sig_FFT_=sig_FFT_->createIntegral( RooArgSet(*m4l_rrv_), RooFit::Range("shape"))->getVal();
   if(verbose_)std::cout<<"Normalization of signal m4l shape is "<<norm_sig_FFT_<<std::endl;
 
-  TCanvas *csig=new TCanvas("canSig","CANVAS SIG SHAPES",800,800);
-  csig->cd();
-  RooPlot *xf=m4l_rrv_->frame();
-  sig_CB_->plotOn(xf,RooFit::LineColor(kRed),RooFit::Normalization(1.0,2));
-  sig_FFT_->plotOn(xf,RooFit::LineColor(kBlack),RooFit::Normalization(1.0,2));
-  xf->Draw();
-  csig->SaveAs( ("can_sigShapes_"+strChan_+".root").c_str());
-  delete csig;
+//   TCanvas *csig=new TCanvas("canSig","CANVAS SIG SHAPES",800,800);
+//   csig->cd();
+//   RooPlot *xf=m4l_rrv_->frame();
+//   sig_CB_->plotOn(xf,RooFit::LineColor(kRed),RooFit::Normalization(1.0,2));
+//   sig_FFT_->plotOn(xf,RooFit::LineColor(kBlack),RooFit::Normalization(1.0,2));
+//   xf->Draw();
+//   csig->SaveAs( ("can_sigShapes_"+strChan_+".root").c_str());
+//   delete csig;
 
   if(verbose_)std::cout<<"Reading background shape parameters"<<std::endl;
   std::vector<double> v_apars;
@@ -205,19 +267,33 @@ void SuperMELA::init(){
     std::cout<<"Param [0]="<<v_apars.at(0)<<" [13]="<<v_apars.at(13)<<std::endl;
   }
 
+  if(a0_qqZZ_) delete a0_qqZZ_;
   a0_qqZZ_=new RooRealVar("CMS_zz4l_a0_qqZZ","CMS_zz4l_a0_qqZZ",v_apars.at(0),0.,200.);
+  if(a1_qqZZ_) delete a1_qqZZ_;
   a1_qqZZ_=new RooRealVar("CMS_zz4l_a1_qqZZ","CMS_zz4l_a1_qqZZ",v_apars.at(1),0.,200.);
+  if(a2_qqZZ_) delete a2_qqZZ_;
   a2_qqZZ_=new RooRealVar("CMS_zz4l_a2_qqZZ","CMS_zz4l_a2_qqZZ",v_apars.at(2),0.,200.);
+  if(a3_qqZZ_) delete a3_qqZZ_;
   a3_qqZZ_=new RooRealVar("CMS_zz4l_a3_qqZZ","CMS_zz4l_a3_qqZZ",v_apars.at(3),0.,1.);
+  if(a4_qqZZ_) delete a4_qqZZ_;
   a4_qqZZ_=new RooRealVar("CMS_zz4l_a4_qqZZ","CMS_zz4l_a4_qqZZ",v_apars.at(4),0.,200.);
+  if(a5_qqZZ_) delete a5_qqZZ_;
   a5_qqZZ_=new RooRealVar("CMS_zz4l_a5_qqZZ","CMS_zz4l_a5_qqZZ",v_apars.at(5),0.,200.);
+  if(a6_qqZZ_) delete a6_qqZZ_;
   a6_qqZZ_=new RooRealVar("CMS_zz4l_a6_qqZZ","CMS_zz4l_a6_qqZZ",v_apars.at(6),0.,100.);
+  if(a7_qqZZ_) delete a7_qqZZ_;
   a7_qqZZ_=new RooRealVar("CMS_zz4l_a7_qqZZ","CMS_zz4l_a7_qqZZ",v_apars.at(7),0.,1.);
+  if(a8_qqZZ_) delete a8_qqZZ_;
   a8_qqZZ_=new RooRealVar("CMS_zz4l_a8_qqZZ","CMS_zz4l_a8_qqZZ",v_apars.at(8),0.,200.);
+  if(a9_qqZZ_) delete a9_qqZZ_;
   a9_qqZZ_=new RooRealVar("CMS_zz4l_a9_qqZZ","CMS_zz4l_a9_qqZZ",v_apars.at(9),0.,1.);
+  if(a10_qqZZ_) delete a10_qqZZ_;
   a10_qqZZ_=new RooRealVar("CMS_zz4l_a10_qqZZ","CMS_zz4l_a10_qqZZ",v_apars.at(10),0.,200.);
+  if(a11_qqZZ_) delete a11_qqZZ_;
   a11_qqZZ_=new RooRealVar("CMS_zz4l_a11_qqZZ","CMS_zz4l_a11_qqZZ",v_apars.at(11),-100.,100.);
+  if(a12_qqZZ_) delete a12_qqZZ_;
   a12_qqZZ_=new RooRealVar("CMS_zz4l_a12_qqZZ","CMS_zz4l_a12_qqZZ",v_apars.at(12),0.,10000.);
+  if(a13_qqZZ_) delete a13_qqZZ_;
   a13_qqZZ_=new RooRealVar("CMS_zz4l_a13_qqZZ","CMS_zz4l_a13_qqZZ",v_apars.at(13),0.,1.);
   a0_qqZZ_->setConstant(kTRUE);
   a1_qqZZ_->setConstant(kTRUE);

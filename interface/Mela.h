@@ -6,8 +6,8 @@
  *  MELA discriminator
  *
  *
- *  $Date: 2012/12/13 13:19:02 $
- *  $Revision: 1.18 $
+ *  $Date: 2012/12/13 13:33:01 $
+ *  $Revision: 1.19 $
  *  \author JHU
  */
 
@@ -144,7 +144,7 @@ private:
   // Ordering of Z1/Z2 according to internal convention
   void checkZorder(float& z1mass, float& z2mass, float& costhetastar, float& costheta1, float& costheta2, float& phi, float& phistar1);
 
-  TFile *f;
+  TFile* f;
   TH1F *h_mzz;
   TH3F *h_mzzm1m2;
   TH2F *h_mzzcosthetastar;

@@ -2,8 +2,8 @@
  *
  *  See header file for documentation.
  *
- *  $Date: 2012/12/13 13:19:02 $
- *  $Revision: 1.29 $
+ *  $Date: 2012/12/18 22:36:55 $
+ *  $Revision: 1.30 $
  */
 
 #include <ZZMatrixElement/MELA/interface/Mela.h>
@@ -46,7 +46,8 @@ Mela::Mela(bool usePowhegTemplate, int LHCsqrts, float mh){
   string fullPath = fip.fullPath();
 
   // Original code from KDProducer::beginJob
-  f = new TFile(fullPath.c_str(),"READ");
+  //TFile* f =TFile::Open(fullPath.c_str(),"READ");
+  f= new TFile(fullPath.c_str(),"READ");
   h_mzz= (TH1F*)(f->Get("h_mzz"));
   h_mzzm1m2= (TH3F*)(f->Get("h_mzzm1m2"));
   h_mzzcosthetastar= (TH2F*)(f->Get("h_mzzcosthetastar"));
@@ -54,6 +55,7 @@ Mela::Mela(bool usePowhegTemplate, int LHCsqrts, float mh){
   h_mzzcostheta2= (TH2F*)(f->Get("h_mzzcostheta2"));
   h_mzzphi1= (TH2F*)(f->Get("h_mzzphi1")); // This is phistar1
   h_mzzphi= (TH2F*)(f->Get("h_mzzphi"));
+  f->Close();
 
   z1mass_rrv = new RooRealVar("z1mass","m_{Z1}",0.,180.);
   z2mass_rrv = new RooRealVar("z2mass","m_{Z2}",0.,120.); 
@@ -144,8 +146,8 @@ Mela::Mela(bool usePowhegTemplate, int LHCsqrts, float mh){
   edm::FileInPath HiggsWidthFile("Higgs/Higgs_CS_and_Width/txtFiles/8TeV-ggH.txt");
   std::string path = HiggsWidthFile.fullPath();
   //std::cout << path.substr(0,path.length()-12) << std::endl;
-
-
+  
+  //std::cout << "before supermela" << std::endl;
   super = new SuperMELA(mh,"4mu",LHCsqrts); // preliminary intialization, we adjust the flavor later
   char cardpath[500];
   sprintf(cardpath,"HZZ4L_Combination/CombinationPy/CreateDatacards/SM_inputs_%dTeV/inputs_4mu.txt",LHCsqrts);
@@ -153,8 +155,9 @@ Mela::Mela(bool usePowhegTemplate, int LHCsqrts, float mh){
   std::string cpath=cardfile.fullPath();
   std::cout << cpath.substr(0,cpath.length()-14).c_str()  <<std::endl;
   super->SetPathToCards(cpath.substr(0,cpath.length()-14).c_str() );
-  super->SetVerbosity(true);
+  super->SetVerbosity(false);
   super->init();
+  //std::cout << "after supermela" << std::endl;
 
   // Create symlinks to the required files, if these are not already present (do nothing otherwse)
   edm::FileInPath mcfmInput1("ZZMatrixElement/MELA/data/input.DAT");
@@ -166,6 +169,7 @@ Mela::Mela(bool usePowhegTemplate, int LHCsqrts, float mh){
   symlink(mcfmInput3.fullPath().c_str(), "Pdfdata/cteq6l1.tbl");
 
   ZZME = new  ZZMatrixElement(path.substr(0,path.length()-12 ).c_str(),1000.*LHCsqrts/2.,TVar::INFO);
+  //std::cout << "after matrixele" << std::endl;
  
   edm::FileInPath ScaleFactorFile("ZZMatrixElement/MELA/data/scaleFactors.root");
   TFile* sf = TFile::Open(ScaleFactorFile.fullPath().c_str(),"r");
@@ -174,11 +178,24 @@ Mela::Mela(bool usePowhegTemplate, int LHCsqrts, float mh){
   vaScale_2e2mu = (TGraph*)sf->Get("scaleFactors_2e2mu");
   sf->Close(); 
   //vaScale->Print("v");
+  //std::cout << "after scalefacts" << std::endl;
 
 }
 
 Mela::~Mela(){ 
+  //std::cout << "begin destructor" << std::endl;  
   delete f;
+  delete vaScale_4e;
+  delete vaScale_4mu;
+  delete vaScale_2e2mu;
+  
+  delete h_mzz;
+  delete h_mzzm1m2;
+  delete h_mzzcosthetastar;
+  delete h_mzzcostheta1;
+  delete h_mzzcostheta2;
+  delete h_mzzphi1;
+  delete h_mzzphi;
 
   delete z1mass_rrv; 
   delete z2mass_rrv; 
@@ -192,6 +209,8 @@ Mela::~Mela(){
   delete sqrtS_rrv;
   delete mzz_rrv;
   delete upFrac_rrv;
+
+  //std::cout << "destroy submes"<< std::endl;
 
   delete SMHiggs;
   delete SMZgammaZZ;
@@ -216,6 +235,7 @@ Mela::~Mela(){
   delete bkgPt;
   delete sigPt;
 
+  //std::cout << "end destructor"<< std::endl;
 }
 
 double Mela::sigPdfNorm(double mzz){
@@ -793,7 +813,7 @@ void Mela::computeP(float mZZ, float mZ1, float mZ2,
   switch(flavor){
   case 1: super->SetDecayChannel("4e")   ;break;
   case 2: super->SetDecayChannel("4mu")  ;break;
-  case 3: super->SetDecayChannel("2mu2e");break;
+  case 3: super->SetDecayChannel("2e2mu");break;
   default: std::cout << " unknown flavor: " << flavor << std::endl; exit(0);
   }
   
