@@ -341,7 +341,7 @@ void SuperMELA::readSigSystFromFile(string &str_mean_CB_err_e,
     getline(card, line);
     std::vector<string> fields;
     split( fields, line, boost::is_any_of( " " ), boost::token_compress_on );
-    if(!(fields[0]=="systematic"&&fields[1]=="param"))continue;
+    if(fields.size()==0 || !(fields[0]=="systematic"&&fields[1]=="param"))continue;
     //ok, we found somethign interesting
     if(fields.size()!=4){
       std::cout<<"Error in SuperMELA::readSigSystFromFile! Incorrect format of line "<<line.c_str()<<std::endl; 
@@ -393,7 +393,7 @@ void  SuperMELA::readSigParsFromFile(string &str_mean_CB,string &str_sigma_CB ,s
     getline(card, line);
     std::vector<string> fields;
     split( fields, line, boost::is_any_of( " " ), boost::token_compress_on );
-    if(fields[0]!="signalShape")continue;
+    if(fields.size()==0 || fields[0]!="signalShape")continue;
     //ok, we found somethign interesting
     if(fields.size()<3){
       std::cout<<"Error in SuperMELA::readSigParsFromFile! Incorrect format of line "<<line.c_str()<<" There should be at least three fields, I could find only "<<fields.size() << " fields."<<std::endl; 
@@ -434,7 +434,7 @@ void SuperMELA::readBkgParsFromFile(std::vector<double> &apars ){
     getline(card, line);
     std::vector<string> fields;
     split( fields, line, boost::is_any_of( " " ), boost::token_compress_on );
-    if(fields[0]!="qqZZshape")continue;
+    if(fields.size()==0 || fields[0]!="qqZZshape")continue;
     //  cout<<"Bkg Line selected: "<<line.c_str()<<std::endl;
     if(fields.size()<3){
       std::cout<<"Error in SuperMELA::readSigParsFromFile! Incorrect format of line \'"<<line.c_str()<<"\' . It contains "<<fields.size()<<"fields (it should be 3)"<<std::endl; 
