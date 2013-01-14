@@ -2,8 +2,8 @@
  *
  *  See header file for documentation.
  *
- *  $Date: 2012/12/18 22:36:55 $
- *  $Revision: 1.30 $
+ *  $Date: 2013/01/12 18:36:25 $
+ *  $Revision: 1.31 $
  */
 
 #include <ZZMatrixElement/MELA/interface/Mela.h>
@@ -55,7 +55,7 @@ Mela::Mela(bool usePowhegTemplate, int LHCsqrts, float mh){
   h_mzzcostheta2= (TH2F*)(f->Get("h_mzzcostheta2"));
   h_mzzphi1= (TH2F*)(f->Get("h_mzzphi1")); // This is phistar1
   h_mzzphi= (TH2F*)(f->Get("h_mzzphi"));
-  f->Close();
+  // f->Close();
 
   z1mass_rrv = new RooRealVar("z1mass","m_{Z1}",0.,180.);
   z2mass_rrv = new RooRealVar("z2mass","m_{Z2}",0.,120.); 
@@ -184,7 +184,6 @@ Mela::Mela(bool usePowhegTemplate, int LHCsqrts, float mh){
 
 Mela::~Mela(){ 
   //std::cout << "begin destructor" << std::endl;  
-  delete f;
   delete vaScale_4e;
   delete vaScale_4mu;
   delete vaScale_2e2mu;
@@ -196,6 +195,7 @@ Mela::~Mela(){
   delete h_mzzcostheta2;
   delete h_mzzphi1;
   delete h_mzzphi;
+  delete f;
 
   delete z1mass_rrv; 
   delete z2mass_rrv; 
