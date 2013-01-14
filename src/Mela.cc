@@ -2,8 +2,8 @@
  *
  *  See header file for documentation.
  *
- *  $Date: 2013/01/12 18:36:25 $
- *  $Revision: 1.31 $
+ *  $Date: 2013/01/14 15:30:44 $
+ *  $Revision: 1.32 $
  */
 
 #include <ZZMatrixElement/MELA/interface/Mela.h>
@@ -329,7 +329,7 @@ void Mela::computeWeight(float mZZ, float mZ1, float mZ2,
 			 ){
 
   // vector algebra
-  double dummy1,dummy2,dummy3,dummy4,dummy5,dummy6,dummy7,dummy8,dummy9;
+  double dummy1,dummy2,dummy3,dummy4,dummy5,dummy6,dummy7,dummy8,dummy9,dummy10,dummy11;
   double dXsec_HZZ_JHU,dXsec_HZZ_JHU_interf; // temporary probabilities (FORTRAN functions will need double  not float)
   
   // calculate dXsec for 2e2mu
@@ -341,7 +341,7 @@ void Mela::computeWeight(float mZZ, float mZ1, float mZ2,
 		  dummy1, dummy2, dummy9,           // vars not used
 		  dXsec_HZZ_JHU,
 		  dummy3, dummy4, dummy5,    // vars not used
-		  dummy6, dummy7, dummy8);   // vars not used
+		  dummy6, dummy7, dummy8,dummy10,dummy11);   // vars not used
 
   // calculate dXsec for 4mu
   ZZME->computeXS(mZZ,mZ1,mZ2,
@@ -352,7 +352,7 @@ void Mela::computeWeight(float mZZ, float mZ1, float mZ2,
 		  dummy1, dummy2, dummy9,      // vars not used
 		  dXsec_HZZ_JHU_interf,
 		  dummy3, dummy4, dummy5,    // vars not used
-		  dummy6, dummy7, dummy8);   // vars not used
+		  dummy6, dummy7, dummy8,dummy10,dummy11);   // vars not used
   
   w = dXsec_HZZ_JHU_interf / dXsec_HZZ_JHU;
 
@@ -685,8 +685,10 @@ void Mela::computeP(float mZZ, float mZ1, float mZ2,
 		    float& p0plus_VAMCFM,// higgs, vector algebra, MCFM
 		    float& p1_mela,  // zprime, analytic distribution 
 		    float& p1_VAJHU, // zprime, vector algebra, JHUgen,
+		    float& p1plus_VAJHU, // 1+ (axial vector), vector algebra, JHUgen,
 		    float& p2_mela , // graviton, analytic distribution 
 		    float& p2_VAJHU, // graviton, vector algebra, JHUgen,
+		    float& p2qqb_VAJHU, // graviton produced by qqbar vector algebra, JHUgen,
 		    //backgrounds
 		    float& bkg_mela,  // background,  analytic distribution 
 		    float& bkg_VAMCFM, // background, vector algebra, MCFM
@@ -759,7 +761,7 @@ void Mela::computeP(float mZZ, float mZ1, float mZ2,
 
   // vector algebra
   double dummy1,dummy2,dummy3;
-  double dXsec_ZZ_MCFM,dXsec_GGZZ_MCFM,dXsec_HZZ_MCFM,dXsec_HZZ_JHU,dXsec_PSHZZ_JHU,dXsec_VZZ_JHU,dXsec_TZZ_JHU; // temporary probabilities (FORTRAN functions will need double, not float)
+  double dXsec_ZZ_MCFM,dXsec_GGZZ_MCFM,dXsec_HZZ_MCFM,dXsec_HZZ_JHU,dXsec_PSHZZ_JHU,dXsec_VZZ_JHU,dXsec_AVZZ_JHU,dXsec_TZZ_JHU,dXsec_QQB_TZZ_JHU; // temporary probabilities (FORTRAN functions will need double, not float)
   ZZME->computeXS(mZZ,mZ1,mZ2,
 		  costhetastar,costheta1,costheta2,
 		  phi,phistar1,
@@ -772,6 +774,8 @@ void Mela::computeP(float mZZ, float mZ1, float mZ2,
 		  dXsec_PSHZZ_JHU,
 		  dXsec_VZZ_JHU,
 		  dXsec_TZZ_JHU,
+		  dXsec_AVZZ_JHU,
+		  dXsec_QQB_TZZ_JHU,
 		  dummy1,dummy2,dummy3);   // discriminants are not used 
 
   bkg_VAMCFM=dXsec_ZZ_MCFM;
@@ -780,7 +784,9 @@ void Mela::computeP(float mZZ, float mZ1, float mZ2,
   p0plus_VAJHU=dXsec_HZZ_JHU;
   p0minus_VAJHU=dXsec_PSHZZ_JHU;
   p1_VAJHU=dXsec_VZZ_JHU;
+  p1plus_VAJHU=dXsec_AVZZ_JHU;
   p2_VAJHU=dXsec_TZZ_JHU;
+  p2qqb_VAJHU=dXsec_QQB_TZZ_JHU;
 
   if(flavor==1){
     if(mZZ > 900)                   

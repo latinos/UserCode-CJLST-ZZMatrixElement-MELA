@@ -29,6 +29,8 @@ public:
 		 double& dXsec_PSHZZ_JHU,
 		 double& dXsec_VZZ_JHU,
 		 double& dXsec_TZZ_JHU,
+		 double& dXsec_AVZZ_JHU,
+		 double& dXsec_QQB_TZZ_JHU,
 		 double& ME,
 		 double& pseudoME,
 		 double& graviME);
@@ -51,6 +53,8 @@ public:
 		 double& dXsec_PSHZZ_JHU,
 		 double& dXsec_VZZ_JHU,
 		 double& dXsec_TZZ_JHU,
+		 double& dXsec_AVZZ_JHU,
+		 double& dXsec_QQB_TZZ_JHU,
 		 double& ME,
 		 double& pseudoME,
 		 double& graviME);

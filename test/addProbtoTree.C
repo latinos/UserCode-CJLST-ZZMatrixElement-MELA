@@ -47,7 +47,7 @@ void addProbtoTree(char* inputFile,int flavor, int max=-1, int LHCsqrts=8){
 
   float m1,m2,mzz,h1,h2,hs,phi,phi1;                                    //angles
   float psig,pbkg,D,oldD;                                                    //legacy probabilities
-  float	p0plus_melaNorm,p0plus_mela,p0minus_mela,p0plus_VAJHU,p0minus_VAJHU,p0plus_VAMCFM,p1_mela,p1_VAJHU,p2_mela,p2_VAJHU; // new signal probablities
+  float	p0plus_melaNorm,p0plus_mela,p0minus_mela,p0plus_VAJHU,p0minus_VAJHU,p0plus_VAMCFM,p1_mela,p1_VAJHU,p1plus_VAJHU,p2_mela,p2_VAJHU,p2qqb_VAJHU; // new signal probablities
   float bkg_mela, bkg_VAMCFM, ggzz_VAMCFM, bkg_VAMCFMNorm;                                           // new background probabilities
   float pt4l, Y4l ,p0_pt,p0_y,p0_y,bkg_pt,bkg_y;                        // rapidity/pt
   float p0plus_m4l,bkg_m4l,smd;  //supermela
@@ -100,8 +100,10 @@ void addProbtoTree(char* inputFile,int flavor, int max=-1, int LHCsqrts=8){
   newTree->Branch("p0plus_VAMCFM",&p0plus_VAMCFM,"p0plus_VAMCFM/F");  // higgs, vector algebra, MCFM
   newTree->Branch("p1_mela",&p1_mela,"p1_mela/F");  // zprime, analytic distribution 
   newTree->Branch("p1_VAJHU",&p1_VAJHU,"p1_VAJHU/F");  // zprime, vector algebra, JHUgen,
+  newTree->Branch("p1plus_VAJHU",&p1plus_VAJHU,"p1plus_VAJHU/F");  // 1+ (axial-vector), vector algebra, JHUgen,
   newTree->Branch("p2_mela ",&p2_mela ,"p2_mela/F");  // graviton, analytic distribution 
-  newTree->Branch("p2_VAJHU",&p2_VAJHU,"p2_VAJHU/F");  // graviton, vector algebra, JHUgen,
+  newTree->Branch("p2_VAJHU",&p2_VAJHU,"p2_VAJHU/F");  // graviton produced by gg, vector algebra, JHUgen,
+  newTree->Branch("p2qqb_VAJHU",&p2qqb_VAJHU,"p2qqb_VAJHU/F");  // graviton produced by qqbar, vector algebra, JHUgen,
   //backgrounds
   newTree->Branch("bkg_mela",&bkg_mela,"bkg_mela/F");  // background,  analytic distribution 
   newTree->Branch("bkg_VAMCFM",&bkg_VAMCFM,"bkg_VAMCFM/F");  // background, vector algebra, MCFM
@@ -147,8 +149,10 @@ void addProbtoTree(char* inputFile,int flavor, int max=-1, int LHCsqrts=8){
 		      p0plus_VAMCFM,// higgs, vector algebra, MCFM
 		      p1_mela,  // zprime, analytic distribution 
 		      p1_VAJHU, // zprime, vector algebra, JHUgen,
+		      p1plus_VAJHU, // 1+ (axial vector), vector algebra, JHUgen,
 		      p2_mela , // graviton, analytic distribution 
 		      p2_VAJHU, // graviton, vector algebra, JHUgen,
+		      p2qqb_VAJHU, // graviton produced by qqbar, vector algebra, JHUgen,
 		      //backgrounds
 		      bkg_mela,  // background,  analytic distribution 
 		      bkg_VAMCFM, // background, vector algebra, MCFM

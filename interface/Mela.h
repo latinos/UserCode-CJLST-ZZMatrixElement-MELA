@@ -6,8 +6,8 @@
  *  MELA discriminator
  *
  *
- *  $Date: 2012/12/13 13:33:01 $
- *  $Revision: 1.19 $
+ *  $Date: 2013/01/12 18:36:22 $
+ *  $Revision: 1.20 $
  *  \author JHU
  */
 
@@ -81,8 +81,10 @@ public:
 		float& p0plus_VAMCFM,// higgs, vector algebra, MCFM
 		float& p1_mela,  // zprime, analytic distribution 
 		float& p1_VAJHU, // zprime, vector algebra, JHUgen,
+		float& p1plus_VAJHU, // 1+ (axial vector), vector algebra, JHUgen,
 		float& p2_mela , // graviton, analytic distribution 
 		float& p2_VAJHU, // graviton, vector algebra, JHUgen,
+		float& p2qqb_VAJHU, // graviton produced by qqbar, vector algebra, JHUgen,
 		//backgrounds
 		float& bkg_mela,  // background,  analytic distribution 
 		float& bkg_VAMCFM, // background, vector algebra, MCFM

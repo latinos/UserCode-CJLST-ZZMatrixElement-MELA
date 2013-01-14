@@ -78,6 +78,8 @@ void ZZMatrixElement::computeXS(TLorentzVector Z1_lept1, int Z1_lept1Id,
 	       double& dXsec_PSHZZ_JHU,
 	       double& dXsec_VZZ_JHU,
 	       double& dXsec_TZZ_JHU,
+	       double& dXsec_AVZZ_JHU,
+	       double& dXsec_QQB_TZZ_JHU,
 	       double& ME,
 	       double& pseudoME,
 	       double& graviME
@@ -91,7 +93,10 @@ void ZZMatrixElement::computeXS(TLorentzVector Z1_lept1, int Z1_lept1Id,
   dXsec_HZZ_MCFM = 0.;
   dXsec_HZZ_JHU = 0.;
   dXsec_PSHZZ_JHU = 0.;
+  dXsec_VZZ_JHU = 0.;
+  dXsec_AVZZ_JHU = 0.;
   dXsec_TZZ_JHU = 0.;
+  dXsec_QQB_TZZ_JHU = 0.;
   ME = 0.;
   pseudoME = 0.;
   graviME = 0.;
@@ -167,9 +172,16 @@ void ZZMatrixElement::computeXS(TLorentzVector Z1_lept1, int Z1_lept1Id,
   // 1-
   dXsec_VZZ_JHU = Xcal2.XsecCalc(TVar::VZZ_4l,hzz4l_event,verb);
 
+  // 1+
+  dXsec_AVZZ_JHU = Xcal2.XsecCalc(TVar::AVZZ_4l,hzz4l_event,verb);
+  
   // 2m+
   dXsec_TZZ_JHU = Xcal2.XsecCalc(TVar::TZZ_4l,hzz4l_event,verb);
   graviME =  dXsec_HZZ_JHU / ( dXsec_HZZ_JHU + 1.2*dXsec_TZZ_JHU );
+
+  // 2m+ by qqbar
+  dXsec_QQB_TZZ_JHU = Xcal2.XsecCalc(TVar::QQB_TZZ_4l,hzz4l_event,verb);
+
   
   return;
 }
@@ -189,6 +201,8 @@ void ZZMatrixElement::computeXS(float mZZ, float mZ1, float mZ2,
 				double& dXsec_PSHZZ_JHU,
 				double& dXsec_VZZ_JHU,
 				double& dXsec_TZZ_JHU,
+				double& dXsec_AVZZ_JHU,
+				double& dXsec_QQB_TZZ_JHU,
 				double& ME,
 				double& pseudoME,
 				double& graviME
@@ -231,6 +245,8 @@ void ZZMatrixElement::computeXS(float mZZ, float mZ1, float mZ2,
 	    dXsec_PSHZZ_JHU,
 	    dXsec_VZZ_JHU,
 	    dXsec_TZZ_JHU,
+	    dXsec_AVZZ_JHU,
+	    dXsec_QQB_TZZ_JHU,
 	    ME,
 	    pseudoME,
 	    graviME);
