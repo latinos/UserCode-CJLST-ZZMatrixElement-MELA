@@ -6,8 +6,8 @@
  *  MELA discriminator
  *
  *
- *  $Date: 2013/01/12 18:36:22 $
- *  $Revision: 1.20 $
+ *  $Date: 2013/01/14 15:48:47 $
+ *  $Revision: 1.21 $
  *  \author JHU
  */
 
@@ -79,6 +79,7 @@ public:
 		float& p0plus_VAJHU,  // higgs, vector algebra, JHUgen
 		float& p0minus_VAJHU, // pseudoscalar, vector algebra, JHUgen
 		float& p0plus_VAMCFM,// higgs, vector algebra, MCFM
+		float& p0hplus_VAJHU,  // 0h+ (high dimensional operator), vector algebra, JHUgen
 		float& p1_mela,  // zprime, analytic distribution 
 		float& p1_VAJHU, // zprime, vector algebra, JHUgen,
 		float& p1plus_VAJHU, // 1+ (axial vector), vector algebra, JHUgen,

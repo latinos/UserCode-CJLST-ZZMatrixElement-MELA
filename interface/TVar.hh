@@ -33,6 +33,7 @@ public:
     GGZZ_4l = 6,
     AVZZ_4l = 7,
     QQB_TZZ_4l = 8,
+    HDHZZ_4l = 9, // 0h+
     Null
   };
   //---------------------------------
@@ -49,6 +50,8 @@ public:
       return TString("HZZ_4l");
     else if(temp==TVar::PSHZZ_4l   ) 
       return TString("PSHZZ_4l");
+    else if(temp==TVar::HDHZZ_4l   ) 
+      return TString("HDHZZ_4l");
     else if(temp==TVar::TZZ_4l   ) 
       return TString("TZZ_2mplus_4l");
     else if(temp==TVar::QQB_TZZ_4l   ) 

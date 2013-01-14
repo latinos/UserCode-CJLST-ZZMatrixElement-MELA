@@ -31,6 +31,7 @@ public:
 		 double& dXsec_TZZ_JHU,
 		 double& dXsec_AVZZ_JHU,
 		 double& dXsec_QQB_TZZ_JHU,
+		 double& dXsec_HDHZZ_JHU,
 		 double& ME,
 		 double& pseudoME,
 		 double& graviME);
@@ -55,6 +56,7 @@ public:
 		 double& dXsec_TZZ_JHU,
 		 double& dXsec_AVZZ_JHU,
 		 double& dXsec_QQB_TZZ_JHU,
+		 double& dXsec_HDHZZ_JHU,
 		 double& ME,
 		 double& pseudoME,
 		 double& graviME);
