@@ -2,8 +2,8 @@
  *
  *  See header file for documentation.
  *
- *  $Date: 2013/01/14 15:48:12 $
- *  $Revision: 1.33 $
+ *  $Date: 2013/01/14 16:18:26 $
+ *  $Revision: 1.34 $
  */
 
 #include <ZZMatrixElement/MELA/interface/Mela.h>
@@ -142,6 +142,9 @@ Mela::Mela(bool usePowhegTemplate, int LHCsqrts, float mh){
   // ------
 
   RooMsgService::instance().getStream(1).removeTopic(NumIntegration);
+  //deactivate generation messages
+  RooMsgService::instance().setStreamStatus(1,kFALSE);
+
 
   edm::FileInPath HiggsWidthFile("Higgs/Higgs_CS_and_Width/txtFiles/8TeV-ggH.txt");
   std::string path = HiggsWidthFile.fullPath();
@@ -616,21 +619,21 @@ pair<float,float> Mela::likelihoodDiscriminant (float mZZ, float m1, float m2, f
   }
   // - - - - - - - - - - - - - - - - - - - - - 
 
-  if(Psig<0 || Pbackg<0){
-    cout<<"Mela::likelihoodDiscriminant() Error: KD not defined for this mzz (maybe mZZ<100 ?)"<<endl;
-    cout << "=========================" << endl;
-    cout << "psig: " << Psig << endl;
-    cout << "pbkg: " << Pbackg << endl;
-    cout << " - - - - - - - - - - - - " << endl;
-    cout << "mzz: " << mZZ << endl;
-    cout << "m1: " << m1 << endl;
-    cout << "m2: " << m2 << endl;
-    cout << "costheta1: " << costheta1 << endl;
-    cout << "costheta2: " << costheta2 << endl;
-    cout << "costhetastar: " << costhetastar << endl;
-    cout << "phi: " << phi << endl;
-    cout << "phi1: " << phistar1 << endl;
-  }
+//   if(Psig<0 || Pbackg<0){
+//     cout<<"Mela::likelihoodDiscriminant() Error: KD not defined for this mzz (maybe mZZ<100 ?)"<<endl;
+//     cout << "=========================" << endl;
+//     cout << "psig: " << Psig << endl;
+//     cout << "pbkg: " << Pbackg << endl;
+//     cout << " - - - - - - - - - - - - " << endl;
+//     cout << "mzz: " << mZZ << endl;
+//     cout << "m1: " << m1 << endl;
+//     cout << "m2: " << m2 << endl;
+//     cout << "costheta1: " << costheta1 << endl;
+//     cout << "costheta2: " << costheta2 << endl;
+//     cout << "costhetastar: " << costhetastar << endl;
+//     cout << "phi: " << phi << endl;
+//     cout << "phi1: " << phistar1 << endl;
+//   }
 
   return make_pair(Psig,Pbackg);
 

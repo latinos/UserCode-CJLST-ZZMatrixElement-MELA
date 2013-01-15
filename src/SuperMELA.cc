@@ -242,10 +242,10 @@ void SuperMELA::init(){
   }
   norm_sig_CB_ =sig_CB_->createIntegral( RooArgSet(*m4l_rrv_), RooFit::Range("shape"))->getVal();
   if(verbose_)std::cout<<"Normalization of signal m4l CB shape is "<<norm_sig_CB_<<std::endl;
-  std::cout<<"\n---> Integrating Breit-Wigner:"<<std::endl;
+   if(verbose_)std::cout<<"\n---> Integrating Breit-Wigner:"<<std::endl;
   double norm_sig_BW_ =sig_BW_->createIntegral( RooArgSet(*m4l_rrv_), RooFit::Range("shape"))->getVal();
   if(verbose_)std::cout<<"Normalization of signal m4l BW shape is "<<norm_sig_BW_<<std::endl;
-  std::cout<<"\n---> Integrating full signal:"<<std::endl;
+   if(verbose_)std::cout<<"\n---> Integrating full signal:"<<std::endl;
   norm_sig_FFT_=sig_FFT_->createIntegral( RooArgSet(*m4l_rrv_), RooFit::Range("shape"))->getVal();
   if(verbose_)std::cout<<"Normalization of signal m4l shape is "<<norm_sig_FFT_<<std::endl;
 

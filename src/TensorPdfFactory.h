@@ -288,7 +288,7 @@ public:
  
     double norm=-999;
     if(mZZ>180 || mZZ<100){
-      cout << "Normalization is not available for this value of mZZ: I'm extrapolating ..." << mZZ << endl;
+      //cout << "Normalization is not available for this value of mZZ: I'm extrapolating ..." << mZZ << endl;
     }
     norm = fmZZNorm->Eval(mZZ);
     return PDF->getVal()/norm;
