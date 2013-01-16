@@ -6,8 +6,8 @@
  *  MELA discriminator
  *
  *
- *  $Date: 2013/01/14 16:18:07 $
- *  $Revision: 1.22 $
+ *  $Date: 2013/01/16 14:37:34 $
+ *  $Revision: 1.23 $
  *  \author JHU
  */
 
@@ -126,6 +126,14 @@ public:
 		 bool withY = false,
 		 float Y4l=0.0);
 
+  TensorPdfFactory* getMinGrav(){
+    return minGrav;    
+  };
+
+  TensorPdfFactory* getqqMinGrav(){
+    return qqminGrav;    
+  };
+
 private:
 
   double sigPdfNorm(double mzz);
@@ -180,8 +188,8 @@ private:
   AngularPdfFactory* ScalarhPlus;
   VectorPdfFactory* zprime;
   VectorPdfFactory* zprimePlus;
-  TensorPdfFactory *minGrav;
-  TensorPdfFactory *qqminGrav;   
+  TensorPdfFactory* minGrav;
+  TensorPdfFactory* qqminGrav;   
   RooAbsPdf* SMZgammaZZ;
   RooAbsPdf* SMZZ;
   

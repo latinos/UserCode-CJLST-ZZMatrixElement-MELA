@@ -2,8 +2,8 @@
  *
  *  See header file for documentation.
  *
- *  $Date: 2013/01/15 11:31:19 $
- *  $Revision: 1.35 $
+ *  $Date: 2013/01/16 14:37:34 $
+ *  $Revision: 1.36 $
  */
 
 #include <ZZMatrixElement/MELA/interface/Mela.h>
@@ -768,13 +768,12 @@ void Mela::computeP(float mZZ, float mZ1, float mZ2,
   p0hplus_mela = ScalarhPlus->getVal(mZZ);
 
   // Z'
-  p1_mela = zprime->PDF->getVal(); // not implemented yet.
-  p1plus_mela = zprimePlus->PDF->getVal(); // not implemented yet.
+  p1_mela = zprime->PDF->getVal(); 
+  p1plus_mela = zprimePlus->PDF->getVal(); 
   
   //graviMela
   p2_mela = minGrav->getVal(mZZ);
   p2qqb_mela = qqminGrav->getVal(mZZ);
-
 
   //compute pt/Y probabilities:
   pt_rrv->setVal(pt4l);
@@ -870,3 +869,4 @@ void Mela::computeP(float mZZ, float mZ1, float mZ2,
 
 
 }
+
