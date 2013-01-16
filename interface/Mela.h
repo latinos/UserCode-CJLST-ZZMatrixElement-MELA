@@ -6,8 +6,8 @@
  *  MELA discriminator
  *
  *
- *  $Date: 2013/01/14 15:48:47 $
- *  $Revision: 1.21 $
+ *  $Date: 2013/01/14 16:18:07 $
+ *  $Revision: 1.22 $
  *  \author JHU
  */
 
@@ -22,6 +22,7 @@ class RooRealVar;
 class RooAbsPdf;
 class RooArgSet;
 class AngularPdfFactory;
+class VectorPdfFactory;
 class TensorPdfFactory;
 class ZZMatrixElement;
 class SuperMELA;
@@ -76,14 +77,17 @@ public:
 		float& p0plus_melaNorm,   // higgs, analytic distribution, normalized as for normal MELA distribution     
 		float& p0plus_mela,   // higgs, analytic distribution          
 		float& p0minus_mela,  // pseudoscalar, analytic distribution 
+		float& p0hplus_mela,  // 0h+, analytic distribution
 		float& p0plus_VAJHU,  // higgs, vector algebra, JHUgen
 		float& p0minus_VAJHU, // pseudoscalar, vector algebra, JHUgen
 		float& p0plus_VAMCFM,// higgs, vector algebra, MCFM
 		float& p0hplus_VAJHU,  // 0h+ (high dimensional operator), vector algebra, JHUgen
 		float& p1_mela,  // zprime, analytic distribution 
-		float& p1_VAJHU, // zprime, vector algebra, JHUgen,
+		float& p1plus_mela,  // 1+, analytic distribution 
+		float& p1_VAJHU, // 1- (vector), vector algebra, JHUgen,
 		float& p1plus_VAJHU, // 1+ (axial vector), vector algebra, JHUgen,
 		float& p2_mela , // graviton, analytic distribution 
+		float& p2qqb_mela, // graviton produced by qqbar vector algebra, analytical,
 		float& p2_VAJHU, // graviton, vector algebra, JHUgen,
 		float& p2qqb_VAJHU, // graviton produced by qqbar, vector algebra, JHUgen,
 		//backgrounds
@@ -173,7 +177,11 @@ private:
   
   AngularPdfFactory* SMHiggs;
   AngularPdfFactory* PSHiggs;
-  TensorPdfFactory *minGrav;   
+  AngularPdfFactory* ScalarhPlus;
+  VectorPdfFactory* zprime;
+  VectorPdfFactory* zprimePlus;
+  TensorPdfFactory *minGrav;
+  TensorPdfFactory *qqminGrav;   
   RooAbsPdf* SMZgammaZZ;
   RooAbsPdf* SMZZ;
   

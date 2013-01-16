@@ -22,7 +22,7 @@ SpinOneOddMELA::SpinOneOddMELA(){
 
   sigAlt = new VectorPdfFactory(z1mass_rrv,z2mass_rrv,costhetastar_rrv,costheta1_rrv,costheta2_rrv,phi_rrv,phistar1_rrv,mzz_rrv);
 
-  sigAlt->makePseudoZprime();
+  sigAlt->makeZprime();
   sigAlt->makeParamsConst(true);
 
 }

@@ -70,7 +70,7 @@ public:
 
   };
 
-  void makeZprime(){  // NEED TO CALCULATE NORMALIZATIONS
+  void makePseudoZprime(){  // NEED TO CALCULATE NORMALIZATIONS
 
     g1Val->setVal(0.0);
     g2Val->setVal(1.0); 
@@ -85,7 +85,7 @@ public:
     fmZZNorm->FixParameter(4,8.13202e-08);
   };
 
-  void makePseudoZprime(){  // NEED TO CALCULATE NORMALIZATIONS
+  void makeZprime(){  // NEED TO CALCULATE NORMALIZATIONS
 
     g1Val->setVal(1.0); 
     g2Val->setVal(0.0); 

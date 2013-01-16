@@ -2,8 +2,8 @@
  *
  *  See header file for documentation.
  *
- *  $Date: 2013/01/14 16:18:26 $
- *  $Revision: 1.34 $
+ *  $Date: 2013/01/15 11:31:19 $
+ *  $Revision: 1.35 $
  */
 
 #include <ZZMatrixElement/MELA/interface/Mela.h>
@@ -14,6 +14,7 @@
 
 #include "computeAngles.h"
 #include "AngularPdfFactory.h"
+#include "VectorPdfFactory.h"
 #include "TensorPdfFactory.h"
 #include "RooqqZZ_JHU_ZgammaZZ_fast.h"
 #include "RooqqZZ_JHU.h"
@@ -78,17 +79,39 @@ Mela::Mela(bool usePowhegTemplate, int LHCsqrts, float mh){
   SMHiggs->makeSMHiggs();
   SMHiggs->makeParamsConst(true);
   
-
+  // pseudoscalar PDF
   PSHiggs = new AngularPdfFactory(z1mass_rrv,z2mass_rrv,costheta1_rrv,costheta2_rrv,phi_rrv,mzz_rrv);
 
   PSHiggs->makePSHiggs();
   PSHiggs->makeParamsConst(true);
 
+  // 0h+ scalar PDF
+  ScalarhPlus = new AngularPdfFactory(z1mass_rrv,z2mass_rrv,costheta1_rrv,costheta2_rrv,phi_rrv,mzz_rrv);
 
+  ScalarhPlus->makeLGHiggs();
+  ScalarhPlus->makeParamsConst(true);
+
+  // 1- PDF
+  zprime = new VectorPdfFactory(z1mass_rrv,z2mass_rrv,costhetastar_rrv,costheta1_rrv,costheta2_rrv,phi_rrv,phi1_rrv,mzz_rrv);
+  zprime->makeZprime();
+  zprime->makeParamsConst(true);
+
+  // 1- PDF
+  zprimePlus = new VectorPdfFactory(z1mass_rrv,z2mass_rrv,costhetastar_rrv,costheta1_rrv,costheta2_rrv,phi_rrv,phi1_rrv,mzz_rrv);
+  zprimePlus->makePseudoZprime();
+  zprimePlus->makeParamsConst(true);
+
+  // gg->2m+ PDF
   minGrav = new TensorPdfFactory(z1mass_rrv,z2mass_rrv,costhetastar_rrv,costheta1_rrv,costheta2_rrv,phi_rrv,phi1_rrv,mzz_rrv);
 
   minGrav->makeMinGrav();
   minGrav->makeParamsConst(true);
+
+  // qq->2m+ PDF
+  qqminGrav = new TensorPdfFactory(z1mass_rrv,z2mass_rrv,costhetastar_rrv,costheta1_rrv,costheta2_rrv,phi_rrv,phi1_rrv,mzz_rrv);
+
+  qqminGrav->makeqqMinGrav();
+  qqminGrav->makeParamsConst(true);
 
   // PDFs for Pt and Y
 
@@ -219,7 +242,11 @@ Mela::~Mela(){
   delete SMZgammaZZ;
   delete SMZZ;
   delete PSHiggs;
+  delete ScalarhPlus;
+  delete zprime;
+  delete zprimePlus;
   delete minGrav;
+  delete qqminGrav;
   
   delete ZZME;
 
@@ -683,14 +710,17 @@ void Mela::computeP(float mZZ, float mZ1, float mZ2,
 		    float& p0plus_melaNorm,   // higgs, analytic distribution          
 		    float& p0plus_mela,   // higgs, analytic distribution          
 		    float& p0minus_mela,  // pseudoscalar, analytic distribution 
+		    float& p0hplus_mela,  // 0h+, analytic distribution 
 		    float& p0plus_VAJHU,  // higgs, vector algebra, JHUgen
 		    float& p0minus_VAJHU, // pseudoscalar, vector algebra, JHUgen
 		    float& p0plus_VAMCFM,// higgs, vector algebra, MCFM
 		    float& p0hplus_VAJHU,  // 0h+ (high dimensional operator), vector algebra, JHUgen
 		    float& p1_mela,  // zprime, analytic distribution 
+		    float& p1plus_mela,  // 1+, analytic distribution 
 		    float& p1_VAJHU, // zprime, vector algebra, JHUgen,
 		    float& p1plus_VAJHU, // 1+ (axial vector), vector algebra, JHUgen,
 		    float& p2_mela , // graviton, analytic distribution 
+		    float& p2qqb_mela, // graviton produced by qqbar vector algebra, analytical,
 		    float& p2_VAJHU, // graviton, vector algebra, JHUgen,
 		    float& p2qqb_VAJHU, // graviton produced by qqbar vector algebra, JHUgen,
 		    //backgrounds
@@ -734,11 +764,16 @@ void Mela::computeP(float mZZ, float mZ1, float mZ2,
   // pseudo mela
   p0minus_mela = PSHiggs->getVal(mZZ);
 
+  // 0h+ mela
+  p0hplus_mela = ScalarhPlus->getVal(mZZ);
+
   // Z'
-  p1_mela =0.0 ; // not implemented yet.
+  p1_mela = zprime->PDF->getVal(); // not implemented yet.
+  p1plus_mela = zprimePlus->PDF->getVal(); // not implemented yet.
   
   //graviMela
   p2_mela = minGrav->getVal(mZZ);
+  p2qqb_mela = qqminGrav->getVal(mZZ);
 
 
   //compute pt/Y probabilities:
