@@ -2,8 +2,8 @@
  *
  *  See header file for documentation.
  *
- *  $Date: 2013/01/16 14:37:34 $
- *  $Revision: 1.36 $
+ *  $Date: 2013/01/16 18:28:28 $
+ *  $Revision: 1.37 $
  */
 
 #include <ZZMatrixElement/MELA/interface/Mela.h>
@@ -167,6 +167,7 @@ Mela::Mela(bool usePowhegTemplate, int LHCsqrts, float mh){
   RooMsgService::instance().getStream(1).removeTopic(NumIntegration);
   //deactivate generation messages
   RooMsgService::instance().setStreamStatus(1,kFALSE);
+  RooMsgService::instance().setStreamStatus(0,kFALSE);// silence also the error messages, but should really be looked at.
 
 
   edm::FileInPath HiggsWidthFile("Higgs/Higgs_CS_and_Width/txtFiles/8TeV-ggH.txt");
