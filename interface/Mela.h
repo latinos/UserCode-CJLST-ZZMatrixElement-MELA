@@ -6,8 +6,8 @@
  *  MELA discriminator
  *
  *
- *  $Date: 2013/01/16 14:37:34 $
- *  $Revision: 1.23 $
+ *  $Date: 2013/01/16 18:28:27 $
+ *  $Revision: 1.24 $
  *  \author JHU
  */
 
@@ -104,9 +104,9 @@ public:
 		float& p0plus_m4l,  // signal m4l probability as in datacards
 		float& bkg_m4l,     // backgroun m4l probability as in datacards
 		//optional input parameters
-		float pt4l=0.0,
-		float Y4l=0.0,
-		int flavor=1 // 1:4e, 2:4mu, 3:2e2mu (for interference effects)
+		float pt4l,
+		float Y4l,
+		int flavor // 1:4e, 2:4mu, 3:2e2mu (for interference effects)
 		);
 
   
