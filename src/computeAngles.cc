@@ -2,13 +2,14 @@
  *
  *  MELA - cf. http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/UserCode/sbologne/MELAproject/
  *
- *  $Date: 2012/09/20 20:47:44 $
- *  $Revision: 1.4 $
+ *  $Date: 2012/10/04 13:51:21 $
+ *  $Revision: 1.5 $
  */
 
 #include <ZZMatrixElement/MELA/src/computeAngles.h>
 #include <TLorentzVector.h>
 #include <algorithm>
+#include <iostream>
 
 using namespace std;
 
@@ -73,6 +74,10 @@ void mela::computeAngles(TLorentzVector p4M11, int Z1_lept1Id,
 
   //// --------------------------- costheta2
   TVector3 boostV2 = -(p4Z2.BoostVector());
+  if (boostV2.Mag()>=1.) {
+    cout << "Warning: Mela::computeAngles: Z2 boost with beta=1, scaling down" << endl;
+    boostV2*=0.9999;
+  }
   TLorentzVector p4M11_BV2( p4M11 );
   TLorentzVector p4M12_BV2( p4M12 );
   TLorentzVector p4M21_BV2( p4M21 );
