@@ -237,7 +237,7 @@ double SumMatrixElementPDF(TVar::Process process, mcfm_event_type* mcfm_event,do
   
   
   //remove events has small invariant mass
-  if(My_masscuts(s,process)) return 0.0;
+  // if(My_masscuts(s,process)) return 0.0;
   if(My_smalls(s,npart_.npart)) return 0.0;
   
   double msqjk=0;
