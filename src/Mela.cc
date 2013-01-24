@@ -2,8 +2,8 @@
  *
  *  See header file for documentation.
  *
- *  $Date: 2013/01/16 18:28:28 $
- *  $Revision: 1.37 $
+ *  $Date: 2013/01/17 12:43:02 $
+ *  $Revision: 1.38 $
  */
 
 #include <ZZMatrixElement/MELA/interface/Mela.h>
@@ -174,15 +174,18 @@ Mela::Mela(bool usePowhegTemplate, int LHCsqrts, float mh){
   std::string path = HiggsWidthFile.fullPath();
   //std::cout << path.substr(0,path.length()-12) << std::endl;
   
-  //std::cout << "before supermela" << std::endl;
+  //  std::cout << "before supermela" << std::endl;
+  myR=new TRandom3(35797);
   super = new SuperMELA(mh,"4mu",LHCsqrts); // preliminary intialization, we adjust the flavor later
   char cardpath[500];
   sprintf(cardpath,"HZZ4L_Combination/CombinationPy/CreateDatacards/SM_inputs_%dTeV/inputs_4mu.txt",LHCsqrts);
+  //std::cout << "before supermela, pathToCards: " <<cardpath<< std::endl;
   edm::FileInPath cardfile(cardpath);
   std::string cpath=cardfile.fullPath();
   std::cout << cpath.substr(0,cpath.length()-14).c_str()  <<std::endl;
   super->SetPathToCards(cpath.substr(0,cpath.length()-14).c_str() );
   super->SetVerbosity(false);
+  // std::cout << "starting superMELA initialization" << std::endl;
   super->init();
   //std::cout << "after supermela" << std::endl;
 
@@ -701,6 +704,8 @@ void Mela::checkZorder(float& z1mass, float& z2mass,
     return;
 
 }
+
+
 void Mela::computeP(float mZZ, float mZ1, float mZ2, 
 		    float costhetastar,
 		    float costheta1, 
@@ -736,16 +741,91 @@ void Mela::computeP(float mZZ, float mZ1, float mZ2,
 		    float& bkg_y, // multiplicative probability for bkg y
 		    // supermela
 		    float& p0plus_m4l,  // signal m4l probability as in datacards
-		    float& bkg_m4l,     // backgroun m4l probability as in datacards
+		    float& bkg_m4l,     // backgroun m4l probability as in datacards		  
 		    //optional input parameters
 		    float pt4l,
 		    float Y4l,
 		    int flavor // 1:4e, 2:4mu, 3:2e2mu (for interference effects)
 		    ){
-  
 
   //initialize variables
-  checkZorder(mZ1,mZ2,costhetastar,costheta1,costheta2,phi,phistar1);
+   checkZorder(mZ1,mZ2,costhetastar,costheta1,costheta2,phi,phistar1);
+  
+   //std::cout<<"Computing MELA "<<std::flush;
+
+   computeMELA( mZZ, mZ1,  mZ2, 
+	     costhetastar, costheta1,costheta2,
+	     phi,  phistar1,p0plus_melaNorm,
+	     p0plus_mela, p0minus_mela,p0hplus_mela, 
+	     p1_mela, p1plus_mela , p2_mela ,p2qqb_mela,bkg_mela 
+	    );
+   //std::cout<<" VA "<<std::flush;
+   computeVA( mZZ,  mZ1, mZ2, 
+	     costhetastar, costheta1, costheta2,
+	     phi,phistar1,flavor,
+	     p0plus_VAJHU, p0minus_VAJHU,
+	     p0plus_VAMCFM,p0hplus_VAJHU,
+	     p1_VAJHU, p1plus_VAJHU,
+	     p2_VAJHU, p2qqb_VAJHU,
+	     bkg_VAMCFM, ggzz_VAMCFM,
+	     bkg_VAMCFMNorm
+	     );
+   //std::cout<<" PT/Y "<<std::flush;
+   computePPTY( mZZ,  mZ1,  mZ2, 
+		costhetastar,  costheta1, costheta2,
+		phi, phistar1,
+		p0_pt,   p0_y,
+		bkg_pt,   bkg_y,
+		pt4l,Y4l
+		);
+
+   //  std::cout<<" M4L "<<std::flush;
+   float p0plus_m4l_ScaleUp;  // signal m4l probability for systematics
+   float bkg_m4l_ScaleUp;     // backgroun m4l probability for systematics
+   float p0plus_m4l_ScaleDown;  // signal m4l probability for systematics
+   float bkg_m4l_ScaleDown;     // backgroun m4l probability for systematics
+   float p0plus_m4l_ResUp;  // signal m4l probability for systematics
+   float bkg_m4l_ResUp;     // backgroun m4l probability for systematics
+   float p0plus_m4l_ResDown;  // signal m4l probability for systematics
+   float bkg_m4l_ResDown;     // backgroun m4l probability for systematics
+   computePM4L( mZZ, mZ1, mZ2, 
+		costhetastar,  costheta1, costheta2,
+		phi, phistar1,flavor,
+		p0plus_m4l,  bkg_m4l,  
+		p0plus_m4l_ScaleUp,
+		bkg_m4l_ScaleUp,   
+		p0plus_m4l_ScaleDown,
+		bkg_m4l_ScaleDown,   
+		p0plus_m4l_ResUp, 
+		bkg_m4l_ResUp,    
+		p0plus_m4l_ResDown, 
+		bkg_m4l_ResDown    
+		);
+   //  std::cout<<" -> Done ! "<<std::endl;
+   
+}//end computeP
+
+ void Mela::computeMELA(float mZZ, float mZ1, float mZ2, 
+		   float costhetastar,
+		   float costheta1, 
+		   float costheta2,
+		   float phi,
+		   float phistar1,
+		float& p0plus_melaNorm,   // higgs, analytic distribution, normalized as for normal MELA distribution     
+		float& p0plus_mela,   // higgs, analytic distribution          
+		float& p0minus_mela,  // pseudoscalar, analytic distribution 
+		float& p0hplus_mela,  // 0h+, analytic distribution
+		   float& p1_mela,  // zprime, analytic distribution 
+			float& p1plus_mela,  // 1+, analytic distribution 
+		   float& p2_mela , // graviton, analytic distribution 
+		   float& p2qqb_mela, // graviton produced by qqbar vector algebra, analytical,
+		   float& bkg_mela  // background,  analytic distribution
+
+
+		  ){
+
+   //initialize variables
+   checkZorder(mZ1,mZ2,costhetastar,costheta1,costheta2,phi,phistar1);
 
 
   //std mela variables (will initialize RooRealVars for other PDfs too)
@@ -776,6 +856,23 @@ void Mela::computeP(float mZZ, float mZ1, float mZ2,
   p2_mela = minGrav->getVal(mZZ);
   p2qqb_mela = qqminGrav->getVal(mZZ);
 
+ }//end computeMELA
+
+void Mela::computePPTY(float mZZ, float mZ1, float mZ2, 
+		       float costhetastar,
+		       float costheta1, 
+		       float costheta2,
+		       float phi,
+		       float phistar1,
+		       float& p0_pt, // multiplicative probability for signal pt
+		       float& p0_y, // multiplicative probability for signal y
+		       float& bkg_pt, // multiplicative probability for bkg pt
+		       float& bkg_y, // multiplicative probability for bkg y
+		       //optional input parameters
+		       float pt4l,
+		       float Y4l
+		       ){
+  
   //compute pt/Y probabilities:
   pt_rrv->setVal(pt4l);
   y_rrv->setVal(Y4l);
@@ -797,6 +894,32 @@ void Mela::computeP(float mZZ, float mZ1, float mZ2,
   p0_y = sigY->getVal()/tempIntegral_sigY->getVal();
   delete tempIntegral_sigY;
 
+}//end computePPTY
+
+
+
+void Mela::computeVA(float mZZ, float mZ1, float mZ2, 
+	       float costhetastar,
+	       float costheta1, 
+	       float costheta2,
+	       float phi,
+	       float phistar1,
+	       int flavor,
+	       float& p0plus_VAJHU,  // higgs, vector algebra, JHUgen
+	       float& p0minus_VAJHU, // pseudoscalar, vector algebra, JHUgen
+	       float& p0plus_VAMCFM,// higgs, vector algebra, MCFM
+	       float& p0hplus_VAJHU,  // 0h+ (high dimensional operator), vector algebra, JHUgen
+	       float& p1_VAJHU, // 1- (vector), vector algebra, JHUgen,
+	       float& p1plus_VAJHU, // 1+ (axial vector), vector algebra, JHUgen,
+	       float& p2_VAJHU, // graviton, vector algebra, JHUgen,
+	       float& p2qqb_VAJHU, // graviton produced by qqbar, vector algebra, JHUgen,
+	       float& bkg_VAMCFM, // background, vector algebra, MCFM
+	       float& ggzz_VAMCFM, // background, vector algebra, MCFM for ggZZ
+	       float& bkg_VAMCFMNorm // background, vector algebra, MCFM, Normalized 
+	       ){
+
+  //initialize variables
+  checkZorder(mZ1,mZ2,costhetastar,costheta1,costheta2,phi,phistar1);
 
   // vector algebra
   double dummy1,dummy2,dummy3;
@@ -856,6 +979,28 @@ void Mela::computeP(float mZZ, float mZ1, float mZ2,
       bkg_VAMCFMNorm = bkg_VAMCFM * vaScale_2e2mu->Eval(mZZ);
   }
 
+}//end computeVA
+
+void Mela::computePM4L(float mZZ, float mZ1, float mZ2, 
+		 float costhetastar,
+		 float costheta1, 
+		 float costheta2,
+		 float phi,
+		 float phistar1,
+		 int flavor,
+		 ///////////////
+		 float& p0plus_m4l,  // signal m4l probability as in datacards
+		 float& bkg_m4l,   // backgroun m4l probability as in datacards
+		 float& p0plus_m4l_ScaleUp,  // signal m4l probability for systematics
+		 float& bkg_m4l_ScaleUp,     // backgroun m4l probability for systematics
+		 float& p0plus_m4l_ScaleDown,  // signal m4l probability for systematics
+		 float& bkg_m4l_ScaleDown,     // backgroun m4l probability for systematics
+		 float& p0plus_m4l_ResUp,  // signal m4l probability for systematics
+		 float& bkg_m4l_ResUp,     // backgroun m4l probability for systematics
+		 float& p0plus_m4l_ResDown,  // signal m4l probability for systematics
+		 float& bkg_m4l_ResDown     // backgroun m4l probability for systematics
+		 ){
+ 
   // supermela
   switch(flavor){
   case 1: super->SetDecayChannel("4e")   ;break;
@@ -864,10 +1009,42 @@ void Mela::computeP(float mZZ, float mZ1, float mZ2,
   default: std::cout << " unknown flavor: " << flavor << std::endl; exit(0);
   }
   
+
+ 
   std::pair<double,double> m4lP = super->M4lProb(mZZ);
   p0plus_m4l = m4lP.first; 
   bkg_m4l = m4lP.second;
 
+ 
+  //systematics for p(m4l)
+  float mZZtmp=mZZ;
+  float meanErr=float(super->GetSigShapeSystematic("meanCB") );
+  mZZtmp = mZZ*(1.0+meanErr);
+  if(mZZtmp>180.0 || mZZtmp<100)mZZtmp=mZZ;
+  std::pair<double,double> m4lPScaleUp = super->M4lProb(mZZtmp);
+  p0plus_m4l_ScaleUp = m4lPScaleUp.first; 
+  bkg_m4l_ScaleUp = m4lPScaleUp.second;
+  
+  mZZtmp = mZZ*(1.0-meanErr);
+  if(mZZtmp>180.0 || mZZtmp<100)mZZtmp=mZZ;
+  std::pair<double,double> m4lPScaleDown = super->M4lProb(mZZtmp);
+  p0plus_m4l_ScaleDown = m4lPScaleDown.first; 
+  bkg_m4l_ScaleDown = m4lPScaleDown.second;
+  
+  float sigmaErr=float(super->GetSigShapeSystematic("sigmaCB") );
+  float sigmaCB=float(super->GetSigShapeParameter("sigmaCB"));
+  mZZtmp= myR->Gaus(mZZ,sigmaErr*sigmaCB);
+  //  cout<<"Systematics on m4l: MeanErr="<<meanErr<<"  SigmaErr="<<sigmaErr<<"  SigmaCB="<<sigmaCB<<"  CentralMZZ="<<mZZ<<"  SmearedMZZ="<< mZZtmp<<std::endl;
+  if(mZZtmp>180.0 || mZZtmp<100) mZZtmp=mZZ;
+  std::pair<double,double> m4lPResUp = super->M4lProb(mZZtmp);
+  p0plus_m4l_ResUp = m4lPResUp.first; 
+  bkg_m4l_ResUp = m4lPResUp.second;
+  // std::cout<<"SMD_RESUP="<<p0plus_m4l_ResUp*p0plus_melaNorm / (p0plus_m4l_ResUp*p0plus_melaNorm + bkg_m4l_ResUp*bkg_mela)<<std::endl;
+  p0plus_m4l_ResDown =  p0plus_m4l_ResUp;
+  bkg_m4l_ResDown = bkg_m4l_ResUp ;
 
-}
+}//end computePM4L
+
+
+
 

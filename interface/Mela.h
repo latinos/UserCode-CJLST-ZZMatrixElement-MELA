@@ -6,13 +6,14 @@
  *  MELA discriminator
  *
  *
- *  $Date: 2013/01/16 18:28:27 $
- *  $Revision: 1.24 $
+ *  $Date: 2013/01/17 15:06:44 $
+ *  $Revision: 1.25 $
  *  \author JHU
  */
 
 #include <vector>
 #include <TLorentzVector.h>
+#include <TRandom3.h>
 
 class TFile; 
 class TH1F; 
@@ -102,7 +103,7 @@ public:
 		float& bkg_y, // multiplicative probability for bkg y
 		//supermela
 		float& p0plus_m4l,  // signal m4l probability as in datacards
-		float& bkg_m4l,     // backgroun m4l probability as in datacards
+		float& bkg_m4l,   // backgroun m4l probability as in datacards		
 		//optional input parameters
 		float pt4l,
 		float Y4l,
@@ -125,6 +126,84 @@ public:
 		 float pt4l=0.0,
 		 bool withY = false,
 		 float Y4l=0.0);
+
+
+  //smaller compute functions that get only specific info (then summed up in computeP() )
+  void computeMELA(float mZZ, float mZ1, float mZ2, 
+		   float costhetastar,
+		   float costheta1, 
+		   float costheta2,
+		   float phi,
+		   float phistar1,
+		float& p0plus_melaNorm,   // higgs, analytic distribution, normalized as for normal MELA distribution     
+		float& p0plus_mela,   // higgs, analytic distribution          
+		float& p0minus_mela,  // pseudoscalar, analytic distribution 
+		float& p0hplus_mela,  // 0h+, analytic distribution
+		   float& p1_mela,  // zprime, analytic distribution 
+		   float& p1plus_mela,  // 1+, analytic distribution 
+		   float& p2_mela , // graviton, analytic distribution 
+		   float& p2qqb_mela, // graviton produced by qqbar vector algebra, analytical,
+		   float& bkg_mela  // background,  analytic distribution
+
+
+	 );
+
+ void computeVA(float mZZ, float mZ1, float mZ2, 
+		float costhetastar,
+		float costheta1, 
+		float costheta2,
+		float phi,
+		float phistar1,
+		int flavor,
+		float& p0plus_VAJHU,  // higgs, vector algebra, JHUgen
+		float& p0minus_VAJHU, // pseudoscalar, vector algebra, JHUgen
+		float& p0plus_VAMCFM,// higgs, vector algebra, MCFM
+		float& p0hplus_VAJHU,  // 0h+ (high dimensional operator), vector algebra, JHUgen
+		float& p1_VAJHU, // 1- (vector), vector algebra, JHUgen,
+		float& p1plus_VAJHU, // 1+ (axial vector), vector algebra, JHUgen,
+		float& p2_VAJHU, // graviton, vector algebra, JHUgen,
+		float& p2qqb_VAJHU, // graviton produced by qqbar, vector algebra, JHUgen,
+		float& bkg_VAMCFM, // background, vector algebra, MCFM
+		float& ggzz_VAMCFM, // background, vector algebra, MCFM for ggZZ
+		float& bkg_VAMCFMNorm // background, vector algebra, MCFM, Normalized 
+		);
+
+void computePM4L(float mZZ, float mZ1, float mZ2, 
+	     float costhetastar,
+	     float costheta1, 
+	     float costheta2,
+	     float phi,
+	     float phistar1,
+		 int flavor,
+	     ///////////////
+	     float& p0plus_m4l,  // signal m4l probability as in datacards
+	     float& bkg_m4l,   // backgroun m4l probability as in datacards
+	     float& p0plus_m4l_ScaleUp,  // signal m4l probability for systematics
+	     float& bkg_m4l_ScaleUp,     // backgroun m4l probability for systematics
+	     float& p0plus_m4l_ScaleDown,  // signal m4l probability for systematics
+	     float& bkg_m4l_ScaleDown,     // backgroun m4l probability for systematics
+	     float& p0plus_m4l_ResUp,  // signal m4l probability for systematics
+	     float& bkg_m4l_ResUp,     // backgroun m4l probability for systematics
+	     float& p0plus_m4l_ResDown,  // signal m4l probability for systematics
+	     float& bkg_m4l_ResDown     // backgroun m4l probability for systematics
+	     );
+
+
+void computePPTY(float mZZ, float mZ1, float mZ2, 
+	     float costhetastar,
+	     float costheta1, 
+	     float costheta2,
+	     float phi,
+	     float phistar1,
+	     float& p0_pt, // multiplicative probability for signal pt
+	     float& p0_y, // multiplicative probability for signal y
+	     float& bkg_pt, // multiplicative probability for bkg pt
+	     float& bkg_y, // multiplicative probability for bkg y
+	     //optional input parameters
+	     float pt4l,
+	     float Y4l
+	     );
+
 
   TensorPdfFactory* getMinGrav(){
     return minGrav;    
@@ -195,6 +274,7 @@ private:
   
   ZZMatrixElement* ZZME;
   SuperMELA* super;
+  TRandom3 *myR;
 
   std::vector<RooRealVar*> ptparamsS;
   std::vector<RooRealVar*> ptparamsB;

@@ -94,11 +94,38 @@ double SuperMELA::GetSigShapeSystematic(string parName){
     return    sigma_CB_err_->getVal();
   }
   else{
+    std::cout<<"Error from SuperMELA::GetSigShapeSystematic, unrecognized input: "<<parName.c_str()<<std::endl;
     try{
       throw 40;
     }
     catch(int e){
       if(e==40)std::cout<<"Exception "<<e<<"  in SuperMELA::GetSigShapeSystematic! Unrecognized type of parameter requested: "<<parName.c_str()<<"  . Valid options are meanCB ; sigmaCB" <<std::endl;
+      return 0.0;
+    }
+  }
+  return 0.0;
+}
+
+double SuperMELA::GetSigShapeParameter(string parName){
+
+  if(parName=="meanCB"){
+    return    meanTOT_CB_->getVal();
+  }
+  else if(parName=="sigmaCB"){
+    return    sigma_CB_->getVal();
+  }
+  else if(parName=="alphaCB"){
+    return    alpha_CB_->getVal();
+  }
+  else if(parName=="nCB"){
+    return    n_CB_->getVal();
+  }
+  else{
+    try{
+      throw 40;
+    }
+    catch(int e){
+      if(e==40)std::cout<<"Exception "<<e<<"  in SuperMELA::GetSigShapeParameter! Unrecognized type of parameter requested: "<<parName.c_str()<<"  . Valid options are meanCB ; sigmaCB ; alphaCB ; nCB" <<std::endl;
       return 0.0;
     }
   }
@@ -160,7 +187,9 @@ void SuperMELA::init(){
     mean_CB_err_=new RooFormulaVar("mean_CB_err",("("+str_mean_CB_err_m+"+"+str_mean_CB_err_e+")*@0").c_str(),RooArgList(dummyOne));
     sigma_CB_err_=new RooFormulaVar("sigma_CB_err",("("+str_sigma_CB_err_m+"+"+str_mean_CB_err_e+")*@0").c_str(),RooArgList(dummyOne));
   }
-  //std::cout<<"Systematic from RooFormulaVar(), Mean and Sigma of CB: "<<mean_CB_err_->getVal()<<"  "<<sigma_CB_err_->getVal()<<endl;
+  if(mean_CB_err_->getVal()<0.0){std::cout<<"Negatiuve error on the m4l mean ! "<<mean_CB_err_->getVal()<<std::endl;}
+  if(sigma_CB_err_->getVal()<0.0){std::cout<<"Negatiuve error on the m4l sigma ! "<<sigma_CB_err_->getVal()<<std::endl;}
+    //  if(verbose_)std::cout<<"Systematic from RooFormulaVar(), Mean and Sigma of CB: "<<mean_CB_err_->getVal()<<"  "<<sigma_CB_err_->getVal()<<endl;
 
   //delete old stuff before reinitialization                                                                                                                                                                  
   if(n_CB_)

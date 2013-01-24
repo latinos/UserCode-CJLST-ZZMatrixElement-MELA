@@ -23,7 +23,7 @@ void addProbtoTree(char* inputFile,int flavor, int max=-1, int LHCsqrts=8){
 
   gSystem->Load("$CMSSW_BASE/src/ZZMatrixElement/MELA/data/$SCRAM_ARCH/libmcfm.so");
   gSystem->Load("$CMSSW_BASE/lib/slc5_amd64_gcc462/libZZMatrixElementMELA.so");
-  gROOT->LoadMacro("../interface/Mela.h++");
+  gROOT->LoadMacro("../interface/Mela.h+");
 
   Mela myMELA(false,LHCsqrts);
   Mela myMELA_ICHEP(true,LHCsqrts);
@@ -40,17 +40,26 @@ void addProbtoTree(char* inputFile,int flavor, int max=-1, int LHCsqrts=8){
     if(sigFile)
         sigTree = (TTree*) sigFile->Get("SelectedTree");
     if(!sigTree){
-      cout<<"ERROR could not find the tree!"<<endl;
-      return;
+      //2nd try with the name of data obs tree
+      sigTree = (TTree*) sigFile->Get("data_obs");
+      if(!sigTree){
+	cout<<"ERROR could not find the tree!"<<endl;
+	return;
+      }
     }
 
 
   float m1,m2,mzz,h1,h2,hs,phi,phi1;                                    //angles
-  float psig,pbkg,D,oldD;                                                    //legacy probabilities
+  float psig,pbkg,D;
+  double oldD;                                                    //legacy probabilities
   float	p0plus_melaNorm,p0plus_mela,p0minus_mela,p0hplus_mela,p0plus_VAJHU,p0minus_VAJHU,p0plus_VAMCFM,p0hplus_VAJHU,p1_mela,p1plus_mela,p1_VAJHU,p1plus_VAJHU,p2_mela,p2qqb_mela,p2_VAJHU,p2qqb_VAJHU; // new signal probablities
   float bkg_mela, bkg_VAMCFM, ggzz_VAMCFM, bkg_VAMCFMNorm;                                           // new background probabilities
   float pt4l, Y4l ,p0_pt,p0_y,p0_y,bkg_pt,bkg_y;                        // rapidity/pt
   float p0plus_m4l,bkg_m4l,smd;  //supermela
+  float p0plus_m4l_ScaleUp, p0plus_m4l_ScaleDown,p0plus_m4l_ResUp,p0plus_m4l_ResDown;//alternative values of supermela used for systematic templates
+  float bkg_m4l_ScaleUp, bkg_m4l_ScaleDown,bkg_m4l_ResUp,bkg_m4l_ResDown;//alternative values of supermela used for systematic templates
+ 
+
   float VAKD=0;                         // MCFM/JHUGen kinimetatic discriminant
 
   // -------- CJLST TREES ---------------
@@ -62,10 +71,11 @@ void addProbtoTree(char* inputFile,int flavor, int max=-1, int LHCsqrts=8){
   sigTree->SetBranchAddress("helcosthetaZ2",&h2);
   sigTree->SetBranchAddress("helphi",&phi);
   sigTree->SetBranchAddress("phistarZ1",&phi1);
-  sigTree->SetBranchAddress("ZZPt",&pt4l);
-  sigTree->SetBranchAddress("ZZRapidity",&Y4l);
   sigTree->SetBranchAddress("ZZLD",&oldD);
-
+  //  sigTree->SetBranchAddress("ZZRapidity",&Y4l);
+  //  sigTree->SetBranchAddress("ZZPt",&pt4l);
+  Y4l=0.0;
+  pt4l=0.0;
 
 
   float weight;
@@ -104,7 +114,7 @@ void addProbtoTree(char* inputFile,int flavor, int max=-1, int LHCsqrts=8){
   newTree->Branch("p1plus_mela",&p1plus_mela,"p1plus_mela/F");  // 1+, analytic distribution 
   newTree->Branch("p1_VAJHU",&p1_VAJHU,"p1_VAJHU/F");  // zprime, vector algebra, JHUgen,
   newTree->Branch("p1plus_VAJHU",&p1plus_VAJHU,"p1plus_VAJHU/F");  // 1+ (axial-vector), vector algebra, JHUgen,
-  newTree->Branch("p2_mela ",&p2_mela ,"p2_mela/F");  // graviton, analytic distribution 
+  newTree->Branch("p2_mela",&p2_mela ,"p2_mela/F");  // graviton, analytic distribution 
   newTree->Branch("p2qqb_mela",&p2qqb_mela,"p2qqb_mela/F"); // graviton produced by qqbar vector algebra, analytical,
   newTree->Branch("p2_VAJHU",&p2_VAJHU,"p2_VAJHU/F");  // graviton produced by gg, vector algebra, JHUgen,
   newTree->Branch("p2qqb_VAJHU",&p2qqb_VAJHU,"p2qqb_VAJHU/F");  // graviton produced by qqbar, vector algebra, JHUgen,
@@ -116,7 +126,15 @@ void addProbtoTree(char* inputFile,int flavor, int max=-1, int LHCsqrts=8){
   //supermela
   newTree->Branch("p0plus_m4l",&p0plus_m4l,"p0plus_m4l/F"  );  
   newTree->Branch("bkg_m4l",   &bkg_m4l, "bkg_m4l/F");  
-  newTree->Branch("superMELA",&smd,"superMELA/F"  );  
+  newTree->Branch("superMELA",&smd,"superMELA/F"  ); 
+   newTree->Branch("p0plus_m4l_ScaleUp",&p0plus_m4l_ScaleUp,"p0plus_m4l_ScaleUp/F"  );  
+   newTree->Branch("p0plus_m4l_ScaleDown",&p0plus_m4l_ScaleDown,"p0plus_m4l_ScaleDown/F"  );  
+   newTree->Branch("p0plus_m4l_ResUp",&p0plus_m4l_ResUp,"p0plus_m4l_ResUp/F"  );  
+   newTree->Branch("p0plus_m4l_ResDown",&p0plus_m4l_ResDown,"p0plus_m4l_ResDown/F"  );  
+   newTree->Branch("bkg_m4l_ScaleUp",&bkg_m4l_ScaleUp,"bkg_m4l_ScaleUp/F"  );  
+   newTree->Branch("bkg_m4l_ScaleDown",&bkg_m4l_ScaleDown,"bkg_m4l_ScaleDown/F"  );  
+   newTree->Branch("bkg_m4l_ResUp",&bkg_m4l_ResUp,"bkg_m4l_ResUp/F"  );  
+   newTree->Branch("bkg_m4l_ResDown",&bkg_m4l_ResDown,"bkg_m4l_ResDown/F"  );   
   //pt/rapidity
   newTree->Branch("p0_pt",&p0_pt,"p0_pt/F");  // multiplicative probability for signal pt
   newTree->Branch("p0_y",&p0_y,"p0_y/F");  // multiplicative probability for signal y
@@ -132,16 +150,16 @@ void addProbtoTree(char* inputFile,int flavor, int max=-1, int LHCsqrts=8){
     
     if(iEvt>=sigTree->GetEntries()) break;
     
-    //    if(iEvt%1000==0) 
-      //  cout << "event: " << iEvt << endl;
+    if(iEvt%1000==1) {
       cout<<"---------\n event: "<<iEvt<<endl;
+    }
     sigTree->GetEntry(iEvt);
     
     // --------------------------------
 
     if(mzz>100.){
       myMELA_ICHEP.computeKD(mzz,m1,m2,hs,h1,h2,phi,phi1,D,psig,pbkg,false,pt4l,false,Y4l); //keep legacy probabilities
- 
+      //std::cout<<"computing MELA probs"<<std::endl;
       myMELA.computeP(mzz, m1, m2, 
 		      hs,h1,h2,phi,phi1,
 		      //signal probabilities
@@ -174,9 +192,25 @@ void addProbtoTree(char* inputFile,int flavor, int max=-1, int LHCsqrts=8){
 		      // supermela
 		      p0plus_m4l,  // signal m4l probability as in datacards
 		      bkg_m4l,     // backgroun m4l probability as in datacards
+
 		      //optional input parameters
 		      pt4l,Y4l,flavor // 1:4e, 2:4mu, 3:2e2mu (for interference effects)
 		      );
+
+      float p0plus_m4l_v2,bkg_m4l_v2;
+
+      myMELA.computePM4L(mzz, m1, m2, 
+			 hs,h1,h2,phi,phi1,flavor ,
+			 p0plus_m4l_v2,bkg_m4l_v2,
+			 p0plus_m4l_ScaleUp,bkg_m4l_ScaleUp,
+			 p0plus_m4l_ScaleDown,  bkg_m4l_ScaleDown,
+			 p0plus_m4l_ResUp,bkg_m4l_ResUp, 
+			 p0plus_m4l_ResDown,bkg_m4l_ResDown);
+
+      if( (p0plus_m4l_v2!=p0plus_m4l) || (bkg_m4l_v2!=bkg_m4l) ){
+	std::cerr<<"Exception  from addProbToTree. Mismatch between the same P(m4l) calculated at different points: Psig(m4l)-OLD="<<p0plus_m4l<<"  Psig(m4l)-NEW="<<p0plus_m4l_v2<<"Pbkg(m4l)-OLD="<<bkg_m4l<<"  Pbkg(m4l)-NEW="<<bkg_m4l_v2    <<std::endl;
+	return;
+      }
 
       VAKD = p0plus_VAJHU/( bkg_VAMCFMNorm +  p0plus_VAJHU );
       
@@ -184,7 +218,7 @@ void addProbtoTree(char* inputFile,int flavor, int max=-1, int LHCsqrts=8){
 	smd=-1.0;
       }
       else{
-	smd=(p0plus_m4l*p0plus_mela)/(p0plus_m4l*p0plus_mela + bkg_mela*bkg_m4l);
+	smd=(p0plus_m4l*p0plus_melaNorm)/(p0plus_m4l*p0plus_melaNorm + bkg_mela*bkg_m4l);
 	//	std::cout<<"PSig-SMD="<<p0plus_m4l*p0plus_mela <<"   PBkg="<<bkg_mela*bkg_m4l<<endl;
       }
 

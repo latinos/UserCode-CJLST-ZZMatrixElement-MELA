@@ -25,6 +25,7 @@ class SuperMELA {
   void init();
 
   double GetSigShapeSystematic(string parName);
+  double GetSigShapeParameter(string parName);
 
   void SetVerbosity(bool verb=true){verbose_=verb;}
   void SetDecayChannel(string myChan);
