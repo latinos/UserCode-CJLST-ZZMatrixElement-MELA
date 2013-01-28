@@ -527,6 +527,7 @@ if (matchArgs(allVars,analVars,hs,h1,h2,Phi1)) return 4 ; // No Phi
 if (matchArgs(allVars,analVars,hs,h1,Phi,Phi1)) return 3 ; // No h2
 if (matchArgs(allVars,analVars,hs,h2,Phi,Phi1)) return 2 ; // No h1
 if (matchArgs(allVars,analVars,h1,h2,Phi,Phi1)) return 1 ; // No hs
+if (matchArgs(allVars,analVars,hs,Phi1)) return 7 ; // production angles integrated
 return 0 ;
 }
 Double_t RooSpinTwo_7D::analyticalIntegral(Int_t code, const char* /*rangeName*/) const
@@ -1018,6 +1019,50 @@ value += (fmp*(4*fz1Val + fz2Val + 6*fz2Val*Power(hs_,2) + (-4*fz1Val + fz2Val)*
 
 integral = value;
 return betaVal*term2Coeff*term1Coeff*integral;
+}
+
+// production angles integrated out
+case 7:
+{
+
+  double value=0;
+  double fz0Val = 1-fz1Val-fz2Val;
+
+  value += (f00*(fz0Val + fz1Val + fz2Val)*(-1 + Power(h1,2))*(-1 + Power(h2,2))*Pi())/5.    ; 
+  value += (fmm*(fz0Val + fz1Val + fz2Val)*Pi()*(-1 - Power(h1,2) + 2*h1*R1Val)*
+	    (-1 - Power(h2,2) + 2*h2*R2Val))/20.   ; 
+  value += (fpp*(fz0Val + fz1Val + fz2Val)*Pi()*(1 + Power(h1,2) + 2*h1*R1Val)*
+	    (1 + Power(h2,2) + 2*h2*R2Val))/20.   ; 
+  value += -(fp0*(fz0Val + fz1Val + fz2Val)*(-1 + Power(h2,2))*Pi()*
+	     (1 + Power(h1,2) + 2*h1*R1Val))/10.   ; 
+  value += (f0m*(fz0Val + fz1Val + fz2Val)*(-1 + Power(h1,2))*Pi()*
+	    (-1 - Power(h2,2) + 2*h2*R2Val))/10.   ; 
+  value += -(f0p*(fz0Val + fz1Val + fz2Val)*(-1 + Power(h1,2))*Pi()*
+	     (1 + Power(h2,2) + 2*h2*R2Val))/10.   ; 
+  value += (fm0*(fz0Val + fz1Val + fz2Val)*(-1 + Power(h2,2))*Pi()*
+	    (-1 - Power(h1,2) + 2*h1*R1Val))/10.   ; 
+  value += -(fpm*(fz0Val + fz1Val + fz2Val)*Pi()*(1 + Power(h1,2) + 2*h1*R1Val)*
+	     (-1 - Power(h2,2) + 2*h2*R2Val))/20.   ; 
+  value += -(fmp*(fz0Val + fz1Val + fz2Val)*Pi()*(-1 - Power(h1,2) + 2*h1*R1Val)*
+	     (1 + Power(h2,2) + 2*h2*R2Val))/20.   ; 
+  value += (Sqrt(f00)*Sqrt(fmm)*(fz0Val + fz1Val + fz2Val)*Sqrt(1 - Power(h1,2))*
+	    Sqrt(1 - Power(h2,2))*Pi()*(h1 - R1Val)*(h2 - R2Val)*Cos(Phi - phimm))/5.   ; 
+  value += (Sqrt(f00)*Sqrt(fpp)*(fz0Val + fz1Val + fz2Val)*Sqrt(1 - Power(h1,2))*
+	    Sqrt(1 - Power(h2,2))*Pi()*(h1 + R1Val)*(h2 + R2Val)*Cos(Phi + phipp))/5.   ; 
+
+  value += (Sqrt(fmm)*Sqrt(fpp)*(fz0Val + fz1Val + fz2Val)*(-1 + Power(h1,2))*
+	    (-1 + Power(h2,2))*Pi()*Cos(2*Phi - phimm + phipp))/10.   ; 
+
+  value += (Sqrt(f0m)*Sqrt(fp0)*(fz0Val + fz1Val + fz2Val)*Sqrt(1 - Power(h1,2))*
+	    Sqrt(1 - Power(h2,2))*Pi()*(h1 + R1Val)*(-h2 + R2Val)*
+	    Cos(Phi - phi0m + phip0))/5.   ; 
+
+  value += (Sqrt(f0p)*Sqrt(fm0)*(fz0Val + fz1Val + fz2Val)*Sqrt(1 - Power(h1,2))*
+	    Sqrt(1 - Power(h2,2))*Pi()*(-h1 + R1Val)*(h2 + R2Val)*
+	    Cos(Phi + phi0p - phim0))/5.   ; 
+
+  integral = value;
+  return betaVal*term2Coeff*term1Coeff*integral;
 }
 
 }
