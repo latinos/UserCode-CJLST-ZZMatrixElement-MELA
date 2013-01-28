@@ -2,8 +2,8 @@
  *
  *  See header file for documentation.
  *
- *  $Date: 2013/01/17 12:43:02 $
- *  $Revision: 1.38 $
+ *  $Date: 2013/01/24 15:23:50 $
+ *  $Revision: 1.39 $
  */
 
 #include <ZZMatrixElement/MELA/interface/Mela.h>
@@ -770,6 +770,26 @@ void Mela::computeP(float mZZ, float mZ1, float mZ2,
 	     bkg_VAMCFM, ggzz_VAMCFM,
 	     bkg_VAMCFMNorm
 	     );
+
+   // add constants for discriminants
+   // ---------------------------------
+   if(flavor==3){
+     p0minus_VAJHU*=6.0;
+     p0hplus_VAJHU*=2.1;
+     p1_VAJHU*=16;
+     p1plus_VAJHU*=13;
+     p2_VAJHU*=.6;
+     p2qqb_VAJHU*=13;
+   }else{
+     p0minus_VAJHU*=7.0;
+     p0hplus_VAJHU*=2.3;
+     p1_VAJHU*=38;
+     p1plus_VAJHU*=28;
+     p2_VAJHU*=1.4;
+     p2qqb_VAJHU*=30;
+   }
+   // ---------------------------------
+
    //std::cout<<" PT/Y "<<std::flush;
    computePPTY( mZZ,  mZ1,  mZ2, 
 		costhetastar,  costheta1, costheta2,
