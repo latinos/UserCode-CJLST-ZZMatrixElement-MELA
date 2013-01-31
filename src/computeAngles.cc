@@ -2,8 +2,8 @@
  *
  *  MELA - cf. http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/UserCode/sbologne/MELAproject/
  *
- *  $Date: 2012/10/04 13:51:21 $
- *  $Revision: 1.5 $
+ *  $Date: 2013/01/21 23:51:30 $
+ *  $Revision: 1.6 $
  */
 
 #include <ZZMatrixElement/MELA/src/computeAngles.h>
@@ -129,6 +129,18 @@ void mela::computeAngles(TLorentzVector p4M11, int Z1_lept1Id,
   float tmpSgnPhi1 = p4Z1_BX.Vect().Dot( normal1_BX.Cross( normalSC_BX) );
   float sgnPhi1 = tmpSgnPhi1/fabs(tmpSgnPhi1);    
   Phi1 = sgnPhi1 * acos( normal1_BX.Dot( normalSC_BX) );    
+
+
+  if (isnan(costhetastar) || isnan(costheta1) || isnan(costheta2) || isnan(Phi) || isnan(Phi1)){
+    cout << "WARNING: NaN in computeAngles: " 
+	 << costhetastar << " " 
+	 << costheta1  << " " 
+	 << costheta2  << " " 
+	 << Phi  << " " 
+	 << Phi1  << " " << endl;
+    cout << "   boostV1: " <<boostV1.Pt() << " " << boostV1.Eta() << " " << boostV1.Phi() << " " << boostV1.Mag() << endl;
+    cout << "   boostV2: " <<boostV2.Pt() << " " << boostV2.Eta() << " " << boostV2.Phi() << " " << boostV2.Mag() << endl;
+  }
     
 }
 
@@ -314,6 +326,15 @@ void mela::computeAnglesCS(TLorentzVector p4M11, int Z1_lept1Id,
 	//// costheta2
 	costheta2 = -p4V1_BX_rotCS_rotZ2.Vect().Dot( p4M21_BX_rotCS_rotZ2.Vect() )/p4V1_BX_rotCS_rotZ2.Vect().Mag()/p4M21_BX_rotCS_rotZ2.Vect().Mag();
 
-}	
+
+  if (isnan(costhetastar) || isnan(costheta1) || isnan(costheta2) || isnan(Phi) || isnan(Phi1)){
+    cout << "WARNING: NaN in computeAngles: " 
+	 << costhetastar << " " 
+	 << costheta1  << " " 
+	 << costheta2  << " " 
+	 << Phi  << " " 
+	 << Phi1  << " " << endl;
+  }
+}
 
 
