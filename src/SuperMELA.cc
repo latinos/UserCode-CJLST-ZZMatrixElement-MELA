@@ -11,6 +11,7 @@ using namespace RooFit;
 
 SuperMELA::SuperMELA(double mH,string channel,int LHCsqrts){
 
+  sigma_CB_=0;
   mean_CB_err_=0;
   sigma_CB_err_=0;
 
@@ -42,6 +43,8 @@ SuperMELA::SuperMELA(double mH,string channel,int LHCsqrts){
   a11_qqZZ_=0;
   a12_qqZZ_=0;
   a13_qqZZ_=0;
+
+  qqZZ_pdf_=0;
 
   verbose_=false;
   sqrts_=LHCsqrts;
@@ -231,6 +234,8 @@ void SuperMELA::init(){
 
   if(verbose_){    std::cout<<"Signal Mean vals -> Correction: "<<corr_mean_sig.getVal()<<"  Mean: "<<mean_CB_->getVal()<<"  Total: "<<meanTOT_CB_->getVal()<<std::endl;}
 
+  if(sigma_CB_)
+    delete sigma_CB_;
   sigma_CB_=new RooFormulaVar("CMS_zz4l_sigma_m_sig",("("+str_sigma_CB+")*(1+@1)").c_str(),RooArgList(*mH_rrv_,corr_sigma_sig ));
    
 
@@ -278,13 +283,20 @@ void SuperMELA::init(){
     sig_FFT_->Print("v");
     std::cout<<"Value of signal m4l FFT shape is "<<sig_FFT_->getVal()<<std::endl;
   }
-  norm_sig_CB_ =sig_CB_->createIntegral( RooArgSet(*m4l_rrv_), RooFit::Range("shape"))->getVal();
+  RooAbsReal* tmpint;
+  tmpint = sig_CB_->createIntegral( RooArgSet(*m4l_rrv_), RooFit::Range("shape"));
+  norm_sig_CB_ =tmpint->getVal();
+  delete tmpint;
   if(verbose_)std::cout<<"Normalization of signal m4l CB shape is "<<norm_sig_CB_<<std::endl;
-   if(verbose_)std::cout<<"\n---> Integrating Breit-Wigner:"<<std::endl;
-  double norm_sig_BW_ =sig_BW_->createIntegral( RooArgSet(*m4l_rrv_), RooFit::Range("shape"))->getVal();
+  if(verbose_)std::cout<<"\n---> Integrating Breit-Wigner:"<<std::endl;
+  tmpint = sig_BW_->createIntegral( RooArgSet(*m4l_rrv_), RooFit::Range("shape"));
+  double norm_sig_BW_ =tmpint->getVal();
+  delete tmpint;
   if(verbose_)std::cout<<"Normalization of signal m4l BW shape is "<<norm_sig_BW_<<std::endl;
-   if(verbose_)std::cout<<"\n---> Integrating full signal:"<<std::endl;
-  norm_sig_FFT_=sig_FFT_->createIntegral( RooArgSet(*m4l_rrv_), RooFit::Range("shape"))->getVal();
+  if(verbose_)std::cout<<"\n---> Integrating full signal:"<<std::endl;
+  tmpint = sig_FFT_->createIntegral( RooArgSet(*m4l_rrv_), RooFit::Range("shape"));
+  norm_sig_FFT_=tmpint->getVal();
+  delete tmpint;
   if(verbose_)std::cout<<"Normalization of signal m4l shape is "<<norm_sig_FFT_<<std::endl;
 
 //   TCanvas *csig=new TCanvas("canSig","CANVAS SIG SHAPES",800,800);
@@ -349,13 +361,16 @@ void SuperMELA::init(){
   a13_qqZZ_->setConstant(kTRUE);
 
 
+  if(qqZZ_pdf_)
+    delete qqZZ_pdf_;
   qqZZ_pdf_ = new RooqqZZPdf_v2("bkg_qqzz","bkg_qqzz",*m4l_rrv_,*a0_qqZZ_, *a1_qqZZ_, *a2_qqZZ_, *a3_qqZZ_,             
 				*a4_qqZZ_, *a5_qqZZ_, *a6_qqZZ_, *a7_qqZZ_,
 				*a8_qqZZ_, *a9_qqZZ_, *a10_qqZZ_,*a11_qqZZ_,
 				*a12_qqZZ_,   *a13_qqZZ_ );
 
-  norm_bkg_qqZZ_=qqZZ_pdf_->createIntegral( RooArgSet(*m4l_rrv_), RooFit::Range("shape"))->getVal();
-
+  tmpint = qqZZ_pdf_->createIntegral( RooArgSet(*m4l_rrv_), RooFit::Range("shape"));
+  norm_bkg_qqZZ_=tmpint->getVal();
+  delete tmpint;
 
 }//end init
 
