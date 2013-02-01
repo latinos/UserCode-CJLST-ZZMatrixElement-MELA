@@ -137,7 +137,15 @@ double SuperMELA::GetSigShapeParameter(string parName){
 void SuperMELA::init(){
   if(verbose_)std::cout<<"INITIALIZING..."<<std::endl;
   //calculate m4l ranges for the given mH, set range of rrv
-  calc_mZZ_range(mHVal_,lowMH_,highMH_);
+  if(mHVal_==125){
+    lowMH_=105.0;
+    highMH_=140.0;
+  }
+  else if(mHVal_==126.0){
+    lowMH_=106.0;
+    highMH_=141.0;
+  }
+  else   calc_mZZ_range(mHVal_,lowMH_,highMH_);
   if(verbose_)cout<<"Range width="<<highMH_ - lowMH_<<endl;
   m4l_rrv_=new RooRealVar("CMS_zz4l_mass","CMS_zz4l_mass",mHVal_,lowMH_,highMH_);//this one is the variable!
   m4l_rrv_->setBins(2000,"fft") ;
