@@ -5,6 +5,7 @@
 #include "RooArgList.h"
 #include "Higgs/Higgs_CS_and_Width/include/HiggsCSandWidth.h"
 #include "RooPlot.h"
+#include <FWCore/ParameterSet/interface/FileInPath.h>
 
 using namespace RooFit;
 
@@ -496,7 +497,10 @@ void SuperMELA::readBkgParsFromFile(std::vector<double> &apars ){
 }//end readBkgParsFromFile
 
 void SuperMELA::calc_mZZ_range(const double mHVal,double &low_M,double &high_M){
-  HiggsCSandWidth *myCSW = new HiggsCSandWidth("../../../Higgs/Higgs_CS_and_Width/txtFiles");
+  edm::FileInPath fip("Higgs/Higgs_CS_and_Width/txtFiles/8TeV-ggH.txt");
+  string path = fip.fullPath();
+  path.erase(std::find(path.rbegin(), path.rend(), '/').base(), path.end());
+  HiggsCSandWidth *myCSW = new HiggsCSandWidth(path.c_str());
   double widthHVal =  myCSW->HiggsWidth(1,mHVal);
   //  if(verbose_)cout<<"Width="<<widthHVal<<endl;
   double windowVal = max( widthHVal, 1. );
