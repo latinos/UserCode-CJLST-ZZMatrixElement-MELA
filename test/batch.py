@@ -4,6 +4,8 @@ import os
 import sys
 import commands
 
+from ROOT import TFile
+
 def processDirectory ( args, dirname, filenames ):
     print "processing " + dirname
     for filename in filenames:
@@ -17,16 +19,18 @@ def processDirectory ( args, dirname, filenames ):
         if ("2mu2e" in dirname) or ("2e2mu" in dirname):
             flavor = 3
 
-        if ("withProbabilities" in filename):
-            flavor = 10  # already processed
-        if not(".root" in filename):
-            flavor = 10  # only process root files
-
         if ("data" in  dirname) and ("DoubleEle" in filename):
             flavor = 1
         if ("data" in  dirname) and ("DoubleMu" in filename):
             flavor = 2
         if ("data" in  dirname) and ("DoubleOr" in filename):
+            flavor = 3
+
+        if ("CR" in  dirname) and ("DoubleEle" in filename):
+            flavor = 1
+        if ("CR" in  dirname) and ("DoubleMu" in filename):
+            flavor = 2
+        if ("CR" in  dirname) and ("DoubleOr" in filename):
             flavor = 3
 
         if ("CR" in dirname) and ("EEEE" in filename):
@@ -39,6 +43,11 @@ def processDirectory ( args, dirname, filenames ):
             flavor = 3
                             
 
+        if ("withProbabilities" in filename):
+            flavor = 10  # already processed
+                        
+        if not(".root" in filename):
+            flavor = 10  # only process root files
             
         sqrts=7
         if ("8TeV" in dirname):
@@ -69,6 +78,8 @@ def main():
     file.write("cd " + sys.argv[2] + "\n")
     file.write("pwd\n")
     file.write("eval `scramv1 runtime -sh`\n")
+    file.write("cd - \n")
+    file.write("cp " + sys.argv[2] + "/addProbtoTree.C .  \n")
     file.close()
     
     os.path.walk( base_dir, processDirectory, None )
