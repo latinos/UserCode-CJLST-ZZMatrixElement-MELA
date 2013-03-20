@@ -6,14 +6,13 @@ void addDtoTree(char* inputFile,int max=-1, int LHCsqrts=8){
 
   gSystem->Load("/afs/cern.ch/user/y/yygao/public/libmcfm.so");
   gSystem->Load("$CMSSW_BASE/lib/slc5_amd64_gcc462/libZZMatrixElementMELA.so");
-  gROOT->LoadMacro("../interface/Mela.h+");
   gROOT->LoadMacro("../interface/SpinTwoMinimalMELA.h+");
-  gROOT->LoadMacro("../interface/PseudoMELA.h+");
+  gROOT->LoadMacro("../interface/SpinTwoDecayMELA.h+");
+  gROOT->LoadMacro("../interface/SpinTwoqqMinimalMELA.h+");  
 
-  Mela myMELA;
-  Mela myMELA_ICHEP(true);
-  PseudoMELA myPseudoMELA;
   SpinTwoMinimalMELA mySpinTwoMinimalMELA;
+  SpinTwoDecayMELA mySpinTwoDecayMELA;
+  SpinTwoqqMinimalMELA mySpinTwoqqMinimalMELA;
 
   RooMsgService::instance().getStream(1).removeTopic(NumIntegration);
 
@@ -22,21 +21,20 @@ void addDtoTree(char* inputFile,int max=-1, int LHCsqrts=8){
   sprintf(inputFileName,"%s.root",inputFile);
   sprintf(outputFileName,"%s_withDiscriminants.root",inputFile);
 
-  TFile* sigFile = new TFile(inputFileName);
-  TTree* sigTree=0;
-    if(sigFile)
-        sigTree = (TTree*) sigFile->Get("SelectedTree");
-    if(!sigTree){
-      cout<<"ERROR could not find the tree!"<<endl;
-      return;
-    }
+  TChain* sigTree = new TChain("SelectedTree");
+  sigTree->Add(inputFileName);
+  
+  if(!sigTree){
+    cout<<"ERROR could not find the tree!"<<endl;
+    return;
+  }
 
   TFile* newFile = new TFile(outputFileName,"RECREATE");
-  TTree* newTree = new TTree("newTree","SelectedTree"); 
+  TTree* newTree = (TTree*) sigTree->CloneTree(0,"fast");
 
-  float m1,m2,mzz,h1,h2,hs,phi,phi1,psig,pbkg,D,pseudoD,graviD;
+  float m1,m2,mzz,h1,h2,hs,phi,phi1;
   float pt4l, Y4l;
-  float oldD,D_PtY,D_postICHEP;
+  float psig, pbkg, spinTwo, spinTwoDecay, spinTwoQQ;
 
   // -------- CJLST TREES ---------------
   sigTree->SetBranchAddress("Z2Mass",&m2);
@@ -47,39 +45,12 @@ void addDtoTree(char* inputFile,int max=-1, int LHCsqrts=8){
   sigTree->SetBranchAddress("helcosthetaZ2",&h2);
   sigTree->SetBranchAddress("helphi",&phi);
   sigTree->SetBranchAddress("phistarZ1",&phi1);
-  sigTree->SetBranchAddress("ZZPt",&pt4l);
-  sigTree->SetBranchAddress("ZZRapidity",&Y4l);
-  sigTree->SetBranchAddress("ZZLD",&oldD);
 
-  float weight;
-  sigTree->SetBranchAddress("MC_weight_noxsec",&weight);
   //---------------------------------------*/
 
-
-  newTree->Branch("Z1Mass",&m1,"Z1Mass/F");
-  newTree->Branch("Z2Mass",&m2,"Z2Mass/F");
-  newTree->Branch("ZZMass",&mzz,"ZZMass/F");
-  newTree->Branch("helcosthetaZ1",&h1,"helcosthetaZ1/F"); 
-  newTree->Branch("helcosthetaZ2",&h2,"helcosthetaZ2/F");
-  newTree->Branch("costhetastar",&hs,"costhetastar/F");
-  newTree->Branch("helphi",&phi,"helphi/F");  
-  newTree->Branch("phistarZ1",&phi1,"phistarZ1/F");
-
-  newTree->Branch("ZZPt",&pt4l,"ZZpt/F");
-  newTree->Branch("ZZRapidity",&Y4l,"ZZRapidity/F");
-  
-  newTree->Branch("MC_weight_noxsec",&weight,"MC_weight_noxsec/F");
-
-  newTree->Branch("ZZLD",&oldD,"ZZLD/F");
-
-  newTree->Branch("Psig",&psig,"Psig/F");  
-  newTree->Branch("Pbkg",&pbkg,"Pbkg/F");  
-
-  newTree->Branch("ZZLD_analBkg",&D,"ZZLD_analBkg/F");  
-  newTree->Branch("ZZLD_postICHEP",&D_postICHEP,"ZZLD_postICHEP/F");  
-  newTree->Branch("ZZLD_PtY",&D_PtY,"ZZLD_PtY/F");  
-  newTree->Branch("pseudoMelaLD",&pseudoD,"pseudoMelaLD/F");  
-  newTree->Branch("spinTwoMinimalMelaLD",&graviD,"spinTwoMinimalMelaLD/F");  
+  newTree->Branch("spinTwoDecay",&spinTwoDecay,"spinTwoDecay/F");  
+  newTree->Branch("spinTwo",&spinTwo,"spinTwo/F");  
+  newTree->Branch("spinTwoQQ",&spinTwoQQ,"spinTwoQQ/F");  
 
   for(int iEvt=0; iEvt<(max<0?sigTree->GetEntries():max); iEvt++){
 
@@ -92,27 +63,32 @@ void addDtoTree(char* inputFile,int max=-1, int LHCsqrts=8){
 
     // --------------------------------
 
+    /*
+    cout << mzz << endl;
+    cout << m1 << endl;
+dD    cout << m2 << endl;
+    cout << h1 << endl;
+    cout << h2 << endl;
+    cout << hs << endl;
+    cout << phi << endl;
+    cout << phi1 << endl;
+    */
+
     if(mzz>100.){
 
-      mySpinTwoMinimalMELA.computeKD(mzz,m1,m2,hs,h1,h2,phi,phi1,graviD,psig,pbkg);
+      
+
+      mySpinTwoMinimalMELA.computeKD((float)mzz,(float)m1,(float)m2,(float)hs,(float)h1,(float)h2,(float)phi,(float)phi1,spinTwo,psig,pbkg);
 
       //std::cout << "Gravi "<< graviD << " " << psig << " " << pbkg <<std::endl;
 
-      myPseudoMELA.computeKD(mzz,m1,m2,hs,h1,h2,phi,phi1,pseudoD,psig,pbkg);
-
+      mySpinTwoqqMinimalMELA.computeKD((float)mzz,(float)m1,(float)m2,(float)hs,(float)h1,(float)h2,(float)phi,(float)phi1,spinTwoQQ,psig,pbkg);
+      
       //std::cout << "Pseudo "<< pseudoD << " " << psig << " " << pbkg <<std::endl;
       
-      myMELA_ICHEP.computeKD(mzz,m1,m2,hs,h1,h2,phi,phi1,D_postICHEP,psig,pbkg,false,pt4l,false,Y4l);
+      mySpinTwoDecayMELA.computeKD((float)mzz,(float)m1,(float)m2,(float)hs,(float)h1,(float)h2,(float)phi,(float)phi1,spinTwoDecay,psig,pbkg);
 
       //std::cout << "ICHEP "<< D_postICHEP << " " << psig << " " << pbkg <<std::endl;
-
-      myMELA.computeKD(mzz,m1,m2,hs,h1,h2,phi,phi1,D_PtY,psig,pbkg,true,pt4l,true,Y4l);
-
-      //std::cout << "PTY "<< D_PtY << " " << psig << " " << pbkg <<std::endl;
-
-      myMELA.computeKD(mzz,m1,m2,hs,h1,h2,phi,phi1,D,psig,pbkg,false,pt4l,false,Y4l);
-
-      //std::cout << "Nominal "<< D << " " << psig << " " << pbkg <<std::endl;
 
       newTree->Fill();
       
