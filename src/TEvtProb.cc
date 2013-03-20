@@ -128,7 +128,7 @@ double TEvtProb::XsecCalc(TVar::Process proc, const hzz4l_event_type &hzz4l_even
       // spin 2 
       // 
       
-      if ( proc == TVar::TZZ_4l || proc == TVar::QQB_TZZ_4l ) {
+      if ( proc == TVar::TZZ_4l || proc == TVar::QQB_TZZ_4l || proc == TVar::TZZ_DECAY_4l ) {
 	// Graviton->Glu Glu coupling constants 
 	double Gggcoupl[5] = {1.0, 0.0, 0.0, 0.0, 0.0}; // 2m+
 	// double Gggcoupl[5] = {0.0, 0.0, 0.0, 1.0, 0.0}; // 2h+
@@ -150,7 +150,7 @@ double TEvtProb::XsecCalc(TVar::Process proc, const hzz4l_event_type &hzz4l_even
 	Gvvcoupl[7]=0.0; // 2h-
 	Gvvcoupl[8]=0.0;
 	Gvvcoupl[9]=0.0;
-	if ( proc == TVar::TZZ_4l )
+	if ( proc == TVar::TZZ_4l ||  proc == TVar::TZZ_DECAY_4l )
 	  msqjk = JHUGenMatEl(proc, &mcfm_event, _hmass, _hwidth, Gggcoupl, Gvvcoupl);
 	if ( proc == TVar::QQB_TZZ_4l )
 	  msqjk = JHUGenMatEl(proc, &mcfm_event, _hmass, _hwidth, Gqqcoupl, Gvvcoupl);
@@ -160,15 +160,14 @@ double TEvtProb::XsecCalc(TVar::Process proc, const hzz4l_event_type &hzz4l_even
       // spin 1
       // 
       
-      if ( proc == TVar::VZZ_4l ) {
+      if ( proc == TVar::VZZ_4l || proc == TVar::VZZ_DECAY_4l ) {
 	// Zprime->qq coupling constants 
 	double Zqqcoupl[2] = {1.0, 1.0}; // do not change 
 	double Zvvcoupl[2] = {1.0, 0.0};  // 1 -
-	// double Zvvcoupl[2] = {0.0, 1.0};  // 1 +
 	msqjk = JHUGenMatEl(proc, &mcfm_event, _hmass, _hwidth, Zqqcoupl, Zvvcoupl);
       }
 
-      if ( proc == TVar::AVZZ_4l ) {
+      if ( proc == TVar::AVZZ_4l || proc == TVar::AVZZ_DECAY_4l ) {
         // Zprime->qq coupling constants 
 	double Zqqcoupl[2] = {1.0, 1.0}; // do not change 
 	double Zvvcoupl[2] = {0.0, 1.0};  // 1 +
@@ -186,7 +185,8 @@ double TEvtProb::XsecCalc(TVar::Process proc, const hzz4l_event_type &hzz4l_even
     
     if (verbosity >= TVar::DEBUG)
       {
-	cout <<" TEvtProb::XsecCalc(): dXsec=" << dXsec
+	cout <<"Process " << TVar::ProcessName(proc) << 
+	  " TEvtProb::XsecCalc(): dXsec=" << dXsec
 	     <<" Msq="<<msqjk 
 	     <<" flux="<<flux 
 	     <<endl;
