@@ -60,6 +60,32 @@ public:
 		 double& ME,
 		 double& pseudoME,
 		 double& graviME);
+  //
+  // The below two functions calculate the ME integrating out the production angles
+  // 
+  void computeXSDecay(TLorentzVector Z1_lept1, int Z1_lept1Id,
+                 TLorentzVector Z1_lept2, int Z1_lept2Id,
+                 TLorentzVector Z2_lept1, int Z2_lept1Id,
+                 TLorentzVector Z2_lept2, int Z2_lept2Id,
+                 // return variables:
+    	         double& dXsec_VZZ_DECAY_JHU,
+    	         double& dXsec_AVZZ_DECAY_JHU,
+   	         double& dXsec_TZZ_DECAY_JHU);
+    
+  /// Compute KD from masses and angles.
+  /// The user must ensure that the order of m1/m2 matches the order of theta1/theta2.
+  // flavor 1 for 4e, 2 for 4m, 3 for 2e2mu
+  void computeXSDecay(float mZZ, float mZ1, float mZ2,
+                 float costhetastar,
+                 float costheta1,
+                 float costheta2,
+                 float phistar1,
+                 float phi,
+		 int flavor,
+		 //output variables
+    	         double& dXsec_VZZ_DECAY_JHU,
+    	         double& dXsec_AVZZ_DECAY_JHU,
+                 double& dXsec_TZZ_DECAY_JHU);
   
   //compute four-momenta from angles only 
   // Nota bene: angles, not cos(theta)...

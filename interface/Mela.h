@@ -6,8 +6,8 @@
  *  MELA discriminator
  *
  *
- *  $Date: 2013/01/17 15:06:44 $
- *  $Revision: 1.25 $
+ *  $Date: 2013/01/24 15:23:49 $
+ *  $Revision: 1.26 $
  *  \author JHU
  */
 
@@ -110,6 +110,18 @@ public:
 		int flavor // 1:4e, 2:4mu, 3:2e2mu (for interference effects)
 		);
 
+  void computePDecay(float mZZ, float mZ1, float mZ2, 
+		float costhetastar,
+		float costheta1, 
+		float costheta2,
+		float phi,
+		float phistar1,
+		//signal probabilities
+    	        float& p1_decay_VAJHU,       // 1-, vector algebra, production indpendent JHUgen,
+		float& p1plus_decay_VAJHU,   // 1+, vector algebra, production indpendent JHUgen,
+       	        float& p2_decay_VAJHU,       // 2m+, vector algebra, production indpendent JHUgen,
+		int flavor // 1:4e, 2:4mu, 3:2e2mu (for interference effects)
+		);
   
   /// Compute KD from masses and angles. 
   /// The user must ensure that the order of m1/m2 matches the order of theta1/theta2.
@@ -166,6 +178,18 @@ public:
 		float& bkg_VAMCFM, // background, vector algebra, MCFM
 		float& ggzz_VAMCFM, // background, vector algebra, MCFM for ggZZ
 		float& bkg_VAMCFMNorm // background, vector algebra, MCFM, Normalized 
+		);
+
+ void computeVADecay(float mZZ, float mZ1, float mZ2, 
+		float costhetastar,
+		float costheta1, 
+		float costheta2,
+		float phi,
+		float phistar1,
+		int flavor,
+    	        float& p1_decay_VAJHU,       // 1-, vector algebra, production indpendent JHUgen,
+		float& p1plus_decay_VAJHU,   // 1+, vector algebra, production indpendent JHUgen,
+       	        float& p2_decay_VAJHU       // 2m+, vector algebra, production indpendent JHUgen,
 		);
 
 void computePM4L(float mZZ, float mZ1, float mZ2, 

@@ -260,3 +260,124 @@ void ZZMatrixElement::computeXS(float mZZ, float mZ1, float mZ2,
   
   return;
 }
+
+void ZZMatrixElement::computeXSDecay(TLorentzVector Z1_lept1, int Z1_lept1Id,
+	       TLorentzVector Z1_lept2, int Z1_lept2Id,
+	       TLorentzVector Z2_lept1, int Z2_lept1Id,
+	       TLorentzVector Z2_lept2, int Z2_lept2Id,
+	       //output variables
+   	       double& dXsec_VZZ_DECAY_JHU,
+   	       double& dXsec_AVZZ_DECAY_JHU,
+               double& dXsec_TZZ_DECAY_JHU
+	       ){
+  
+  //
+  // initialise the differential cross-sections
+  //
+  dXsec_VZZ_DECAY_JHU = 0.;
+  dXsec_AVZZ_DECAY_JHU = 0.;
+  dXsec_TZZ_DECAY_JHU = 0.;
+  
+  hzz4l_event.p[0].SetXYZM(Z1_lept1.Px(), Z1_lept1.Py(), Z1_lept1.Pz(), 0.);
+  hzz4l_event.p[1].SetXYZM(Z1_lept2.Px(), Z1_lept2.Py(), Z1_lept2.Pz(), 0.);
+  hzz4l_event.p[2].SetXYZM(Z2_lept1.Px(), Z2_lept1.Py(), Z2_lept1.Pz(), 0.);
+  hzz4l_event.p[3].SetXYZM(Z2_lept2.Px(), Z2_lept2.Py(), Z2_lept2.Pz(), 0.);
+
+  double z1mass = (hzz4l_event.p[0]+hzz4l_event.p[1]).M();
+  double z2mass = (hzz4l_event.p[2]+hzz4l_event.p[3]).M();
+  double zzmass = (hzz4l_event.p[0]+hzz4l_event.p[1]+hzz4l_event.p[2]+hzz4l_event.p[3]).M();
+  
+
+  if (verb >= TVar::DEBUG) {
+    cout << "four lepton p4 for ME calculations: ===========================" <<endl;
+    printf("lep1 p3 = (%4.4f, %4.4f, %4.4f)  lep2 p3 = (%4.4f, %4.4f, %4.4f)\n",
+	   Z1_lept1.Px(), Z1_lept1.Py(), Z1_lept1.Pz(), Z1_lept2.Px(), Z1_lept2.Py(), Z1_lept2.Pz());
+    printf("lep3 p3 = (%4.4f, %4.4f, %4.4f)  lep4 p3 = (%4.4f, %4.4f, %4.4f)\n",
+	   Z2_lept1.Px(), Z2_lept1.Py(), Z2_lept1.Pz(), Z2_lept2.Px(), Z2_lept2.Py(), Z2_lept2.Pz());
+    std::cout << "ZZ system (pX, pY, pZ, E, mass) = ( "
+	      << (hzz4l_event.p[0]+hzz4l_event.p[1]+hzz4l_event.p[2]+hzz4l_event.p[3]).Px() << ", "
+	      << (hzz4l_event.p[0]+hzz4l_event.p[1]+hzz4l_event.p[2]+hzz4l_event.p[3]).Py() << ", "
+	      << (hzz4l_event.p[0]+hzz4l_event.p[1]+hzz4l_event.p[2]+hzz4l_event.p[3]).Pz() << ", "
+	      << (hzz4l_event.p[0]+hzz4l_event.p[1]+hzz4l_event.p[2]+hzz4l_event.p[3]).Energy()  << ", "
+	      << zzmass << ")\n";
+    std::cout << "Z1 mass = " << z1mass << "\tz2mass = " << z2mass << "\n";
+    cout << "=========================================================\n";
+  }
+
+  hzz4l_event.PdgCode[0] =  Z1_lept1Id;
+  hzz4l_event.PdgCode[1] =  Z1_lept2Id;
+  hzz4l_event.PdgCode[2] =  Z2_lept1Id;
+  hzz4l_event.PdgCode[3] =  Z2_lept2Id;
+
+  if (verb >= TVar::DEBUG) {
+    std::cout << "PDG code \n";
+    std::cout << "hzz4l_event.PdgCode[0] = " << hzz4l_event.PdgCode[0] << "\n";
+    std::cout << "hzz4l_event.PdgCode[1] = " << hzz4l_event.PdgCode[1] << "\n";
+    std::cout << "hzz4l_event.PdgCode[2] = " << hzz4l_event.PdgCode[2] << "\n";
+    std::cout << "hzz4l_event.PdgCode[3] = " << hzz4l_event.PdgCode[3] << "\n";
+  }
+  
+  // ==== Begin the differential cross-section calculation
+  Xcal2.SetHiggsMass(zzmass);
+  Xcal2.SetMatrixElement(TVar::JHUGen);
+  
+  // 1- decay 
+  dXsec_VZZ_DECAY_JHU = Xcal2.XsecCalc(TVar::VZZ_DECAY_4l,hzz4l_event,verb);  
+
+  // 1+ decay 
+  dXsec_AVZZ_DECAY_JHU = Xcal2.XsecCalc(TVar::AVZZ_DECAY_4l,hzz4l_event,verb);  
+
+  // 2m+ decay 
+  dXsec_TZZ_DECAY_JHU = Xcal2.XsecCalc(TVar::TZZ_DECAY_4l,hzz4l_event,verb);  
+  
+  return;
+}
+
+void ZZMatrixElement::computeXSDecay(float mZZ, float mZ1, float mZ2,
+				float costhetastar,
+				float costheta1,
+				float costheta2,
+				float phi,
+				float phistar1,
+				int flavor,
+				//output variables
+   			        double& dXsec_VZZ_DECAY_JHU,
+				double& dXsec_AVZZ_DECAY_JHU,
+   			        double& dXsec_TZZ_DECAY_JHU
+				){
+  std::vector<TLorentzVector> p;
+  p=Calculate4Momentum(mZZ,mZ1,mZ2,acos(costhetastar),acos(costheta1),acos(costheta2),phistar1,phi);
+  
+  int pdg11,pdg12,pdg21,pdg22;
+  assert(flavor==1 || flavor==2 || flavor==3 );
+  if ( flavor == 1 ) {
+    pdg11 = 11;
+    pdg12 = -11;
+    pdg21 = 11;
+    pdg22 = -11;
+  }
+  if ( flavor == 2 ) {
+    pdg11 = 13;
+    pdg12 = -13;
+    pdg21 = 13;
+    pdg22 = -13;
+  }
+  if ( flavor == 3 ) {
+    pdg11 = 11;
+    pdg12 = -11;
+    pdg21 = 13;
+    pdg22 = -13;
+  }
+  
+  computeXSDecay(p[0], pdg11,
+	    p[1], pdg12,
+	    p[2], pdg21,
+	    p[3], pdg22,
+	    //output variables
+      	    dXsec_VZZ_DECAY_JHU,
+            dXsec_AVZZ_DECAY_JHU,
+	    dXsec_TZZ_DECAY_JHU
+	    );
+  
+  return;
+}

@@ -2,8 +2,8 @@
  *
  *  See header file for documentation.
  *
- *  $Date: 2013/01/24 15:23:50 $
- *  $Revision: 1.39 $
+ *  $Date: 2013/01/28 02:05:31 $
+ *  $Revision: 1.40 $
  */
 
 #include <ZZMatrixElement/MELA/interface/Mela.h>
@@ -1067,4 +1067,63 @@ void Mela::computePM4L(float mZZ, float mZ1, float mZ2,
 
 
 
+void Mela::computeVADecay(float mZZ, float mZ1, float mZ2, 
+	       float costhetastar,
+	       float costheta1, 
+	       float costheta2,
+	       float phi,
+	       float phistar1,
+	       int flavor,
+    	       float& p1_decay_VAJHU,       // 1-, vector algebra, production indpendent JHUgen,
+    	       float& p1plus_decay_VAJHU,   // 1+, vector algebra, production indpendent JHUgen,
+               float& p2_decay_VAJHU       // 2m+, vector algebra, production indpendent JHUgen,
+       	      ){
 
+  //initialize variables
+  checkZorder(mZ1,mZ2,costhetastar,costheta1,costheta2,phi,phistar1);
+  double dXsec_VZZ_DECAY_JHU;
+  double dXsec_AVZZ_DECAY_JHU;
+  double dXsec_TZZ_DECAY_JHU;
+
+  ZZME->computeXSDecay(mZZ,mZ1,mZ2,
+		  costhetastar,costheta1,costheta2,
+		  phi,phistar1,
+		  flavor,
+		  //output variables
+   	          dXsec_VZZ_DECAY_JHU,
+   	          dXsec_AVZZ_DECAY_JHU,
+		  dXsec_TZZ_DECAY_JHU
+		  );
+
+  p1_decay_VAJHU=dXsec_VZZ_DECAY_JHU;
+  p1plus_decay_VAJHU=dXsec_AVZZ_DECAY_JHU;
+  p2_decay_VAJHU=dXsec_TZZ_DECAY_JHU;
+
+}//end computeVADecay
+
+
+void Mela::computePDecay(float mZZ, float mZ1, float mZ2, 
+		 float costhetastar,
+		 float costheta1, 
+		 float costheta2,
+		 float phi,
+		 float phistar1,
+   		 ///////////////
+    	         float& p1_decay_VAJHU,       // 1-, vector algebra, production indpendent JHUgen,
+		 float& p1plus_decay_VAJHU,   // 1+, vector algebra, production indpendent JHUgen,
+		 float& p2_decay_VAJHU,       // 2m+, vector algebra, production indpendent JHUgen,
+                 int flavor // 1:4e, 2:4mu, 3:2e2mu (for interference effects)
+		 ){
+  //initialize variables
+  checkZorder(mZ1,mZ2,costhetastar,costheta1,costheta2,phi,phistar1);
+  computeVADecay( mZZ,  mZ1, mZ2, 
+	     costhetastar, costheta1, costheta2,
+	     phi,phistar1,flavor,
+     	     p1_decay_VAJHU, p1plus_decay_VAJHU, p2_decay_VAJHU);
+
+  // define constants for discriminants
+  p1_decay_VAJHU *= 1e+10;
+  p1plus_decay_VAJHU *= 1e+10;
+  p2_decay_VAJHU *= 1.6e+9;
+
+}
