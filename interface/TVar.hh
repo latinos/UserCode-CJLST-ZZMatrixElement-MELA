@@ -34,6 +34,9 @@ public:
     AVZZ_4l = 7,
     QQB_TZZ_4l = 8,
     HDHZZ_4l = 9, // 0h+
+    TZZ_DECAY_4l = 10,
+    VZZ_DECAY_4l = 11,
+    AVZZ_DECAY_4l = 12,
     Null
   };
   //---------------------------------
@@ -56,10 +59,16 @@ public:
       return TString("TZZ_2mplus_4l");
     else if(temp==TVar::QQB_TZZ_4l   ) 
       return TString("QQB_TZZ_2mplus_4l");
+    else if(temp==TVar::TZZ_DECAY_4l   ) 
+      return TString("TZZ_decay_2mplus_4l");
     else if(temp==TVar::VZZ_4l   ) 
       return TString("VZZ_4l");
     else if(temp==TVar::AVZZ_4l   ) 
       return TString("AVZZ_4l");
+    else if(temp==TVar::VZZ_DECAY_4l   ) 
+      return TString("VZZ_decay_4l");
+    else if(temp==TVar::AVZZ_DECAY_4l   ) 
+      return TString("AVZZ_decay_4l");
     else 
       return TString("UnKnown");
   };
