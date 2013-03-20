@@ -59,6 +59,7 @@ void addProbtoTree(char* inputFile,int flavor, int max=-1, int LHCsqrts=8){
   float p0plus_m4l_ScaleUp, p0plus_m4l_ScaleDown,p0plus_m4l_ResUp,p0plus_m4l_ResDown;//alternative values of supermela used for systematic templates
   float bkg_m4l_ScaleUp, bkg_m4l_ScaleDown,bkg_m4l_ResUp,bkg_m4l_ResDown;//alternative values of supermela used for systematic templates
   float p1_decay_VAJHU, p1plus_decay_VAJHU, p2_decay_VAJHU; 
+  float p2hminus_VAJHU, p2hplus_VAJHU, p2bplus_VAJHU;
 
   float VAKD=0;                         // MCFM/JHUGen kinimetatic discriminant
 
@@ -121,6 +122,10 @@ void addProbtoTree(char* inputFile,int flavor, int max=-1, int LHCsqrts=8){
   newTree->Branch("p1_decay_VAJHU",&p1_decay_VAJHU,"p1_decay_VAJHU/F");  // 1-, vector algebra, production indpendent JHUgen
   newTree->Branch("p1plus_decay_VAJHU",&p1plus_decay_VAJHU,"p1plus_decay_VAJHU/F");  // 1+, vector algebra, production indpendent JHUgen
   newTree->Branch("p2_decay_VAJHU",&p2_decay_VAJHU,"p2_decay_VAJHU/F");  // 2m+, vector algebra, production indpendent JHUgen
+  newTree->Branch("p2hminus_VAJHU",&p2hminus_VAJHU,"p2hminus_VAJHU/F");  // 2h-, vector algebra, JHUgen,
+  newTree->Branch("p2hplus_VAJHU",&p2hplus_VAJHU,"p2hplus_VAJHU/F");     // 2h+, vector algebra, JHUgen,
+  newTree->Branch("p2bplus_VAJHU",&p2bplus_VAJHU,"p2bplus_VAJHU/F");     // 2b+, vector algebra, JHUgen,
+
   //backgrounds
   newTree->Branch("bkg_mela",&bkg_mela,"bkg_mela/F");  // background,  analytic distribution 
   newTree->Branch("bkg_VAMCFM",&bkg_VAMCFM,"bkg_VAMCFM/F");  // background, vector algebra, MCFM
@@ -200,12 +205,15 @@ void addProbtoTree(char* inputFile,int flavor, int max=-1, int LHCsqrts=8){
 		      pt4l,Y4l,flavor // 1:4e, 2:4mu, 3:2e2mu (for interference effects)
 		      );
 
-      myMELA.computePDecay(mzz, m1, m2, 
+      myMELA.computePExtra(mzz, m1, m2, 
 		      hs,h1,h2,phi,phi1,
 		      //signal probabilities
 		      p1_decay_VAJHU,       // 1-, vector algebra, production indpendent JHUgen,
 	              p1plus_decay_VAJHU,   // 1+, vector algebra, production indpendent JHUgen,
    		      p2_decay_VAJHU,       // 2m+, vector algebra, production indpendent JHUgen,
+		      p2hminus_VAJHU,       // 2h-, vector algebra, JHUgen,
+		      p2hplus_VAJHU,        // 2h+, vector algebra, JHUgen,
+		      p2bplus_VAJHU,        // 2b+, vector algebra, JHUgen,
 		      flavor); 
 
       float p0plus_m4l_v2,bkg_m4l_v2;

@@ -6,8 +6,8 @@
  *  MELA discriminator
  *
  *
- *  $Date: 2013/01/24 15:23:49 $
- *  $Revision: 1.26 $
+ *  $Date: 2013/03/20 13:23:18 $
+ *  $Revision: 1.27 $
  *  \author JHU
  */
 
@@ -110,7 +110,7 @@ public:
 		int flavor // 1:4e, 2:4mu, 3:2e2mu (for interference effects)
 		);
 
-  void computePDecay(float mZZ, float mZ1, float mZ2, 
+  void computePExtra(float mZZ, float mZ1, float mZ2, 
 		float costhetastar,
 		float costheta1, 
 		float costheta2,
@@ -120,9 +120,13 @@ public:
     	        float& p1_decay_VAJHU,       // 1-, vector algebra, production indpendent JHUgen,
 		float& p1plus_decay_VAJHU,   // 1+, vector algebra, production indpendent JHUgen,
        	        float& p2_decay_VAJHU,       // 2m+, vector algebra, production indpendent JHUgen,
+       	        float& p2hminus_VAJHU,       // 2h-, vector algebra, JHUgen,
+	        float& p2hplus_VAJHU,        // 2h+, vector algebra, JHUgen,
+  	        float& p2bplus_VAJHU,         // 2b+, vector algebra, JHUgen,
 		int flavor // 1:4e, 2:4mu, 3:2e2mu (for interference effects)
 		);
-  
+
+   
   /// Compute KD from masses and angles. 
   /// The user must ensure that the order of m1/m2 matches the order of theta1/theta2.
   void computeKD(float mZZ, float mZ1, float mZ2, 
@@ -180,7 +184,7 @@ public:
 		float& bkg_VAMCFMNorm // background, vector algebra, MCFM, Normalized 
 		);
 
- void computeVADecay(float mZZ, float mZ1, float mZ2, 
+ void computeVAExtra(float mZZ, float mZ1, float mZ2, 
 		float costhetastar,
 		float costheta1, 
 		float costheta2,
@@ -189,7 +193,10 @@ public:
 		int flavor,
     	        float& p1_decay_VAJHU,       // 1-, vector algebra, production indpendent JHUgen,
 		float& p1plus_decay_VAJHU,   // 1+, vector algebra, production indpendent JHUgen,
-       	        float& p2_decay_VAJHU       // 2m+, vector algebra, production indpendent JHUgen,
+ 	        float& p2_decay_VAJHU,       // 2m+, vector algebra, production indpendent JHUgen,
+       	        float& p2hminus_VAJHU,       // 2h-, vector algebra, JHUgen,
+	        float& p2hplus_VAJHU,        // 2h+, vector algebra, JHUgen,
+  	        float& p2bplus_VAJHU         // 2b+, vector algebra, JHUgen,
 		);
 
 void computePM4L(float mZZ, float mZ1, float mZ2, 

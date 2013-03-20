@@ -261,14 +261,17 @@ void ZZMatrixElement::computeXS(float mZZ, float mZ1, float mZ2,
   return;
 }
 
-void ZZMatrixElement::computeXSDecay(TLorentzVector Z1_lept1, int Z1_lept1Id,
+void ZZMatrixElement::computeXSExtra(TLorentzVector Z1_lept1, int Z1_lept1Id,
 	       TLorentzVector Z1_lept2, int Z1_lept2Id,
 	       TLorentzVector Z2_lept1, int Z2_lept1Id,
 	       TLorentzVector Z2_lept2, int Z2_lept2Id,
 	       //output variables
    	       double& dXsec_VZZ_DECAY_JHU,
    	       double& dXsec_AVZZ_DECAY_JHU,
-               double& dXsec_TZZ_DECAY_JHU
+ 	       double& dXsec_TZZ_DECAY_JHU,
+   	       double& dXsec_PTZZ_2hminus_JHU,
+   	       double& dXsec_TZZ_2hplus_JHU,
+               double& dXsec_TZZ_2bplus_JHU
 	       ){
   
   //
@@ -277,6 +280,9 @@ void ZZMatrixElement::computeXSDecay(TLorentzVector Z1_lept1, int Z1_lept1Id,
   dXsec_VZZ_DECAY_JHU = 0.;
   dXsec_AVZZ_DECAY_JHU = 0.;
   dXsec_TZZ_DECAY_JHU = 0.;
+  dXsec_PTZZ_2hminus_JHU = 0.;
+  dXsec_TZZ_2hplus_JHU = 0.;
+  dXsec_TZZ_2bplus_JHU = 0.;
   
   hzz4l_event.p[0].SetXYZM(Z1_lept1.Px(), Z1_lept1.Py(), Z1_lept1.Pz(), 0.);
   hzz4l_event.p[1].SetXYZM(Z1_lept2.Px(), Z1_lept2.Py(), Z1_lept2.Pz(), 0.);
@@ -328,12 +334,21 @@ void ZZMatrixElement::computeXSDecay(TLorentzVector Z1_lept1, int Z1_lept1Id,
   dXsec_AVZZ_DECAY_JHU = Xcal2.XsecCalc(TVar::AVZZ_DECAY_4l,hzz4l_event,verb);  
 
   // 2m+ decay 
-  dXsec_TZZ_DECAY_JHU = Xcal2.XsecCalc(TVar::TZZ_DECAY_4l,hzz4l_event,verb);  
+  dXsec_TZZ_DECAY_JHU = Xcal2.XsecCalc(TVar::TZZ_DECAY_4l,hzz4l_event,verb); 
+
+  // 2h-
+  dXsec_PTZZ_2hminus_JHU = Xcal2.XsecCalc(TVar::PTZZ_2hminus_4l,hzz4l_event,verb);  
+
+  // 2h+
+  dXsec_TZZ_2hplus_JHU = Xcal2.XsecCalc(TVar::TZZ_2hplus_4l,hzz4l_event,verb);  
+
+  // 2b+ 
+  dXsec_TZZ_2bplus_JHU = Xcal2.XsecCalc(TVar::TZZ_2bplus_4l,hzz4l_event,verb);   
   
   return;
 }
 
-void ZZMatrixElement::computeXSDecay(float mZZ, float mZ1, float mZ2,
+void ZZMatrixElement::computeXSExtra(float mZZ, float mZ1, float mZ2,
 				float costhetastar,
 				float costheta1,
 				float costheta2,
@@ -343,7 +358,10 @@ void ZZMatrixElement::computeXSDecay(float mZZ, float mZ1, float mZ2,
 				//output variables
    			        double& dXsec_VZZ_DECAY_JHU,
 				double& dXsec_AVZZ_DECAY_JHU,
-   			        double& dXsec_TZZ_DECAY_JHU
+				double& dXsec_TZZ_DECAY_JHU,
+  			        double& dXsec_PTZZ_2hminus_JHU,
+				double& dXsec_TZZ_2hplus_JHU,
+                                double& dXsec_TZZ_2bplus_JHU
 				){
   std::vector<TLorentzVector> p;
   p=Calculate4Momentum(mZZ,mZ1,mZ2,acos(costhetastar),acos(costheta1),acos(costheta2),phistar1,phi);
@@ -369,15 +387,19 @@ void ZZMatrixElement::computeXSDecay(float mZZ, float mZ1, float mZ2,
     pdg22 = -13;
   }
   
-  computeXSDecay(p[0], pdg11,
+  computeXSExtra(p[0], pdg11,
 	    p[1], pdg12,
 	    p[2], pdg21,
 	    p[3], pdg22,
 	    //output variables
       	    dXsec_VZZ_DECAY_JHU,
             dXsec_AVZZ_DECAY_JHU,
-	    dXsec_TZZ_DECAY_JHU
+            dXsec_TZZ_DECAY_JHU,
+      	    dXsec_PTZZ_2hminus_JHU,
+      	    dXsec_TZZ_2hplus_JHU,
+	    dXsec_TZZ_2bplus_JHU
 	    );
   
   return;
 }
+

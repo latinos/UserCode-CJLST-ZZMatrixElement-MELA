@@ -2,8 +2,8 @@
  *
  *  See header file for documentation.
  *
- *  $Date: 2013/01/28 02:05:31 $
- *  $Revision: 1.40 $
+ *  $Date: 2013/03/20 13:23:18 $
+ *  $Revision: 1.41 $
  */
 
 #include <ZZMatrixElement/MELA/interface/Mela.h>
@@ -1067,16 +1067,19 @@ void Mela::computePM4L(float mZZ, float mZ1, float mZ2,
 
 
 
-void Mela::computeVADecay(float mZZ, float mZ1, float mZ2, 
+void Mela::computeVAExtra(float mZZ, float mZ1, float mZ2, 
 	       float costhetastar,
 	       float costheta1, 
 	       float costheta2,
 	       float phi,
 	       float phistar1,
 	       int flavor,
-    	       float& p1_decay_VAJHU,       // 1-, vector algebra, production indpendent JHUgen,
-    	       float& p1plus_decay_VAJHU,   // 1+, vector algebra, production indpendent JHUgen,
-               float& p2_decay_VAJHU       // 2m+, vector algebra, production indpendent JHUgen,
+   	       float& p1_decay_VAJHU,       // 1-, vector algebra, production indpendent JHUgen,
+	       float& p1plus_decay_VAJHU,   // 1+, vector algebra, production indpendent JHUgen,
+	       float& p2_decay_VAJHU,       // 2m+, vector algebra, production indpendent JHUgen,
+      	       float& p2hminus_VAJHU,       // 2h-, vector algebra, JHUgen,
+	       float& p2hplus_VAJHU,        // 2h+, vector algebra, JHUgen,
+	       float& p2bplus_VAJHU         // 2b+, vector algebra, JHUgen,
        	      ){
 
   //initialize variables
@@ -1084,25 +1087,34 @@ void Mela::computeVADecay(float mZZ, float mZ1, float mZ2,
   double dXsec_VZZ_DECAY_JHU;
   double dXsec_AVZZ_DECAY_JHU;
   double dXsec_TZZ_DECAY_JHU;
+  double dXsec_PTZZ_2hminus_JHU;
+  double dXsec_TZZ_2hplus_JHU;
+  double dXsec_TZZ_2bplus_JHU;
 
-  ZZME->computeXSDecay(mZZ,mZ1,mZ2,
+  ZZME->computeXSExtra(mZZ,mZ1,mZ2,
 		  costhetastar,costheta1,costheta2,
 		  phi,phistar1,
 		  flavor,
 		  //output variables
    	          dXsec_VZZ_DECAY_JHU,
    	          dXsec_AVZZ_DECAY_JHU,
-		  dXsec_TZZ_DECAY_JHU
+     	          dXsec_TZZ_DECAY_JHU,
+   	          dXsec_PTZZ_2hminus_JHU,
+   	          dXsec_TZZ_2hplus_JHU,
+   	          dXsec_TZZ_2bplus_JHU
 		  );
 
   p1_decay_VAJHU=dXsec_VZZ_DECAY_JHU;
   p1plus_decay_VAJHU=dXsec_AVZZ_DECAY_JHU;
   p2_decay_VAJHU=dXsec_TZZ_DECAY_JHU;
+  p2hminus_VAJHU=dXsec_PTZZ_2hminus_JHU;
+  p2hplus_VAJHU=dXsec_TZZ_2hplus_JHU;
+  p2bplus_VAJHU=dXsec_TZZ_2bplus_JHU;
 
-}//end computeVADecay
+}//end computeVAExtra
 
 
-void Mela::computePDecay(float mZZ, float mZ1, float mZ2, 
+void Mela::computePExtra(float mZZ, float mZ1, float mZ2, 
 		 float costhetastar,
 		 float costheta1, 
 		 float costheta2,
@@ -1112,18 +1124,29 @@ void Mela::computePDecay(float mZZ, float mZ1, float mZ2,
     	         float& p1_decay_VAJHU,       // 1-, vector algebra, production indpendent JHUgen,
 		 float& p1plus_decay_VAJHU,   // 1+, vector algebra, production indpendent JHUgen,
 		 float& p2_decay_VAJHU,       // 2m+, vector algebra, production indpendent JHUgen,
+      	         float& p2hminus_VAJHU,       // 2h-, vector algebra, JHUgen,
+	         float& p2hplus_VAJHU,        // 2h+, vector algebra, JHUgen,
+		 float& p2bplus_VAJHU,         // 2b+, vector algebra, JHUgen,
                  int flavor // 1:4e, 2:4mu, 3:2e2mu (for interference effects)
 		 ){
   //initialize variables
   checkZorder(mZ1,mZ2,costhetastar,costheta1,costheta2,phi,phistar1);
-  computeVADecay( mZZ,  mZ1, mZ2, 
+  computeVAExtra( mZZ,  mZ1, mZ2, 
 	     costhetastar, costheta1, costheta2,
 	     phi,phistar1,flavor,
-     	     p1_decay_VAJHU, p1plus_decay_VAJHU, p2_decay_VAJHU);
+             p1_decay_VAJHU, 
+             p1plus_decay_VAJHU, 
+             p2_decay_VAJHU,
+    	     p2hminus_VAJHU,
+    	     p2hplus_VAJHU,
+    	     p2bplus_VAJHU
+            );
 
   // define constants for discriminants
+  // tuned with 2e2m for the moment -YY
   p1_decay_VAJHU *= 1e+10;
   p1plus_decay_VAJHU *= 1e+10;
   p2_decay_VAJHU *= 1.6e+9;
-
+  p2hminus_VAJHU *= 1e+10;
+  p2hplus_VAJHU *= 1e+10;
 }
