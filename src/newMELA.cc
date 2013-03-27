@@ -1,8 +1,39 @@
-#include "ZZMatrixElement/MELA/interface/newMELA.h"
-#include "ZZMatrixElement/MELA/src/computeAngles.h"
+#include <ZZMatrixElement/MELA/interface/newMELA.h>
+#include <ZZMatrixElement/MELA/interface/newZZMatrixElement.h>
+#include <ZZMatrixElement/MELA/interface/SuperMELA.h>
+#include <DataFormats/GeometryVector/interface/Pi.h>
+#include <FWCore/ParameterSet/interface/FileInPath.h>
 
-newMELA::newMELA(TVar::Process myModel_){
-  
+#include "computeAngles.h"
+#include "AngularPdfFactory.h"
+#include "VectorPdfFactory.h"
+#include "TensorPdfFactory.h"
+#include "RooqqZZ_JHU_ZgammaZZ_fast.h"
+#include "RooqqZZ_JHU.h"
+#include "RooTsallis.h"
+//#include "HiggsAnalysis/CombinedLimit/interface/HZZ4LRooPdfs.h"  // replacement for RooTsallis
+#include "RooTsallisExp.h"
+#include "RooRapidityBkg.h"
+#include "RooRapiditySig.h"
+
+#include <RooMsgService.h>
+#include <TFile.h>
+#include <TH1F.h>
+#include <TH2F.h>
+#include <TH3F.h>
+#include <TGraph.h>
+#include <vector>
+
+#include <string>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+
+
+using namespace RooFit;
+
+newMELA::newMELA(bool usePowhegTemplate, int LHCsqrts, float mh) 
+{
   mzz_rrv = new RooRealVar("mzz","m_{ZZ}",0.,1000.);
   z1mass_rrv = new RooRealVar("z1mass","m_{Z1}",0.,180.);
   z2mass_rrv = new RooRealVar("z2mass","m_{Z2}",0.,120.); 
@@ -16,20 +47,104 @@ newMELA::newMELA(TVar::Process myModel_){
   spin1Model = new VectorPdfFactory(z1mass_rrv,z2mass_rrv,costhetastar_rrv,costheta1_rrv,costheta2_rrv,phi_rrv,phi1_rrv,mzz_rrv);
   spin2Model = new TensorPdfFactory(z1mass_rrv,z2mass_rrv,costhetastar_rrv,costheta1_rrv,costheta2_rrv,phi_rrv,phi1_rrv,mzz_rrv);
 
-  myModel = myModel_;
+  EBEAM = 1000.*LHCsqrts/2;
+  
+  edm::FileInPath HiggsWidthFile("Higgs/Higgs_CS_and_Width/txtFiles/8TeV-ggH.txt");
+  std::string path = HiggsWidthFile.fullPath();
+  //std::cout << path.substr(0,path.length()-12) << std::endl;
+  ZZME = new  newZZMatrixElement(path.substr(0,path.length()-12 ).c_str(),1000.*LHCsqrts/2.,TVar::DEBUG);
+
+  // 
+  // configure the JHUGEn and MCFM calculations 
+  // 
+  
+  // Create symlinks to the required files, if these are not already present (do nothing otherwse)
+  edm::FileInPath mcfmInput1("ZZMatrixElement/MELA/data/input.DAT");
+  edm::FileInPath mcfmInput2("ZZMatrixElement/MELA/data/process.DAT");
+  edm::FileInPath mcfmInput3("ZZMatrixElement/MELA/data/Pdfdata/cteq6l1.tbl");  
+  symlink(mcfmInput1.fullPath().c_str(), "input.DAT");
+  symlink(mcfmInput2.fullPath().c_str(), "process.DAT");
+  mkdir("Pdfdata",S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+  symlink(mcfmInput3.fullPath().c_str(), "Pdfdata/cteq6l1.tbl");
+  
+}
+
+
+newMELA::~newMELA(){ 
+  //std::cout << "begin destructor" << std::endl;  
+  /*
+  delete mzz_rrv;
+  delete z1mass_rrv; 
+  delete z2mass_rrv; 
+  delete costhetastar_rrv;
+  delete costheta1_rrv;
+  delete costheta2_rrv;
+  delete phi_rrv;
+  delete phi1_rrv;
+  delete spin0Model;
+  delete spin1Model;
+  delete spin2Model;
+  delete ZZME;
+  */
+}
+
+void newMELA::setProcess(TVar::Process myModel, TVar::MatrixElement myME, TVar::Production myProduction)
+{
+  myModel_ = myModel;
+  myME_ = myME;
+  myProduction_ = myProduction;
+
+  // 
+  // configure the analytical calculations 
+  // 
         
-  if(!spin0Model->configure(myModel)) pdf = spin0Model->PDF;
+  if(!spin0Model->configure(myModel_)) pdf = spin0Model->PDF;
   else{
-    if(!spin1Model->configure(myModel)) pdf = spin1Model->PDF;
+    if(!spin1Model->configure(myModel_)) pdf = spin1Model->PDF;
     else{
-      if(!spin2Model->configure(myModel)) pdf = spin2Model->PDF;
+      if(!spin2Model->configure(myModel_)) pdf = spin2Model->PDF;
       else{
 	cout << "newMELA::newMELA ERROR model not found!!!" << endl; 
       }	
     }
   }
-  
-};
+
+}
+
+
+// Re-order masses and angles as needed by likelihoodDiscriminant. 
+// This follows a different convention than the usual Z1/Z2 definition!
+void newMELA::checkZorder(float& z1mass, float& z2mass,
+		       float& costhetastar, float& costheta1,
+		       float& costheta2, float& phi, 
+		       float& phistar1){
+
+  float tempZ1mass=z1mass;
+  float tempZ2mass=z2mass;
+  float tempH1=costheta1;
+  float tempH2=costheta2;
+  float tempHs=costhetastar;
+  float tempPhi1=phistar1;
+  float tempPhi=phi;
+
+  if(z2mass>z1mass){
+    //cout<<"inverted"<<endl;
+    z1mass=tempZ2mass;
+    z2mass=tempZ1mass;
+    costhetastar=-tempHs;
+    costheta1=tempH2;
+    costheta2=tempH1;
+    phi=tempPhi;
+    phistar1=-tempPhi1-tempPhi;
+    if(phistar1>3.1415)
+      phistar1=phistar1-2*Geom::pi();
+    if(phistar1<-3.1415)
+      phistar1=phistar1+2*Geom::pi();
+
+  }else
+    return;
+
+}
 
 void newMELA::computeP(float mZZ, float mZ1, float mZ2, // input kinematics
 		       float costhetastar,
@@ -37,6 +152,7 @@ void newMELA::computeP(float mZZ, float mZ1, float mZ2, // input kinematics
 		       float costheta2,
 		       float phi,
 		       float phi1,
+		       int flavor, 
 		       float& prob){                   // output probability
     
   costhetastar_rrv->setVal(costhetastar);
@@ -49,11 +165,29 @@ void newMELA::computeP(float mZZ, float mZ1, float mZ2, // input kinematics
   z2mass_rrv->setVal(mZ2);
   mzz_rrv->setVal(mZZ);
 
-  if(mZZ>100.)
-    prob = pdf->getVal();
-  else 
-    prob = -99.0;
+  //
+  // analytical calculations
+  // 
+  if ( myME_ == TVar::ANALYTICAL ) {
+    if(mZZ>100.)
+      prob = pdf->getVal();
+    else 
+      prob = -99.0;
+  } 
 
+  //
+  // JHUGen or MCFM 
+  //
+  if ( myME_ == TVar::JHUGen|| myME_ == TVar::MCFM ) {
+    
+    //initialize variables
+    checkZorder(mZ1,mZ2,costhetastar,costheta1,costheta2,phi,phi1);
+    ZZME->computeXS(mZZ,mZ1,mZ2,
+		    costhetastar,costheta1,costheta2, 
+		    phi, phi1, flavor,
+		    myModel_, myME_,  myProduction_,  prob);
+    
+  }
 }
 
 void newMELA::computeP(TLorentzVector Z1_lept1, int Z1_lept1Id,  // input 4-vectors
