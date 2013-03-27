@@ -19,10 +19,17 @@ public:
     DEBUG = 2
   };
   enum MatrixElement{
-    MCFM,
-    MadGraph,
-    JHUGen
+    MCFM = 0,
+    MadGraph = 1,
+    JHUGen = 2,
+    ANALYTICAL = 3
   };
+  enum Production{
+    GG = 0,
+    QQB = 1,
+    INDEPENDENT=2
+  };
+
   enum Process{
     ZZ_2e2m    =0, // eemm
     HZZ_4l   =1, // 0+
