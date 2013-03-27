@@ -1,6 +1,7 @@
 #ifndef VECTOR_PDF_FACTORY
 #define VECTOR_PDF_FACTORY
 
+#include "ZZMatrixElement/MELA/interface/TVar.hh"
 #include "RooSpinOne_7D.h"
 #include "RooRealVar.h"
 #include "RooAbsPdf.h"
@@ -28,6 +29,8 @@ public:
   RooRealVar* aParam;
   
   TF1* fmZZNorm;
+
+  VectorPdfFactory(){};
 
   VectorPdfFactory(RooRealVar* m1,RooRealVar* m2,RooRealVar* hs,RooRealVar* h1,RooRealVar* h2,RooRealVar* Phi,RooRealVar* Phi1,RooRealVar* mZZ){
 
@@ -69,6 +72,17 @@ public:
     delete PDF;
 
   };
+
+  int configure(TVar::Process model_){
+
+    switch (model_){
+    case TVar::AVZZ_4l: makePseudoZprime(); return 0; break;
+    case TVar::VZZ_4l : makeZprime(); return 0; break;
+    default: makeZprime(); return 1; break;
+    }
+
+  };
+
 
   void makePseudoZprime(){  // NEED TO CALCULATE NORMALIZATIONS
 

@@ -1,6 +1,7 @@
 #ifndef TENSOR_PDF_FACTORY
 #define TENSOR_PDF_FACTORY
 
+#include "ZZMatrixElement/MELA/interface/TVar.hh"
 #include "RooSpinTwo_7D.h"
 #include "RooRealVar.h"
 #include "RooAbsPdf.h"
@@ -45,6 +46,8 @@ public:
   int modelIndex;
 
   
+  TensorPdfFactory(){};
+
   TensorPdfFactory(RooRealVar* m1,RooRealVar* m2,RooRealVar* hs,RooRealVar* h1,RooRealVar* h2,RooRealVar* Phi,RooRealVar* Phi1,RooRealVar* mZZ){
 
     // Parameters
@@ -124,6 +127,18 @@ public:
 
     delete PDF;
 
+
+  };
+
+  int configure(TVar::Process model_){
+
+    switch (model_){
+    case TVar::TZZ_4l          : makeMinGrav(); return 0; break;
+    case TVar::QQB_TZZ_4l      : makeqqMinGrav(); return 0; break;
+    case TVar::TZZ_2hplus_4l   : make2hPlus(); return 0; break;
+    case TVar::PTZZ_2hminus_4l  : make2hMinus(); return 0; break;
+    default: makeMinGrav(); return 1; break;
+    }
 
   };
 

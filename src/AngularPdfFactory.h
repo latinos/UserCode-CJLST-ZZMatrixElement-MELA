@@ -3,7 +3,9 @@
 
 #include "RooRealVar.h"
 #include "RooXZsZs_5D.h"
+#include "ZZMatrixElement/MELA/interface/TVar.hh"
 #include <cmath>
+#include <string>
 
 class AngularPdfFactory{
 
@@ -26,6 +28,9 @@ public:
   RooXZsZs_5D *PDF;
 
   int modelIndex;  //0 - SM Higgs, 1 - PS Higgs, 2 - Fully Longitudinal Scalar, -1 - Custom
+
+
+  AngularPdfFactory(){};
 
   AngularPdfFactory(RooRealVar* m1,RooRealVar* m2,RooRealVar* h1,RooRealVar* h2,RooRealVar* Phi,RooRealVar* mZZ){
 
@@ -61,6 +66,18 @@ public:
     delete R2Val;
     
     delete PDF;
+
+  };
+
+  int configure(TVar::Process model_){
+
+    switch (model_){
+    case TVar::HZZ_4l: makeSMHiggs(); return 0; break;
+    case TVar::HDHZZ_4l : makeLGHiggs(); return 0; break;
+    case TVar::PSHZZ_4l : makePSHiggs(); return 0; break;
+    default: makeSMHiggs(); return 1; break;
+    }
+
 
   };
 
