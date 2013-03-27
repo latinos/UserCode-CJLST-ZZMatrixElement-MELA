@@ -70,7 +70,6 @@ newMELA::newMELA(bool usePowhegTemplate, int LHCsqrts, float mh)
 
 newMELA::~newMELA(){ 
   //std::cout << "begin destructor" << std::endl;  
-  /*
   delete mzz_rrv;
   delete z1mass_rrv; 
   delete z2mass_rrv; 
@@ -83,7 +82,6 @@ newMELA::~newMELA(){
   delete spin1Model;
   delete spin2Model;
   delete ZZME;
-  */
 }
 
 void newMELA::setProcess(TVar::Process myModel, TVar::MatrixElement myME, TVar::Production myProduction)
@@ -162,7 +160,9 @@ void newMELA::computeP(float mZZ, float mZ1, float mZ2, // input kinematics
   z1mass_rrv->setVal(mZ1);
   z2mass_rrv->setVal(mZ2);
   mzz_rrv->setVal(mZZ);
-
+  
+  float constant = 1.;
+  
   //
   // analytical calculations
   // 
@@ -185,8 +185,33 @@ void newMELA::computeP(float mZZ, float mZ1, float mZ2, // input kinematics
 		    phi, phi1, flavor,
 		    myModel_, myME_,  myProduction_,  prob);
     
+    // 
+    // define the constants to be used on JHUGen
+    // 
+    
+    // gg productions 
+    if ( myME_ == TVar::JHUGen && myProduction_ == TVar::GG  ) {
+      if ( flavor == 3 ) {
+	if ( myModel_ == TVar::PSHZZ_4l )  constant = 6.0;
+	if ( myModel_ == TVar::HDHZZ_4l )  constant = 2.1;
+	if ( myModel_ == TVar::VZZ_4l )  constant = 16;
+	if ( myModel_ == TVar::AVZZ_4l )  constant = 13;
+	if ( myModel_ == TVar::TZZ_4l )  constant = 0.6;
+      }  else {
+	if ( myModel_ == TVar::PSHZZ_4l )  constant = 7.0;
+	if ( myModel_ == TVar::HDHZZ_4l )  constant = 2.3;
+	if ( myModel_ == TVar::VZZ_4l )  constant = 38;
+	if ( myModel_ == TVar::AVZZ_4l )  constant = 28;
+	if ( myModel_ == TVar::TZZ_4l )  constant = 1.4;
+      }
+      if ( myModel_ == TVar::PTZZ_2hminus_4l )  constant = 1e+10;
+      if ( myModel_ == TVar::TZZ_2hplus_4l )  constant = 1e+10;
+    } 
+    // qqb productions 
   }
+  prob = prob * constant; 
 }
+
 
 void newMELA::computeP(TLorentzVector Z1_lept1, int Z1_lept1Id,  // input 4-vectors
 		       TLorentzVector Z1_lept2, int Z1_lept2Id,  // 
