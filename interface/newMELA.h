@@ -78,11 +78,6 @@ public:
   // 
   bool usePowhegTemplate_;
   int LHCsqrts;
-  TVar::VerbosityLevel verb_;
-  TEvtProb Xcal2;
-  hzz4l_event_type hzz4l_event;
-  double EBEAM;
-
   TVar::Process myModel_;
   TVar::MatrixElement myME_;
   TVar::Production myProduction_;
