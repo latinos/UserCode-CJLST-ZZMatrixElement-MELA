@@ -148,7 +148,8 @@ void newZZMatrixElement::computeXS(float mZZ, float mZ1, float mZ2,
   // ==== Begin the differential cross-section calculation
   Xcal2.SetHiggsMass(zzmass);
   Xcal2.SetMatrixElement(myME);
-  mevalue  = Xcal2.XsecCalc(myModel,hzz4l_event,verb);
+  Xcal2.SetProduction(myProduction);
+  mevalue  = Xcal2.XsecCalc(myModel,myProduction,hzz4l_event,verb);
   
   return;
 }

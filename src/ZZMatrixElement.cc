@@ -151,41 +151,41 @@ void ZZMatrixElement::computeXS(TLorentzVector Z1_lept1, int Z1_lept1Id,
   //
   Xcal2.SetMatrixElement(TVar::MCFM);
   if(abs(Z1_lept1Id)==abs(Z2_lept1Id)){// 4e or 4mu
-    dXsec_ZZ_MCFM = Xcal2.XsecCalc(TVar::ZZ_4e,hzz4l_event,verb);
+    dXsec_ZZ_MCFM = Xcal2.XsecCalc(TVar::ZZ_4e, TVar::QQB, hzz4l_event,verb);
   }
   else //2e2mu
-    dXsec_ZZ_MCFM = Xcal2.XsecCalc(TVar::ZZ_2e2m,hzz4l_event,verb);
+    dXsec_ZZ_MCFM = Xcal2.XsecCalc(TVar::ZZ_2e2m, TVar::QQB, hzz4l_event,verb);
   // ggZZ
-  dXsec_GGZZ_MCFM = Xcal2.XsecCalc(TVar::GGZZ_4l,hzz4l_event,verb);
-  dXsec_HZZ_MCFM = Xcal2.XsecCalc(TVar::HZZ_4l,hzz4l_event,verb);
+  dXsec_GGZZ_MCFM = Xcal2.XsecCalc(TVar::GGZZ_4l, TVar::GG, hzz4l_event,verb);
+  dXsec_HZZ_MCFM = Xcal2.XsecCalc(TVar::HZZ_4l, TVar::GG, hzz4l_event,verb);
 
   //
   // JHUGen based calcualtions
   //
   // 0+
   Xcal2.SetMatrixElement(TVar::JHUGen);
-  dXsec_HZZ_JHU = Xcal2.XsecCalc(TVar::HZZ_4l,hzz4l_event,verb);
+  dXsec_HZZ_JHU = Xcal2.XsecCalc(TVar::HZZ_4l, TVar::GG, hzz4l_event,verb);
   ME =  dXsec_HZZ_JHU / ( dXsec_HZZ_JHU + 10. * dXsec_ZZ_MCFM );
   
   // 0-
-  dXsec_PSHZZ_JHU = Xcal2.XsecCalc(TVar::PSHZZ_4l,hzz4l_event,verb);
+  dXsec_PSHZZ_JHU = Xcal2.XsecCalc(TVar::PSHZZ_4l, TVar::GG, hzz4l_event,verb);
   pseudoME =  dXsec_HZZ_JHU / ( dXsec_HZZ_JHU + 6*dXsec_PSHZZ_JHU );
 
   // 0h+
-  dXsec_HDHZZ_JHU = Xcal2.XsecCalc(TVar::HDHZZ_4l,hzz4l_event,verb);
+  dXsec_HDHZZ_JHU = Xcal2.XsecCalc(TVar::HDHZZ_4l, TVar::GG, hzz4l_event,verb);
 
   // 1-
-  dXsec_VZZ_JHU = Xcal2.XsecCalc(TVar::VZZ_4l,hzz4l_event,verb);
+  dXsec_VZZ_JHU = Xcal2.XsecCalc(TVar::VZZ_4l, TVar::QQB, hzz4l_event,verb);
 
   // 1+
-  dXsec_AVZZ_JHU = Xcal2.XsecCalc(TVar::AVZZ_4l,hzz4l_event,verb);
+  dXsec_AVZZ_JHU = Xcal2.XsecCalc(TVar::AVZZ_4l, TVar::QQB, hzz4l_event,verb);
   
   // 2m+
-  dXsec_TZZ_JHU = Xcal2.XsecCalc(TVar::TZZ_4l,hzz4l_event,verb);
+  dXsec_TZZ_JHU = Xcal2.XsecCalc(TVar::TZZ_4l,TVar::GG, hzz4l_event,verb);
   graviME =  dXsec_HZZ_JHU / ( dXsec_HZZ_JHU + 1.2*dXsec_TZZ_JHU );
 
   // 2m+ by qqbar
-  dXsec_QQB_TZZ_JHU = Xcal2.XsecCalc(TVar::QQB_TZZ_4l,hzz4l_event,verb);
+  dXsec_QQB_TZZ_JHU = Xcal2.XsecCalc(TVar::QQB_TZZ_4l,TVar::QQB,hzz4l_event,verb);
 
   
   return;
@@ -328,22 +328,22 @@ void ZZMatrixElement::computeXSExtra(TLorentzVector Z1_lept1, int Z1_lept1Id,
   Xcal2.SetMatrixElement(TVar::JHUGen);
   
   // 1- decay 
-  dXsec_VZZ_DECAY_JHU = Xcal2.XsecCalc(TVar::VZZ_DECAY_4l,hzz4l_event,verb);  
+  dXsec_VZZ_DECAY_JHU = Xcal2.XsecCalc(TVar::VZZ_DECAY_4l,TVar::INDEPENDENT, hzz4l_event,verb);  
 
   // 1+ decay 
-  dXsec_AVZZ_DECAY_JHU = Xcal2.XsecCalc(TVar::AVZZ_DECAY_4l,hzz4l_event,verb);  
+  dXsec_AVZZ_DECAY_JHU = Xcal2.XsecCalc(TVar::AVZZ_DECAY_4l, TVar::INDEPENDENT, hzz4l_event,verb);  
 
   // 2m+ decay 
-  dXsec_TZZ_DECAY_JHU = Xcal2.XsecCalc(TVar::TZZ_DECAY_4l,hzz4l_event,verb); 
+  dXsec_TZZ_DECAY_JHU = Xcal2.XsecCalc(TVar::TZZ_DECAY_4l, TVar::INDEPENDENT, hzz4l_event,verb); 
 
   // 2h-
-  dXsec_PTZZ_2hminus_JHU = Xcal2.XsecCalc(TVar::PTZZ_2hminus_4l,hzz4l_event,verb);  
+  dXsec_PTZZ_2hminus_JHU = Xcal2.XsecCalc(TVar::PTZZ_2hminus_4l,TVar::GG, hzz4l_event,verb);  
 
   // 2h+
-  dXsec_TZZ_2hplus_JHU = Xcal2.XsecCalc(TVar::TZZ_2hplus_4l,hzz4l_event,verb);  
+  dXsec_TZZ_2hplus_JHU = Xcal2.XsecCalc(TVar::TZZ_2hplus_4l, TVar::GG, hzz4l_event,verb);  
 
   // 2b+ 
-  dXsec_TZZ_2bplus_JHU = Xcal2.XsecCalc(TVar::TZZ_2bplus_4l,hzz4l_event,verb);   
+  dXsec_TZZ_2bplus_JHU = Xcal2.XsecCalc(TVar::TZZ_2bplus_4l,TVar::GG, hzz4l_event,verb);   
   
   return;
 }

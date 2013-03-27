@@ -38,11 +38,12 @@ TEvtProb::~TEvtProb() {
 // Directly calculate the ZZ->4l differential cross-section 
 // WARNING: in development
 // 
-double TEvtProb::XsecCalc(TVar::Process proc, const hzz4l_event_type &hzz4l_event,
+double TEvtProb::XsecCalc(TVar::Process proc, TVar::Production production, const hzz4l_event_type &hzz4l_event,
 			  TVar::VerbosityLevel verbosity){
 
     //Initialize Process
     SetProcess(proc);
+    SetProduction(production);
     
     if ( _matrixElement == TVar::MCFM) 
       My_choose(proc);
@@ -120,8 +121,7 @@ double TEvtProb::XsecCalc(TVar::Process proc, const hzz4l_event_type &hzz4l_even
 	  hzzcoupl[2] = 0.0;
 	  hzzcoupl[3] = 0.0;
 	}
-	//std::cout <<  _hmass << " " << _hwidth << std::endl;
-	msqjk = JHUGenMatEl(proc, &mcfm_event, _hmass, _hwidth, hggcoupl, hzzcoupl);
+	msqjk = JHUGenMatEl(proc, production, &mcfm_event, _hmass, _hwidth, hggcoupl, hzzcoupl);
       }
 
       //
@@ -129,8 +129,7 @@ double TEvtProb::XsecCalc(TVar::Process proc, const hzz4l_event_type &hzz4l_even
       // 
       
       // 2m+
-      if ( proc == TVar::TZZ_4l || proc == TVar::QQB_TZZ_4l || proc == TVar::TZZ_DECAY_4l ) {
-	
+      if ( proc == TVar::TZZ_4l ) {
 	// Graviton->Glu Glu coupling constants 
 	double Gggcoupl[5] = {1.0, 0.0, 0.0, 0.0, 0.0}; // 2m+
 	// Graviton->qqbar coupling constants
@@ -148,12 +147,14 @@ double TEvtProb::XsecCalc(TVar::Process proc, const hzz4l_event_type &hzz4l_even
 	Gvvcoupl[7]=0.0;
 	Gvvcoupl[8]=0.0;
 	Gvvcoupl[9]=0.0;
-	if ( proc == TVar::TZZ_4l ||  proc == TVar::TZZ_DECAY_4l )
-	  msqjk = JHUGenMatEl(proc, &mcfm_event, _hmass, _hwidth, Gggcoupl, Gvvcoupl);
-	if ( proc == TVar::QQB_TZZ_4l )
-	  msqjk = JHUGenMatEl(proc, &mcfm_event, _hmass, _hwidth, Gqqcoupl, Gvvcoupl);
+	if ( production == TVar::GG  || production == TVar::INDEPENDENT ) {
+	  msqjk = JHUGenMatEl(proc, production, &mcfm_event, _hmass, _hwidth, Gggcoupl, Gvvcoupl);
+	}
+	if ( _production == TVar::QQB ) {
+	  msqjk = JHUGenMatEl(proc, production, &mcfm_event, _hmass, _hwidth, Gqqcoupl, Gvvcoupl);
+	}
       }
-
+      
       // 2h-
       if ( proc == TVar::PTZZ_2hminus_4l ) {
 	double Gggcoupl[5] = {0.0, 0.0, 0.0, 0.0, 1.0};
@@ -169,7 +170,8 @@ double TEvtProb::XsecCalc(TVar::Process proc, const hzz4l_event_type &hzz4l_even
 	Gvvcoupl[7]=1.0;
 	Gvvcoupl[8]=0.0;
 	Gvvcoupl[9]=0.0;
-	msqjk = JHUGenMatEl(proc, &mcfm_event, _hmass, _hwidth, Gggcoupl, Gvvcoupl);
+	if ( production == TVar::GG  )
+	  msqjk = JHUGenMatEl(proc, production, &mcfm_event, _hmass, _hwidth, Gggcoupl, Gvvcoupl);
       }
       
       // 2h+
@@ -187,7 +189,8 @@ double TEvtProb::XsecCalc(TVar::Process proc, const hzz4l_event_type &hzz4l_even
 	Gvvcoupl[7]=0.0;
 	Gvvcoupl[8]=0.0;
 	Gvvcoupl[9]=0.0;
-	msqjk = JHUGenMatEl(proc, &mcfm_event, _hmass, _hwidth, Gggcoupl, Gvvcoupl);
+	if ( _production == TVar::GG  )
+	  msqjk = JHUGenMatEl(proc, production, &mcfm_event, _hmass, _hwidth, Gggcoupl, Gvvcoupl);
       }
       
       // 2b+
@@ -205,35 +208,37 @@ double TEvtProb::XsecCalc(TVar::Process proc, const hzz4l_event_type &hzz4l_even
 	Gvvcoupl[7]=0.0;
 	Gvvcoupl[8]=0.0;
 	Gvvcoupl[9]=0.0;
-	msqjk = JHUGenMatEl(proc, &mcfm_event, _hmass, _hwidth, Gggcoupl, Gvvcoupl);
+	if ( _production == TVar::GG  )
+	  msqjk = JHUGenMatEl(proc, production, &mcfm_event, _hmass, _hwidth, Gggcoupl, Gvvcoupl);
       }
-
+      
       //
       // spin 1
       // 
       
-      if ( proc == TVar::VZZ_4l || proc == TVar::VZZ_DECAY_4l ) {
+      if ( proc == TVar::VZZ_4l ) {
 	// Zprime->qq coupling constants 
 	double Zqqcoupl[2] = {1.0, 1.0}; // do not change 
 	double Zvvcoupl[2] = {1.0, 0.0};  // 1 -
-	msqjk = JHUGenMatEl(proc, &mcfm_event, _hmass, _hwidth, Zqqcoupl, Zvvcoupl);
+	msqjk = JHUGenMatEl(proc, production, &mcfm_event, _hmass, _hwidth, Zqqcoupl, Zvvcoupl);
       }
-
-      if ( proc == TVar::AVZZ_4l || proc == TVar::AVZZ_DECAY_4l ) {
-        // Zprime->qq coupling constants 
+      
+      if ( proc == TVar::AVZZ_4l ) {
+	// Zprime->qq coupling constants 
 	double Zqqcoupl[2] = {1.0, 1.0}; // do not change 
 	double Zvvcoupl[2] = {0.0, 1.0};  // 1 +
-	msqjk = JHUGenMatEl(proc, &mcfm_event, _hmass, _hwidth, Zqqcoupl, Zvvcoupl);
+	msqjk = JHUGenMatEl(proc, production, &mcfm_event, _hmass, _hwidth, Zqqcoupl, Zvvcoupl);
       }
+      
     }
-
-
+    
+    
     if(msqjk<=0){ mcfm_event.pswt=0; }
     
     flux=fbGeV2/(mcfm_event.p[0].Energy()*mcfm_event.p[1].Energy())	/(4*W);
     //    dXsec=msqjk*flux;
     dXsec=msqjk;
-
+    
     
     if (verbosity >= TVar::DEBUG)
       {
@@ -243,9 +248,9 @@ double TEvtProb::XsecCalc(TVar::Process proc, const hzz4l_event_type &hzz4l_even
 	     <<" flux="<<flux 
 	     <<endl;
       }
-
+      
     return dXsec;
-
+    
 }
 
 // this appears to be some kind of 

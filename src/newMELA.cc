@@ -208,6 +208,20 @@ void newMELA::computeP(float mZZ, float mZ1, float mZ2, // input kinematics
       if ( myModel_ == TVar::TZZ_2hplus_4l )  constant = 1e+10;
     } 
     // qqb productions 
+    if ( myME_ == TVar::JHUGen && myProduction_ == TVar::QQB  ) {
+      if ( flavor == 3 ) {
+	if ( myModel_ == TVar::TZZ_4l )  constant = 13;
+      } else {
+	if ( myModel_ == TVar::TZZ_4l )  constant = 30;
+      }
+    }
+    // production independent calculations
+    if ( myME_ == TVar::JHUGen && myProduction_ == TVar::INDEPENDENT  ) {
+      if ( myModel_ == TVar::VZZ_4l )  constant = 1e+10;
+      if ( myModel_ == TVar::AVZZ_4l )  constant = 1e+10;
+      if ( myModel_ == TVar::TZZ_4l )  constant = 1.6e+9;
+    }
+    
   }
   prob = prob * constant; 
 }

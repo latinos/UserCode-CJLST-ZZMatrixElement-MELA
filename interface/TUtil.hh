@@ -28,6 +28,6 @@ void My_choose(TVar::Process process);
 void SetEwkCoupligParameters();
 bool My_smalls(double s[][12], int npart);
 double SumMatrixElementPDF(TVar::Process procees, mcfm_event_type* mcfm_event,double flavor_msq[][11],double* flux,double EBEAM);
-double JHUGenMatEl(TVar::Process procees, mcfm_event_type* mcfm_event, double MReso, double GaReso, double *xggcoupl, double *xvvcoupl);
+double JHUGenMatEl(TVar::Process process, TVar::Production production, mcfm_event_type* mcfm_event, double MReso, double GaReso, double *xggcoupl, double *xvvcoupl);
 
 #endif
