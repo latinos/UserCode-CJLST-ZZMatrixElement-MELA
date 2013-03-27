@@ -50,7 +50,7 @@ newMELA::newMELA(bool usePowhegTemplate, int LHCsqrts, float mh)
   edm::FileInPath HiggsWidthFile("Higgs/Higgs_CS_and_Width/txtFiles/8TeV-ggH.txt");
   std::string path = HiggsWidthFile.fullPath();
   //std::cout << path.substr(0,path.length()-12) << std::endl;
-  ZZME = new  newZZMatrixElement(path.substr(0,path.length()-12 ).c_str(),1000.*LHCsqrts/2.,TVar::DEBUG);
+  ZZME = new  newZZMatrixElement(path.substr(0,path.length()-12 ).c_str(),1000.*LHCsqrts/2.,TVar::INFO);
 
   // 
   // configure the JHUGEn and MCFM calculations 
@@ -220,12 +220,46 @@ void newMELA::computeP(float mZZ, float mZ1, float mZ2, // input kinematics
       if ( myModel_ == TVar::VZZ_4l )  constant = 1e+10;
       if ( myModel_ == TVar::AVZZ_4l )  constant = 1e+10;
       if ( myModel_ == TVar::TZZ_4l )  constant = 1.6e+9;
-    }
+    } 
     
+    // ***
+    // experimental for the ZZ decay 
+    // ****
+    
+    if ( myME_ == TVar::MCFM 
+	 && myProduction_ == TVar::INDEPENDENT 
+	 && ( myModel_ == TVar::ZZ_2e2m || myModel_ == TVar::ZZ_4e )
+	 )
+      {
+	prob = 0.;
+	int gridsize_hs = 10; 
+	double hs_min = -1.;
+	double hs_max = 1.;
+	double hs_step =( hs_max - hs_min ) / double (gridsize_hs); 
+	
+	int gridsize_phi1 = 10; 
+	double phi1_min = -TMath::Pi();
+	double phi1_max = TMath::Pi();
+	double phi1_step =( phi1_max - phi1_min ) / double (gridsize_phi1); 
+	
+	for ( int i_hs = 0; i_hs < gridsize_hs + 1; i_hs ++ ) {
+	  double hs_val = hs_min + i_hs * hs_step; 
+	  for ( int i_phi1 = 0; i_phi1 < gridsize_phi1 +1 ; i_phi1 ++ ) {
+	    double phi1_val = phi1_min + i_phi1 * phi1_step; 
+	    float temp_prob(0.); 
+	    // calculate the ZZ using MCFM
+	    ZZME->computeXS(mZZ,mZ1,mZ2,
+			    hs_val,costheta1,costheta2, 
+			    phi, phi1_val, flavor,
+			    myModel_, myME_,  myProduction_,  temp_prob);
+	    prob += temp_prob;
+	  }
+	}
+	prob =  prob / float ( (gridsize_hs + 1) * (gridsize_phi1 +1 )); 
+      }
   }
   prob = prob * constant; 
 }
-
 
 void newMELA::computeP(TLorentzVector Z1_lept1, int Z1_lept1Id,  // input 4-vectors
 		       TLorentzVector Z1_lept2, int Z1_lept2Id,  // 

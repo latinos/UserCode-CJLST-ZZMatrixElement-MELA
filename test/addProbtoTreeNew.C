@@ -68,7 +68,7 @@ void addProbtoTreeNew(char* inputFile,int flavor, int max=-1, int LHCsqrts=8){
   float psig,pbkg,D;
   double oldD;                                                    //legacy probabilities
   float	p0plus_melaNorm,p0plus_mela,p0minus_mela,p0hplus_mela,p0plus_VAJHU,p0minus_VAJHU,p0plus_VAMCFM,p0hplus_VAJHU,p1_mela,p1plus_mela,p1_VAJHU,p1plus_VAJHU,p2_mela,p2qqb_mela,p2_VAJHU,p2qqb_VAJHU; // new signal probablities
-  float bkg_mela, bkg_VAMCFM, ggzz_VAMCFM, bkg_VAMCFMNorm;                                           // new background probabilities
+  float bkg_mela, bkg_VAMCFM, ggzz_VAMCFM, bkg_VAMCFMNorm, bkg_decay_VAMCFM;    // background probabilities
   float pt4l, Y4l ,p0_pt,p0_y,p0_y,bkg_pt,bkg_y;                        // rapidity/pt
   float p0plus_m4l,bkg_m4l,smd;  //supermela
   float p0plus_m4l_ScaleUp, p0plus_m4l_ScaleDown,p0plus_m4l_ResUp,p0plus_m4l_ResDown;//alternative values of supermela used for systematic templates
@@ -130,6 +130,7 @@ void addProbtoTreeNew(char* inputFile,int flavor, int max=-1, int LHCsqrts=8){
   newTree->Branch("bkg_VAMCFM",&bkg_VAMCFM,"bkg_VAMCFM/F");  // background, vector algebra, MCFM
   newTree->Branch("ggzz_VAMCFM",&ggzz_VAMCFM,"ggzz_VAMCFM/F");  // background, vector algebra, MCFM for ggzz
   newTree->Branch("bkg_VAMCFMNorm",&bkg_VAMCFMNorm,"bkg_VAMCFMNorm/F");  // background, vector algebra, MCFM Normalized
+  newTree->Branch("bkg_decay_VAMCFM",&bkg_decay_VAMCFM,"bkg_decay_VAMCFM/F");  // background, vector algebra, MCFM integrating out the production angles
   //supermela
   newTree->Branch("p0plus_m4l",&p0plus_m4l,"p0plus_m4l/F"  );  
   newTree->Branch("bkg_m4l",   &bkg_m4l, "bkg_m4l/F");  
@@ -157,6 +158,7 @@ void addProbtoTreeNew(char* inputFile,int flavor, int max=-1, int LHCsqrts=8){
     
     if(iEvt>=sigTree->GetEntries()) break;
     
+    // if ( iEvt != 2 ) continue;
     if(iEvt%1000==1) {
       cout<<"---------\n event: "<<iEvt<<endl;
     }
@@ -182,8 +184,25 @@ void addProbtoTreeNew(char* inputFile,int flavor, int max=-1, int LHCsqrts=8){
     myMELA.setProcess(TVar::GGZZ_4l, TVar::MCFM, TVar::GG);
     myMELA.computeP(mzz, m1, m2, 
 		    hs,h1,h2,phi,phi1,flavor, ggzz_VAMCFM);
+
+    // ******  qqZZ-> production independent 
     
-    
+    if ( flavor == 3 ) {
+      myMELA.setProcess(TVar::ZZ_2e2m, TVar::MCFM, TVar::INDEPENDENT);
+      myMELA.computeP(mzz, m1, m2, 
+		      hs,h1,h2,phi,phi1,flavor, bkg_decay_VAMCFM);
+    } else {
+      myMELA.setProcess(TVar::ZZ_4e, TVar::MCFM, TVar::INDEPENDENT);
+      myMELA.computeP(mzz, m1, m2, 
+		      hs,h1,h2,phi,phi1,flavor, bkg_decay_VAMCFM);
+    }
+
+    // 0+
+    myMELA.setProcess(TVar::HZZ_4l, TVar::MCFM, TVar::GG);
+    myMELA.computeP(mzz, m1, m2, 
+		    hs,h1,h2,phi,phi1,flavor, p0plus_VAMCFM);
+
+
     // 
     // JHU Gen based signal calculations 
     // 
@@ -193,6 +212,7 @@ void addProbtoTreeNew(char* inputFile,int flavor, int max=-1, int LHCsqrts=8){
     myMELA.computeP(mzz, m1, m2, 
 		    hs,h1,h2,phi,phi1,flavor, p0plus_VAJHU);
     
+
     // 0-
     myMELA.setProcess(TVar::PSHZZ_4l, TVar::JHUGen, TVar::GG);
     myMELA.computeP(mzz, m1, m2, 
@@ -253,7 +273,7 @@ void addProbtoTreeNew(char* inputFile,int flavor, int max=-1, int LHCsqrts=8){
     myMELA.setProcess(TVar::TZZ_2bplus_4l, TVar::JHUGen, TVar::GG);
     myMELA.computeP(mzz, m1, m2, 
 		    hs,h1,h2,phi,phi1,flavor, p2bplus_VAJHU);
-    
+
     newTree->Fill();
     
   }
