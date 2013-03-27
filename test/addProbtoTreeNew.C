@@ -161,88 +161,106 @@ void addProbtoTreeNew(char* inputFile,int flavor, int max=-1, int LHCsqrts=8){
       cout<<"---------\n event: "<<iEvt<<endl;
     }
     sigTree->GetEntry(iEvt);
-    
-    // --------------------------------
 
-    if(mzz>100.){
+    // 
+    // MCFM calcualtions
+    // 
 
-      // JHU Gen based calculations 
+    // qqZZ 
 
-      // 0+
-      myMELA.setProcess(TVar::HZZ_4l, TVar::JHUGen, TVar::GG);
+    if ( flavor == 3 ) {
+      myMELA.setProcess(TVar::ZZ_2e2m, TVar::MCFM, TVar::QQB);
       myMELA.computeP(mzz, m1, m2, 
-		      hs,h1,h2,phi,phi1,flavor, p0plus_VAJHU);
-
-      // 0-
-      myMELA.setProcess(TVar::PSHZZ_4l, TVar::JHUGen, TVar::GG);
+		      hs,h1,h2,phi,phi1,flavor, bkg_VAMCFM);
+    } else {
+      myMELA.setProcess(TVar::ZZ_4e, TVar::MCFM, TVar::QQB);
       myMELA.computeP(mzz, m1, m2, 
-		      hs,h1,h2,phi,phi1,flavor, p0minus_VAJHU);
-
-
-      // 0h+
-      myMELA.setProcess(TVar::HDHZZ_4l, TVar::JHUGen, TVar::GG);
-      myMELA.computeP(mzz, m1, m2, 
-		      hs,h1,h2,phi,phi1,flavor, p0hplus_VAJHU);
-      
-      // 1-
-      myMELA.setProcess(TVar::VZZ_4l, TVar::JHUGen, TVar::QQB);
-      myMELA.computeP(mzz, m1, m2, 
-		      hs,h1,h2,phi,phi1,flavor, p1_VAJHU);
-
-      // production independent
-      myMELA.setProcess(TVar::VZZ_4l, TVar::JHUGen, TVar::INDEPENDENT);
-      myMELA.computeP(mzz, m1, m2, 
-		      hs,h1,h2,phi,phi1,flavor, p1_decay_VAJHU);
-
-      // 1+
-      myMELA.setProcess(TVar::AVZZ_4l, TVar::JHUGen, TVar::QQB);
-      myMELA.computeP(mzz, m1, m2, 
-		      hs,h1,h2,phi,phi1,flavor, p1plus_VAJHU);
-
-      // production independent
-      myMELA.setProcess(TVar::AVZZ_4l, TVar::JHUGen, TVar::INDEPENDENT);
-      myMELA.computeP(mzz, m1, m2, 
-		      hs,h1,h2,phi,phi1,flavor, p1plus_decay_VAJHU);
-
-      // gg->2m+
-      myMELA.setProcess(TVar::TZZ_4l, TVar::JHUGen, TVar::GG);
-      myMELA.computeP(mzz, m1, m2, 
-		      hs,h1,h2,phi,phi1,flavor, p2_VAJHU);
-      
-      // qqb->2m+
-      myMELA.setProcess(TVar::TZZ_4l, TVar::JHUGen, TVar::QQB);
-      myMELA.computeP(mzz, m1, m2, 
-		      hs,h1,h2,phi,phi1,flavor, p2qqb_VAJHU);
-
-      // qqb->2m+
-      myMELA.setProcess(TVar::TZZ_4l, TVar::JHUGen, TVar::INDEPENDENT);
-      myMELA.computeP(mzz, m1, m2, 
-		      hs,h1,h2,phi,phi1,flavor, p2_decay_VAJHU);
-      
-      // 2h-
-      myMELA.setProcess(TVar::PTZZ_2hminus_4l, TVar::JHUGen, TVar::GG);
-      myMELA.computeP(mzz, m1, m2, 
-		      hs,h1,h2,phi,phi1,flavor, p2hminus_VAJHU);
-
-      // 2h+
-      myMELA.setProcess(TVar::TZZ_2hplus_4l, TVar::JHUGen, TVar::GG);
-      myMELA.computeP(mzz, m1, m2, 
-		      hs,h1,h2,phi,phi1,flavor, p2hplus_VAJHU);
-
-      // 2b+
-      myMELA.setProcess(TVar::TZZ_2bplus_4l, TVar::JHUGen, TVar::GG);
-      myMELA.computeP(mzz, m1, m2, 
-		      hs,h1,h2,phi,phi1,flavor, p2bplus_VAJHU);
-
-      newTree->Fill();
-      
+		      hs,h1,h2,phi,phi1,flavor, bkg_VAMCFM);
     }
+
+    // ggZZ
+    myMELA.setProcess(TVar::GGZZ_4l, TVar::MCFM, TVar::GG);
+    myMELA.computeP(mzz, m1, m2, 
+		    hs,h1,h2,phi,phi1,flavor, ggzz_VAMCFM);
+    
+    
+    // 
+    // JHU Gen based signal calculations 
+    // 
+    
+    // 0+
+    myMELA.setProcess(TVar::HZZ_4l, TVar::JHUGen, TVar::GG);
+    myMELA.computeP(mzz, m1, m2, 
+		    hs,h1,h2,phi,phi1,flavor, p0plus_VAJHU);
+    
+    // 0-
+    myMELA.setProcess(TVar::PSHZZ_4l, TVar::JHUGen, TVar::GG);
+    myMELA.computeP(mzz, m1, m2, 
+		    hs,h1,h2,phi,phi1,flavor, p0minus_VAJHU);
+    
+    
+    // 0h+
+    myMELA.setProcess(TVar::HDHZZ_4l, TVar::JHUGen, TVar::GG);
+    myMELA.computeP(mzz, m1, m2, 
+		    hs,h1,h2,phi,phi1,flavor, p0hplus_VAJHU);
+    
+    // 1-
+    myMELA.setProcess(TVar::VZZ_4l, TVar::JHUGen, TVar::QQB);
+    myMELA.computeP(mzz, m1, m2, 
+		    hs,h1,h2,phi,phi1,flavor, p1_VAJHU);
+    
+    // production independent
+    myMELA.setProcess(TVar::VZZ_4l, TVar::JHUGen, TVar::INDEPENDENT);
+    myMELA.computeP(mzz, m1, m2, 
+		    hs,h1,h2,phi,phi1,flavor, p1_decay_VAJHU);
+    
+    // 1+
+    myMELA.setProcess(TVar::AVZZ_4l, TVar::JHUGen, TVar::QQB);
+    myMELA.computeP(mzz, m1, m2, 
+		    hs,h1,h2,phi,phi1,flavor, p1plus_VAJHU);
+    
+    // production independent
+    myMELA.setProcess(TVar::AVZZ_4l, TVar::JHUGen, TVar::INDEPENDENT);
+    myMELA.computeP(mzz, m1, m2, 
+		    hs,h1,h2,phi,phi1,flavor, p1plus_decay_VAJHU);
+    
+    // gg->2m+
+    myMELA.setProcess(TVar::TZZ_4l, TVar::JHUGen, TVar::GG);
+    myMELA.computeP(mzz, m1, m2, 
+		    hs,h1,h2,phi,phi1,flavor, p2_VAJHU);
+    
+    // qqb->2m+
+    myMELA.setProcess(TVar::TZZ_4l, TVar::JHUGen, TVar::QQB);
+    myMELA.computeP(mzz, m1, m2, 
+		    hs,h1,h2,phi,phi1,flavor, p2qqb_VAJHU);
+    
+    // qqb->2m+
+    myMELA.setProcess(TVar::TZZ_4l, TVar::JHUGen, TVar::INDEPENDENT);
+    myMELA.computeP(mzz, m1, m2, 
+		    hs,h1,h2,phi,phi1,flavor, p2_decay_VAJHU);
+    
+    // 2h-
+    myMELA.setProcess(TVar::PTZZ_2hminus_4l, TVar::JHUGen, TVar::GG);
+    myMELA.computeP(mzz, m1, m2, 
+		    hs,h1,h2,phi,phi1,flavor, p2hminus_VAJHU);
+    
+    // 2h+
+    myMELA.setProcess(TVar::TZZ_2hplus_4l, TVar::JHUGen, TVar::GG);
+    myMELA.computeP(mzz, m1, m2, 
+		    hs,h1,h2,phi,phi1,flavor, p2hplus_VAJHU);
+    
+    // 2b+
+    myMELA.setProcess(TVar::TZZ_2bplus_4l, TVar::JHUGen, TVar::GG);
+    myMELA.computeP(mzz, m1, m2, 
+		    hs,h1,h2,phi,phi1,flavor, p2bplus_VAJHU);
+    
+    newTree->Fill();
     
   }
   
   newFile->cd();
   newTree->Write("SelectedTree"); 
   newFile->Close();
-
+  
 }
 
