@@ -149,8 +149,14 @@ public:
     fz1Val->setVal(0.0);
     fz2Val->setVal(1.0);
 
-    g1Val->setVal(1.0);
+    g1Val->setVal(1.0); 
+    g2Val->setVal(0.0); 
+    g3Val->setVal(0.0); 
+    g4Val->setVal(0.0); 
     g5Val->setVal(1.0); 
+    g6Val->setVal(0.0); 
+    g7Val->setVal(0.0); 
+    g8Val->setVal(0.0); 
 
   };
 
@@ -159,8 +165,14 @@ public:
     fz1Val->setVal(1.0);
     fz2Val->setVal(0.0);
 
-    g1Val->setVal(1.0);
+    g1Val->setVal(1.0); 
+    g2Val->setVal(0.0); 
+    g3Val->setVal(0.0); 
+    g4Val->setVal(0.0); 
     g5Val->setVal(1.0); 
+    g6Val->setVal(0.0); 
+    g7Val->setVal(0.0); 
+    g8Val->setVal(0.0); 
 
   };
 
@@ -169,8 +181,14 @@ public:
     fz1Val->setVal(0.4);
     fz2Val->setVal(0.4);
 
-    g1Val->setVal(1.0);
+    g1Val->setVal(1.0); 
+    g2Val->setVal(0.0); 
+    g3Val->setVal(0.0); 
+    g4Val->setVal(0.0); 
     g5Val->setVal(1.0); 
+    g6Val->setVal(0.0); 
+    g7Val->setVal(0.0); 
+    g8Val->setVal(0.0); 
 
   };
 
@@ -179,7 +197,14 @@ public:
     fz1Val->setVal(0.0);
     fz2Val->setVal(0.0);
 
+    g1Val->setVal(0.0); 
+    g2Val->setVal(0.0); 
+    g3Val->setVal(0.0); 
     g4Val->setVal(1.0); 
+    g5Val->setVal(0.0); 
+    g6Val->setVal(0.0); 
+    g7Val->setVal(0.0); 
+    g8Val->setVal(0.0); 
 
   };
 
@@ -188,6 +213,13 @@ public:
     fz1Val->setVal(0.0);
     fz2Val->setVal(0.0);
 
+    g1Val->setVal(0.0); 
+    g2Val->setVal(0.0); 
+    g3Val->setVal(0.0); 
+    g4Val->setVal(0.0); 
+    g5Val->setVal(0.0); 
+    g6Val->setVal(0.0); 
+    g7Val->setVal(0.0); 
     g8Val->setVal(1.0); 
 
   };
@@ -197,7 +229,14 @@ public:
     fz1Val->setVal(0.0);
     fz2Val->setVal(1.0);
 
+    g1Val->setVal(0.0); 
+    g2Val->setVal(0.0); 
+    g3Val->setVal(0.0); 
+    g4Val->setVal(0.0); 
     g5Val->setVal(1.0); 
+    g6Val->setVal(0.0); 
+    g7Val->setVal(0.0); 
+    g5Val->setVal(0.0); 
 
   };
 
