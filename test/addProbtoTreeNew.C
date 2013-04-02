@@ -1,18 +1,6 @@
 ///////////////////////////////
 // Add Probabilities to tree //
 ///////////////////////////////
-// mela analytic:  p0plus_melaNorm /(p0plus_melaNorm +  bkg_mela)
-// mela template:  p0plus_mela_postICHEP /(p0plus_mela_postICHEP +  bkg_mela_postICHEP)
-// gravimela:      p0plus_mela/(p0plus_mela +  p2_mela)
-// pseudomela:     p0plus_mela /(p0plus_mela +  p0minus_mela)
-// mela with pt/Y: p0_pt*p0_y*p0plus_melaNorm /(p0_pt*p0_y*p0plus_melaNorm +  bkg_pt*bkg_y*bkg_mela)
-// ME:             p0plus_VAJHU/(p0plus_VAJHU + 10.*bkg_VAMCFM) 
-// pME:            p0plus_VAJHU/(p0plus_VAJHU + 6.*p0minus_VAJHU)
-// graviME:        p0plus_VAJHU/(p0plus_VAJHU + 1.2*p2_VAJHU) 
-// VAKD            p0plus_VAJHU/( bkg_VAMCFMNorm +  p0plus_VAJHU ); // =normalized ME
-//
-// 
-//
 
 using namespace RooFit;
 bool includePathIsSet = false;
@@ -41,8 +29,10 @@ void addProbtoTreeNew(char* inputFile,int flavor, int max=-1, int LHCsqrts=8){
   // load and create instance of myMela class
   gROOT->LoadMacro("$CMSSW_BASE/src/ZZMatrixElement/MELA/interface/newMELA.h+");
 
-  newMELA myMELA(false,LHCsqrts,flavor);
+  newMELA myMELA(LHCsqrts,flavor);
   
+  cout << "newMELA initialized" << endl;
+
   RooMsgService::instance().getStream(1).removeTopic(NumIntegration);
 
   char inputFileName[500];
@@ -69,14 +59,12 @@ void addProbtoTreeNew(char* inputFile,int flavor, int max=-1, int LHCsqrts=8){
   double oldD;                                                    //legacy probabilities
   float	p0plus_melaNorm,p0plus_mela,p0minus_mela,p0hplus_mela,p0plus_VAJHU,p0minus_VAJHU,p0plus_VAMCFM,p0hplus_VAJHU,p1_mela,p1plus_mela,p1_VAJHU,p1plus_VAJHU,p2_mela,p2qqb_mela,p2_VAJHU,p2qqb_VAJHU; // new signal probablities
   float bkg_mela, bkg_VAMCFM, ggzz_VAMCFM, bkg_VAMCFMNorm, bkg_decay_VAMCFM;    // background probabilities
-  float pt4l, Y4l ,p0_pt,p0_y,p0_y,bkg_pt,bkg_y;                        // rapidity/pt
-  float p0plus_m4l,bkg_m4l,smd;  //supermela
-  float p0plus_m4l_ScaleUp, p0plus_m4l_ScaleDown,p0plus_m4l_ResUp,p0plus_m4l_ResDown;//alternative values of supermela used for systematic templates
-  float bkg_m4l_ScaleUp, bkg_m4l_ScaleDown,bkg_m4l_ResUp,bkg_m4l_ResDown;//alternative values of supermela used for systematic templates
-  float p1_decay_VAJHU, p1plus_decay_VAJHU, p2_decay_VAJHU; 
-  float p2hminus_VAJHU, p2hplus_VAJHU, p2bplus_VAJHU;
 
-  float VAKD=0;                         // MCFM/JHUGen kinimetatic discriminant
+  // probabilities for production independent calculations
+  float p1_decay_VAJHU, p1plus_decay_VAJHU, p2_decay_VAJHU; 
+  // probabilities for exotic spin-2 models
+  float p2hminus_VAJHU, p2hplus_VAJHU, p2bplus_VAJHU;
+  float p2hminus_mela, p2hplus_mela, p2bplus_mela,p2_decay_mela;
 
   // -------- CJLST TREES ---------------
   sigTree->SetBranchAddress("Z2Mass",&m2);
@@ -91,7 +79,6 @@ void addProbtoTreeNew(char* inputFile,int flavor, int max=-1, int LHCsqrts=8){
   Y4l=0.0;
   pt4l=0.0;
 
-
   float weight;
   sigTree->SetBranchAddress("MC_weight_noxsec",&weight);
   //---------------------------------------*/
@@ -99,60 +86,43 @@ void addProbtoTreeNew(char* inputFile,int flavor, int max=-1, int LHCsqrts=8){
   TFile* newFile = new TFile(outputFileName,"RECREATE");
   TTree* newTree = sigTree->CloneTree(0);//new TTree("newTree","SelectedTree"); 
 
-  newTree->Branch("p0_mela_postICHEP",&psig,"p0_mela_postICHEP/F");
-  newTree->Branch("pbkg_mela_postICHEP",&pbkg,"p0_mela_postICHEP/F");
-
-  newTree->Branch("p0plus_melaNorm",&p0plus_melaNorm,"p0plus_melaNorm/F");  // higgs, vector algebra, JHUgen
-  newTree->Branch("p0plus_mela",&p0plus_mela,"p0plus_mela/F");  // higgs, vector algebra, JHUgen
-  newTree->Branch("p0minus_mela",&p0minus_mela,"p0minus_mela/F");  // pseudoscalar, vector algebra, JHUgen
-  newTree->Branch("p0hplus_mela",&p0hplus_mela,"p0hplus_mela/F");  // 0h+, analytic distribution 
-  newTree->Branch("p0plus_VAJHU",&p0plus_VAJHU,"p0plus_VAJHU/F");  // higgs, vector algebra, JHUgen
-  newTree->Branch("p0minus_VAJHU",&p0minus_VAJHU,"p0minus_VAJHU/F");  // pseudoscalar, vector algebra, JHUgen
+  newTree->Branch("p0plus_mela_NEW",&p0plus_mela,"p0plus_mela_NEW/F");  // higgs, vector algebra, JHUgen
+  newTree->Branch("p0minus_mela_NEW",&p0minus_mela,"p0minus_mela_NEW/F");  // pseudoscalar, vector algebra, JHUgen
+  newTree->Branch("p0hplus_mela_NEW",&p0hplus_mela,"p0hplus_mela_NEW/F");  // 0h+, analytic distribution 
+  newTree->Branch("p0plus_VAJHU_NEW",&p0plus_VAJHU,"p0plus_VAJHU_NEW/F");  // higgs, vector algebra, JHUgen
+  newTree->Branch("p0minus_VAJHU_NEW",&p0minus_VAJHU,"p0minus_VAJHU_NEW/F");  // pseudoscalar, vector algebra, JHUgen
   newTree->Branch("p0plus_VAMCFM",&p0plus_VAMCFM,"p0plus_VAMCFM/F");  // higgs, vector algebra, MCFM
-  newTree->Branch("p0hplus_VAJHU",&p0hplus_VAJHU,"p0hplus_VAJHU/F");  // 0h+(high order dimension operator) , vector algebra, JHUgen
-  newTree->Branch("p1_mela",&p1_mela,"p1_mela/F");  // zprime, analytic distribution 
-  newTree->Branch("p1plus_mela",&p1plus_mela,"p1plus_mela/F");  // 1+, analytic distribution 
-  newTree->Branch("p1_VAJHU",&p1_VAJHU,"p1_VAJHU/F");  // zprime, vector algebra, JHUgen,
-  newTree->Branch("p1plus_VAJHU",&p1plus_VAJHU,"p1plus_VAJHU/F");  // 1+ (axial-vector), vector algebra, JHUgen,
-  newTree->Branch("p2_mela",&p2_mela ,"p2_mela/F");  // graviton, analytic distribution 
-  newTree->Branch("p2qqb_mela",&p2qqb_mela,"p2qqb_mela/F"); // graviton produced by qqbar vector algebra, analytical,
-  newTree->Branch("p2_VAJHU",&p2_VAJHU,"p2_VAJHU/F");  // graviton produced by gg, vector algebra, JHUgen,
-  newTree->Branch("p2qqb_VAJHU",&p2qqb_VAJHU,"p2qqb_VAJHU/F");  // graviton produced by qqbar, vector algebra, JHUgen,
-  newTree->Branch("p1_decay_VAJHU",&p1_decay_VAJHU,"p1_decay_VAJHU/F");  // 1-, vector algebra, production indpendent JHUgen
-  newTree->Branch("p1plus_decay_VAJHU",&p1plus_decay_VAJHU,"p1plus_decay_VAJHU/F");  // 1+, vector algebra, production indpendent JHUgen
-  newTree->Branch("p2_decay_VAJHU",&p2_decay_VAJHU,"p2_decay_VAJHU/F");  // 2m+, vector algebra, production indpendent JHUgen
-  newTree->Branch("p2hminus_VAJHU",&p2hminus_VAJHU,"p2hminus_VAJHU/F");  // 2h-, vector algebra, JHUgen,
-  newTree->Branch("p2hplus_VAJHU",&p2hplus_VAJHU,"p2hplus_VAJHU/F");     // 2h+, vector algebra, JHUgen,
-  newTree->Branch("p2bplus_VAJHU",&p2bplus_VAJHU,"p2bplus_VAJHU/F");     // 2b+, vector algebra, JHUgen,
+  newTree->Branch("p0hplus_VAJHU_NEW",&p0hplus_VAJHU,"p0hplus_VAJHU_NEW/F");  // 0h+(high order dimension operator) , vector algebra, JHUgen
+  newTree->Branch("p1_mela_NEW",&p1_mela,"p1_mela_NEW/F");  // zprime, analytic distribution 
+  newTree->Branch("p1plus_mela_NEW",&p1plus_mela,"p1plus_mela_NEW/F");  // 1+, analytic distribution 
+  newTree->Branch("p1_VAJHU_NEW",&p1_VAJHU,"p1_VAJHU_NEW/F");  // zprime, vector algebra, JHUgen,
+  newTree->Branch("p1plus_VAJHU_NEW",&p1plus_VAJHU,"p1plus_VAJHU_NEW/F");  // 1+ (axial-vector), vector algebra, JHUgen,
+  newTree->Branch("p2_mela_NEW",&p2_mela ,"p2_mela_NEW/F");  // graviton, analytic distribution 
+  newTree->Branch("p2qqb_mela_NEW",&p2qqb_mela,"p2qqb_mela_NEW/F"); // graviton produced by qqbar vector algebra, analytical,
+  newTree->Branch("p2_VAJHU_NEW",&p2_VAJHU,"p2_VAJHU_NEW/F");  // graviton produced by gg, vector algebra, JHUgen,
+  newTree->Branch("p2qqb_VAJHU_NEW",&p2qqb_VAJHU,"p2qqb_VAJHU_NEW/F");  // graviton produced by qqbar, vector algebra, JHUgen,
+  newTree->Branch("p1_decay_VAJHU_NEW",&p1_decay_VAJHU,"p1_decay_VAJHU_NEW/F");  // 1-, vector algebra, production indpendent JHUgen
+  newTree->Branch("p1plus_decay_VAJHU_NEW",&p1plus_decay_VAJHU,"p1plus_decay_VAJHU_NEW/F");  // 1+, vector algebra, production indpendent JHUgen
+  newTree->Branch("p2_decay_VAJHU_NEW",&p2_decay_VAJHU,"p2_decay_VAJHU_NEW/F");  // 2m+, vector algebra, production indpendent JHUgen
+  newTree->Branch("p2_decay_mela_NEW",&p2_decay_mela,"p2_decay_mela_NEW/F");  // 2m+, analytical, production indpendent JHUgen
+  newTree->Branch("p2hminus_VAJHU_NEW",&p2hminus_VAJHU,"p2hminus_VAJHU_NEW/F");  // 2h-, vector algebra, JHUgen,
+  newTree->Branch("p2hplus_VAJHU_NEW",&p2hplus_VAJHU,"p2hplus_VAJHU_NEW/F");     // 2h+, vector algebra, JHUgen,
+  newTree->Branch("p2hminus_mela_NEW",&p2hminus_mela,"p2hminus_mela_NEW/F");  // 2h-, vector algebra, JHUgen,
+  newTree->Branch("p2hplus_mela_NEW",&p2hplus_mela,"p2hplus_mela_NEW/F");     // 2h+, vector algebra, analytical,
+  newTree->Branch("p2bplus_VAJHU_NEW",&p2bplus_VAJHU,"p2bplus_VAJHU_NEW/F");     // 2b+, vector algebra, JHUgen,
 
   //backgrounds
-  newTree->Branch("bkg_mela",&bkg_mela,"bkg_mela/F");  // background,  analytic distribution 
+  newTree->Branch("bkg_mela_NEW",&bkg_mela,"bkg_mela_NEW/F");  // background,  analytic distribution 
   newTree->Branch("bkg_VAMCFM",&bkg_VAMCFM,"bkg_VAMCFM/F");  // background, vector algebra, MCFM
   newTree->Branch("ggzz_VAMCFM",&ggzz_VAMCFM,"ggzz_VAMCFM/F");  // background, vector algebra, MCFM for ggzz
   newTree->Branch("bkg_VAMCFMNorm",&bkg_VAMCFMNorm,"bkg_VAMCFMNorm/F");  // background, vector algebra, MCFM Normalized
   newTree->Branch("bkg_decay_VAMCFM",&bkg_decay_VAMCFM,"bkg_decay_VAMCFM/F");  // background, vector algebra, MCFM integrating out the production angles
-  //supermela
-  newTree->Branch("p0plus_m4l",&p0plus_m4l,"p0plus_m4l/F"  );  
-  newTree->Branch("bkg_m4l",   &bkg_m4l, "bkg_m4l/F");  
-  newTree->Branch("superMELA",&smd,"superMELA/F"  ); 
-   newTree->Branch("p0plus_m4l_ScaleUp",&p0plus_m4l_ScaleUp,"p0plus_m4l_ScaleUp/F"  );  
-   newTree->Branch("p0plus_m4l_ScaleDown",&p0plus_m4l_ScaleDown,"p0plus_m4l_ScaleDown/F"  );  
-   newTree->Branch("p0plus_m4l_ResUp",&p0plus_m4l_ResUp,"p0plus_m4l_ResUp/F"  );  
-   newTree->Branch("p0plus_m4l_ResDown",&p0plus_m4l_ResDown,"p0plus_m4l_ResDown/F"  );  
-   newTree->Branch("bkg_m4l_ScaleUp",&bkg_m4l_ScaleUp,"bkg_m4l_ScaleUp/F"  );  
-   newTree->Branch("bkg_m4l_ScaleDown",&bkg_m4l_ScaleDown,"bkg_m4l_ScaleDown/F"  );  
-   newTree->Branch("bkg_m4l_ResUp",&bkg_m4l_ResUp,"bkg_m4l_ResUp/F"  );  
-   newTree->Branch("bkg_m4l_ResDown",&bkg_m4l_ResDown,"bkg_m4l_ResDown/F"  );   
-  //pt/rapidity
-  newTree->Branch("p0_pt",&p0_pt,"p0_pt/F");  // multiplicative probability for signal pt
-  newTree->Branch("p0_y",&p0_y,"p0_y/F");  // multiplicative probability for signal y
-  newTree->Branch("bkg_pt",&bkg_pt,"bkg_pt/F");  // multiplicative probability for bkg pt
-  newTree->Branch("bkg_y",&bkg_y,"bkg_y/F");  // multiplicative probability for bkg y
-  newTree->Branch("VAKD",&VAKD,"VAKD/F");  // discriminant
-
+  
   //interference weight
   float interfWeight;
   newTree->Branch("interfWeight",&interfWeight,"interfWeight/F"); // weight to be used for interference reweighting
+
+  cout << "branches set" << endl;
   
   for(int iEvt=0; iEvt<(max<0?sigTree->GetEntries():max); iEvt++){
     
@@ -165,7 +135,92 @@ void addProbtoTreeNew(char* inputFile,int flavor, int max=-1, int LHCsqrts=8){
     sigTree->GetEntry(iEvt);
 
     // 
-    // MCFM calcualtions
+    // ANALYTICAL calcualtions
+    // 
+
+    // 0+
+    myMELA.setProcess(TVar::HZZ_4l, TVar::ANALYTICAL, TVar::GG);
+    myMELA.computeP(mzz, m1, m2, 
+		    hs,h1,h2,phi,phi1,flavor, 
+		    p0plus_mela);
+    
+
+    // 0-
+    myMELA.setProcess(TVar::PSHZZ_4l, TVar::ANALYTICAL, TVar::GG);
+    myMELA.computeP(mzz, m1, m2, 
+		    hs,h1,h2,phi,phi1,flavor, 
+		    p0minus_mela);
+    
+    
+    // 0h+
+    myMELA.setProcess(TVar::HDHZZ_4l, TVar::ANALYTICAL, TVar::GG);
+    myMELA.computeP(mzz, m1, m2, 
+		    hs,h1,h2,phi,phi1,flavor, 
+		    p0hplus_mela);
+    
+    // 1-
+    myMELA.setProcess(TVar::VZZ_4l, TVar::ANALYTICAL, TVar::QQB);
+    myMELA.computeP(mzz, m1, m2, 
+		    hs,h1,h2,phi,phi1,flavor, 
+		    p1_mela);
+    
+    // production independent
+    myMELA.setProcess(TVar::VZZ_4l, TVar::ANALYTICAL, TVar::INDEPENDENT);
+    //myMELA.computeP(mzz, m1, m2, 
+    //hs,h1,h2,phi,phi1,flavor, 
+    //p1_decay_mela);
+    
+    // 1+
+    myMELA.setProcess(TVar::AVZZ_4l, TVar::ANALYTICAL, TVar::QQB);
+    myMELA.computeP(mzz, m1, m2, 
+		    hs,h1,h2,phi,phi1,flavor, 
+		    p1plus_mela);
+    
+    // production independent
+    //myMELA.setProcess(TVar::AVZZ_4l, TVar::ANALYTICAL, TVar::INDEPENDENT);
+    //myMELA.computeP(mzz, m1, m2, 
+    //hs,h1,h2,phi,phi1,flavor, 
+    //p1plus_decay_mela);
+    
+    // gg->2m+
+    myMELA.setProcess(TVar::TZZ_4l, TVar::ANALYTICAL, TVar::GG);
+    myMELA.computeP(mzz, m1, m2, 
+		    hs,h1,h2,phi,phi1,flavor, 
+		    p2_mela);
+    
+    // qqb->2m+
+    myMELA.setProcess(TVar::TZZ_4l, TVar::ANALYTICAL, TVar::QQB);
+    myMELA.computeP(mzz, m1, m2, 
+		    hs,h1,h2,phi,phi1,flavor, 
+		    p2qqb_mela);
+    
+    // qqb->2m+
+    myMELA.setProcess(TVar::TZZ_4l, TVar::ANALYTICAL, TVar::INDEPENDENT);
+    myMELA.computeP(mzz, m1, m2, 
+		    hs,h1,h2,phi,phi1,flavor, 
+		    p2_decay_mela);
+    
+    // 2h-
+    myMELA.setProcess(TVar::PTZZ_2hminus_4l, TVar::ANALYTICAL, TVar::GG);
+    myMELA.computeP(mzz, m1, m2, 
+		    hs,h1,h2,phi,phi1,flavor, 
+		    p2hminus_mela);
+    
+    // 2h+
+    myMELA.setProcess(TVar::TZZ_2hplus_4l, TVar::ANALYTICAL, TVar::GG);
+    myMELA.computeP(mzz, m1, m2, 
+		    hs,h1,h2,phi,phi1,flavor, 
+		    p2hplus_mela);
+    
+    // 2b+
+    myMELA.setProcess(TVar::TZZ_2bplus_4l, TVar::ANALYTICAL, TVar::GG);
+    myMELA.computeP(mzz, m1, m2, 
+		    hs,h1,h2,phi,phi1,flavor, 
+		    p2bplus_mela);
+
+    
+    // 
+    // MCFM calcualtionsA
     // 
 
     // qqZZ 

@@ -33,8 +33,6 @@ public:
   RooRealVar* fz1Val;
   RooRealVar* fz2Val;
 
-  TF1* fmZZNorm;
-
   RooRealVar* mZ;
   RooRealVar* gamZ;
 
@@ -43,9 +41,6 @@ public:
 
   RooAbsPdf *PDF;
 
-  int modelIndex;
-
-  
   TensorPdfFactory(){};
 
   TensorPdfFactory(RooRealVar* m1,RooRealVar* m2,RooRealVar* hs,RooRealVar* h1,RooRealVar* h2,RooRealVar* Phi,RooRealVar* Phi1,RooRealVar* mZZ){
@@ -117,8 +112,6 @@ public:
     delete g9Val; 
     delete g10Val;
 
-    delete fmZZNorm;
-
     delete mZ;
     delete gamZ;
 
@@ -130,59 +123,48 @@ public:
 
   };
 
-  int configure(TVar::Process model_){
+  int configure(TVar::Process model_,TVar::Production prod_){
 
     switch (model_){
-    case TVar::TZZ_4l          : makeMinGrav(); return 0; break;
-    case TVar::QQB_TZZ_4l      : makeqqMinGrav(); return 0; break;
-    case TVar::TZZ_2hplus_4l   : make2hPlus(); return 0; break;
-    case TVar::PTZZ_2hminus_4l  : make2hMinus(); return 0; break;
+    case TVar::TZZ_4l          : 
+      if(prod_==TVar::GG || prod_==TVar::INDEPENDENT){
+	makeMinGrav(); 
+	return 0; break;
+      }else if(prod_==TVar::QQB){
+	makeqqMinGrav();
+	return 0; break;
+      }else{
+	return 2; break;
+      }
+    case TVar::TZZ_2hplus_4l   : make2hPlus();  return 0; break;
+    case TVar::PTZZ_2hminus_4l : make2hMinus(); return 0; break;
+    case TVar::TZZ_2bplus_4l   : make2bPlus();  return 0; break;
     default: makeMinGrav(); return 1; break;
     }
 
   };
 
-  void makeMinGrav(){  // NEED TO CALCULATE NORMALIZATIONS
-
+  void makeMinGrav(){      // Minimal coupling graviton produced through 
+                           // gluon-gluon fusion
     fz1Val->setVal(0.0);
     fz2Val->setVal(1.0);
 
     g1Val->setVal(1.0);
     g5Val->setVal(1.0); 
 
-    modelIndex=0;
- 
-    fmZZNorm=new TF1("fmZZNorm","exp([0]+[1]*x+[2]*x*x+[3]*pow(x,3)+[4]*pow(x,4)+[5]*pow(x,5) +[6]*pow(x,6))",100,180);
-    fmZZNorm->FixParameter(0,-5.22866);
-    fmZZNorm->FixParameter(1,0.170495);
-    fmZZNorm->FixParameter(2,0.000877867);
-    fmZZNorm->FixParameter(3,-4.01876e-07);
-    fmZZNorm->FixParameter(4,-3.02114e-08);
-    fmZZNorm->FixParameter(5,-1.43247e-10);
-    fmZZNorm->FixParameter(6,1.04256e-12);
   };
 
-  void makeqqMinGrav(){  // NEED TO CALCULATE NORMALIZATIONS
-
+  void makeqqMinGrav(){   // Minimal coupling graviton produced through 
+                          // quark-anti-quark annihilation
     fz1Val->setVal(1.0);
     fz2Val->setVal(0.0);
 
     g1Val->setVal(1.0);
     g5Val->setVal(1.0); 
 
-    modelIndex=0;
- 
-    fmZZNorm=new TF1("fmZZNorm","exp([0]+[1]*x+[2]*x*x+[3]*pow(x,3)+[4]*pow(x,4)+[5]*pow(x,5) +[6]*pow(x,6))",100,180);
-    fmZZNorm->FixParameter(0,-5.22866);
-    fmZZNorm->FixParameter(1,0.170495);
-    fmZZNorm->FixParameter(2,0.000877867);
-    fmZZNorm->FixParameter(3,-4.01876e-07);
-    fmZZNorm->FixParameter(4,-3.02114e-08);
-    fmZZNorm->FixParameter(5,-1.43247e-10);
-    fmZZNorm->FixParameter(6,1.04256e-12);
   };
 
-  void makeUnpolMinGrav(){  // NEED TO CALCULATE NORMALIZATIONS
+  void makeUnpolMinGrav(){  // unpolarized minimal coupling graviton
 
     fz1Val->setVal(0.4);
     fz2Val->setVal(0.4);
@@ -190,52 +172,33 @@ public:
     g1Val->setVal(1.0);
     g5Val->setVal(1.0); 
 
-    modelIndex=0;
- 
-    fmZZNorm=new TF1("fmZZNorm","exp([0]+[1]*x+[2]*x*x+[3]*pow(x,3)+[4]*pow(x,4)+[5]*pow(x,5) +[6]*pow(x,6))",100,180);
-    fmZZNorm->FixParameter(0,-5.22866);
-    fmZZNorm->FixParameter(1,0.170495);
-    fmZZNorm->FixParameter(2,0.000877867);
-    fmZZNorm->FixParameter(3,-4.01876e-07);
-    fmZZNorm->FixParameter(4,-3.02114e-08);
-    fmZZNorm->FixParameter(5,-1.43247e-10);
-    fmZZNorm->FixParameter(6,1.04256e-12);
   };
 
-  void make2hPlus(){  // NEED TO CALCULATE NORMALIZATIONS
-
+  void make2hPlus(){      // exotic CP-even spin-2 resonance produced through 
+                          // gluon-gluon fusion
     fz1Val->setVal(0.0);
     fz2Val->setVal(0.0);
 
     g4Val->setVal(1.0); 
 
-    modelIndex=1;
-    fmZZNorm=new TF1("fmZZNorm","exp([0]+[1]*x+[2]*x*x+[3]*pow(x,3)+[4]*pow(x,4)+[5]*pow(x,5)+[6]*pow(x,6))",100,180);
-    fmZZNorm->FixParameter(0,-8.59286);
-    fmZZNorm->FixParameter(1,0.0337467);
-    fmZZNorm->FixParameter(2,0.0004704);
-    fmZZNorm->FixParameter(3,2.15492e-06);
-    fmZZNorm->FixParameter(4,1.19595e-09);
-    fmZZNorm->FixParameter(5,-4.19439e-11);
-    fmZZNorm->FixParameter(6,-1.02067e-13);  
   };
 
-  void make2hMinus(){  // NEED TO CALCULATE NORMALIZATIONS
-
+  void make2hMinus(){     // exotic CP-odd spin-2 resonance produced through 
+                          // gluon-gluon fusion
     fz1Val->setVal(0.0);
     fz2Val->setVal(0.0);
 
     g8Val->setVal(1.0); 
 
-    modelIndex=2;
-    fmZZNorm=new TF1("fmZZNorm","exp([0]+[1]*x+[2]*x*x+[3]*pow(x,3)+[4]*pow(x,4)+[5]*pow(x,5))",100,180);
-    
-    fmZZNorm->FixParameter(0,-7.27873);
-    fmZZNorm->FixParameter(1,0.0158159);
-    fmZZNorm->FixParameter(2,0.000415876);
-    fmZZNorm->FixParameter(3,2.86406e-06);
-    fmZZNorm->FixParameter(4,6.2603e-09);
-    fmZZNorm->FixParameter(5,-9.36201e-11);
+  };
+
+  void make2bPlus(){     // spin-2 with bulk
+                          // gluon-gluon fusion
+    fz1Val->setVal(0.0);
+    fz2Val->setVal(1.0);
+
+    g5Val->setVal(1.0); 
+
   };
 
   void makeParamsConst(bool yesNo=true){
@@ -297,16 +260,6 @@ public:
       R1Val->setConstant(kFALSE);
       R2Val->setConstant(kFALSE);
     }
-  };
-
-  double getVal(double mZZ){
- 
-    double norm=-999;
-    if(mZZ>180 || mZZ<100){
-      //cout << "Normalization is not available for this value of mZZ: I'm extrapolating ..." << mZZ << endl;
-    }
-    norm = fmZZNorm->Eval(mZZ);
-    return PDF->getVal()/norm;
   };
 
 };

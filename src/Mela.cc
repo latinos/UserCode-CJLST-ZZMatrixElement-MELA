@@ -2,8 +2,8 @@
  *
  *  See header file for documentation.
  *
- *  $Date: 2013/03/20 13:23:18 $
- *  $Revision: 1.41 $
+ *  $Date: 2013/03/20 16:52:48 $
+ *  $Revision: 1.42 $
  */
 
 #include <ZZMatrixElement/MELA/interface/Mela.h>
@@ -586,7 +586,7 @@ pair<float,float> Mela::likelihoodDiscriminant (float mZZ, float m1, float m2, f
     // using template background calculation
     if(mZZ>100 && mZZ<180){
       Pbackg = P[0]*P[1]*P[2]*P[3]*P[4]*P[5]*5.0;
-      Psig=SMHiggs->getVal(mZZ);
+      Psig=SMHiggs->PDF->getVal();
     }
     if(mZZ>180&&mZZ<=2*91.188){
       z1mass_rrv->setVal(mZZ/2.-1e-9);
@@ -860,21 +860,21 @@ void Mela::computeP(float mZZ, float mZ1, float mZ2,
 
   p0plus_melaNorm = P.first;
   bkg_mela    = P.second;
-  p0plus_mela = SMHiggs->getVal(mZZ);
+  p0plus_mela = SMHiggs->PDF->getVal();
 
   // pseudo mela
-  p0minus_mela = PSHiggs->getVal(mZZ);
+  p0minus_mela = PSHiggs->PDF->getVal();
 
   // 0h+ mela
-  p0hplus_mela = ScalarhPlus->getVal(mZZ);
+  p0hplus_mela = ScalarhPlus->PDF->getVal();
 
   // Z'
   p1_mela = zprime->PDF->getVal(); 
   p1plus_mela = zprimePlus->PDF->getVal(); 
   
   //graviMela
-  p2_mela = minGrav->getVal(mZZ);
-  p2qqb_mela = qqminGrav->getVal(mZZ);
+  p2_mela = minGrav->PDF->getVal();
+  p2qqb_mela = qqminGrav->PDF->getVal();
 
  }//end computeMELA
 

@@ -117,8 +117,8 @@ void SpinTwoMinimalMELA::computeKD(TLorentzVector Z1_lept1, int Z1_lept1Id,
   
   mzz_rrv->setVal(mzz);
   
-  psig = SMHiggs->getVal(mzz);
-  psigALT = minGrav->getVal(mzz);
+  psig = SMHiggs->PDF->getVal();
+  psigALT = minGrav->PDF->getVal();
   kd = 1/(1+psigALT/psig);
   
 }
@@ -149,8 +149,8 @@ void SpinTwoMinimalMELA::computeKD(float zzmass, float z1mass,
 
   mzz_rrv->setVal(zzmass);
 
-  psig = SMHiggs->getVal(zzmass);
-  psigALT = minGrav->getVal(zzmass);
+  psig = SMHiggs->PDF->getVal();
+  psigALT = minGrav->PDF->getVal();
   kd = 1/(1+psigALT/psig);
     
 }

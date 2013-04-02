@@ -21,15 +21,11 @@ public:
 
   RooAbsPdf *PDF;
 
-  int modelIndex;
-
   RooRealVar* g1Val;
   RooRealVar* g2Val;
 
   RooRealVar* aParam;
   
-  TF1* fmZZNorm;
-
   VectorPdfFactory(){};
 
   VectorPdfFactory(RooRealVar* m1,RooRealVar* m2,RooRealVar* hs,RooRealVar* h1,RooRealVar* h2,RooRealVar* Phi,RooRealVar* Phi1,RooRealVar* mZZ){
@@ -61,8 +57,6 @@ public:
 
     delete aParam;
 
-    delete fmZZNorm;
-
     delete mZ;
     delete gamZ;
 
@@ -89,14 +83,6 @@ public:
     g1Val->setVal(0.0);
     g2Val->setVal(1.0); 
 
-    modelIndex=0;
-
-    fmZZNorm=new TF1("fmZZNorm","exp([0]+[1]*x+[2]*x*x+[3]*pow(x,3)+[4]*pow(x,4))",100,180);
-    fmZZNorm->FixParameter(0,-48.5383);
-    fmZZNorm->FixParameter(1,0.703812);
-    fmZZNorm->FixParameter(2,0.000160962);
-    fmZZNorm->FixParameter(3,-2.62737e-05);
-    fmZZNorm->FixParameter(4,8.13202e-08);
   };
 
   void makeZprime(){  // NEED TO CALCULATE NORMALIZATIONS
@@ -104,13 +90,6 @@ public:
     g1Val->setVal(1.0); 
     g2Val->setVal(0.0); 
 
-    modelIndex=1;
-    fmZZNorm=new TF1("fmZZNorm","exp([0]+[1]*x+[2]*x*x+[3]*pow(x,3)+[4]*pow(x,4))",100,180);
-    fmZZNorm->FixParameter(0,-33.6399);
-    fmZZNorm->FixParameter(1,0.474581);
-    fmZZNorm->FixParameter(2,0.000350871);
-    fmZZNorm->FixParameter(3,-1.67939e-05);
-    fmZZNorm->FixParameter(4,4.86108e-08);
   };
 
   void makeParamsConst(bool yesNo=true){
@@ -134,16 +113,6 @@ public:
       R1Val->setConstant(kFALSE);
       R2Val->setConstant(kFALSE);
     }
-  };
-
-  double getVal(double mZZ){
-
-    double norm=-999;
-    if(mZZ>180 || mZZ<100){
-      //cout << "Normalization is not available for this value of mZZ: I'm extrapolating ..." << mZZ << endl;
-    }
-    norm = fmZZNorm->Eval(mZZ);
-    return PDF->getVal()/norm;
   };
 
 };

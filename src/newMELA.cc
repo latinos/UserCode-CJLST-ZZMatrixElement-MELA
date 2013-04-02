@@ -1,6 +1,5 @@
 #include <ZZMatrixElement/MELA/interface/newMELA.h>
 #include <ZZMatrixElement/MELA/interface/newZZMatrixElement.h>
-#include <ZZMatrixElement/MELA/interface/SuperMELA.h>
 #include <DataFormats/GeometryVector/interface/Pi.h>
 #include <FWCore/ParameterSet/interface/FileInPath.h>
 
@@ -10,11 +9,6 @@
 #include "TensorPdfFactory.h"
 #include "RooqqZZ_JHU_ZgammaZZ_fast.h"
 #include "RooqqZZ_JHU.h"
-#include "RooTsallis.h"
-//#include "HiggsAnalysis/CombinedLimit/interface/HZZ4LRooPdfs.h"  // replacement for RooTsallis
-#include "RooTsallisExp.h"
-#include "RooRapidityBkg.h"
-#include "RooRapiditySig.h"
 
 #include <RooMsgService.h>
 #include <TFile.h>
@@ -32,7 +26,7 @@
 
 using namespace RooFit;
 
-newMELA::newMELA(bool usePowhegTemplate, int LHCsqrts, float mh) 
+newMELA::newMELA(int LHCsqrts, float mh) 
 {
   mzz_rrv = new RooRealVar("mzz","m_{ZZ}",0.,1000.);
   z1mass_rrv = new RooRealVar("z1mass","m_{Z1}",0.,180.);
@@ -93,14 +87,15 @@ void newMELA::setProcess(TVar::Process myModel, TVar::MatrixElement myME, TVar::
   // 
   // configure the analytical calculations 
   // 
-        
+
   if(!spin0Model->configure(myModel_)) pdf = spin0Model->PDF;
   else{
     if(!spin1Model->configure(myModel_)) pdf = spin1Model->PDF;
     else{
-      if(!spin2Model->configure(myModel_)) pdf = spin2Model->PDF;
+      if(!spin2Model->configure(myModel_,myProduction_)) pdf = spin2Model->PDF;
       else{
-	cout << "newMELA::newMELA ERROR model not found!!!" << endl; 
+	if(myME_ == TVar::ANALYTICAL)
+	  cout << "newMELA::setProcess -> ERROR TVar::Process not found!!! " << myME_ << endl; 
       }	
     }
   }
@@ -167,16 +162,26 @@ void newMELA::computeP(float mZZ, float mZ1, float mZ2, // input kinematics
   // analytical calculations
   // 
   if ( myME_ == TVar::ANALYTICAL ) {
-    if(mZZ>100.)
-      prob = pdf->getVal();
-    else 
+   
+    if(mZZ>100.){
+
+      if(myProduction_==TVar::INDEPENDENT){
+	RooAbsPdf* integral = (RooAbsPdf*) pdf->createIntegral(RooArgSet(*costhetastar_rrv,*phi1_rrv));
+	integral->getVal();
+	delete integral;
+      }else{
+	prob = pdf->getVal();
+      }
+
+    }else{
       prob = -99.0;
+    }
   } 
 
   //
   // JHUGen or MCFM 
   //
-  if ( myME_ == TVar::JHUGen|| myME_ == TVar::MCFM ) {
+  if ( myME_ == TVar::JHUGen || myME_ == TVar::MCFM ) {
     
     //initialize variables
     checkZorder(mZ1,mZ2,costhetastar,costheta1,costheta2,phi,phi1);

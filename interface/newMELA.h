@@ -16,7 +16,6 @@ class AngularPdfFactory;
 class VectorPdfFactory;
 class TensorPdfFactory;
 class newZZMatrixElement;
-class SuperMELA;
 class TGraph;
 
 
@@ -32,7 +31,7 @@ class newMELA{
 public:
   
   // newMELA(){};
-  newMELA(bool usePowhegTemplate=false, int LHCsqrts=8, float mh=126); // higgs mass for supermela
+  newMELA(int LHCsqrts=8, float mh=126); // higgs mass for supermela
   ~newMELA();
   
   void setProcess(TVar::Process myModel, TVar::MatrixElement myME, TVar::Production myProduction);

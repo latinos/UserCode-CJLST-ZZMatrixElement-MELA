@@ -119,8 +119,8 @@ void SpinTwoDecayMELA::computeKD(TLorentzVector Z1_lept1, int Z1_lept1Id,
 
   RooAbsReal* decayPdf = minGrav->PDF->createIntegral(RooArgSet(*costhetastar_rrv,*phistar1_rrv));
   
-  psig = SMHiggs->getVal(mzz);
-  psigALT = decayPdf->getVal()*minGrav->getVal(mzz)/minGrav->PDF->getVal();
+  psig = SMHiggs->PDF->getVal();
+  psigALT = decayPdf->getVal()*minGrav->PDF->getVal()/minGrav->PDF->getVal();
   kd = 1/(1+psigALT/psig);
   
   delete decayPdf;
@@ -154,8 +154,8 @@ void SpinTwoDecayMELA::computeKD(float zzmass, float z1mass,
 
   RooAbsReal* decayPdf = minGrav->PDF->createIntegral(RooArgSet(*costhetastar_rrv,*phistar1_rrv));
 
-  psig = SMHiggs->getVal(zzmass);
-  psigALT = decayPdf->getVal()*minGrav->getVal(zzmass)/minGrav->PDF->getVal();
+  psig = SMHiggs->PDF->getVal();
+  psigALT = decayPdf->getVal()*minGrav->PDF->getVal()/minGrav->PDF->getVal();
   kd = 1/(1+psigALT/psig);
 
   delete decayPdf;
