@@ -31,8 +31,6 @@ void addProbtoTreeNew(char* inputFile,int flavor, int max=-1, int LHCsqrts=8){
 
   newMELA myMELA(LHCsqrts,flavor);
   
-  cout << "newMELA initialized" << endl;
-
   RooMsgService::instance().getStream(1).removeTopic(NumIntegration);
 
   char inputFileName[500];
@@ -58,13 +56,14 @@ void addProbtoTreeNew(char* inputFile,int flavor, int max=-1, int LHCsqrts=8){
   float psig,pbkg,D;
   double oldD;                                                    //legacy probabilities
   float	p0plus_melaNorm,p0plus_mela,p0minus_mela,p0hplus_mela,p0plus_VAJHU,p0minus_VAJHU,p0plus_VAMCFM,p0hplus_VAJHU,p1_mela,p1plus_mela,p1_VAJHU,p1plus_VAJHU,p2_mela,p2qqb_mela,p2_VAJHU,p2qqb_VAJHU; // new signal probablities
-  float bkg_mela, bkg_VAMCFM, ggzz_VAMCFM, bkg_VAMCFMNorm, bkg_decay_VAMCFM;    // background probabilities
+  float bkg_mela, bkg_VAMCFM, bkg_VAMCFMNorm, ggzz_VAMCFM, bkg_decay_VAMCFM;    // background probabilities
 
   // probabilities for production independent calculations
   float p1_decay_VAJHU, p1plus_decay_VAJHU, p2_decay_VAJHU; 
   // probabilities for exotic spin-2 models
   float p2hminus_VAJHU, p2hplus_VAJHU, p2bplus_VAJHU;
-  float p2hminus_mela, p2hplus_mela, p2bplus_mela,p2_decay_mela;
+  float p2hminus_mela, p2hplus_mela, p2bplus_mela;
+  float p1_decay_mela, p1plus_decay_mela, p2_decay_mela;
 
   // -------- CJLST TREES ---------------
   sigTree->SetBranchAddress("Z2Mass",&m2);
@@ -101,8 +100,11 @@ void addProbtoTreeNew(char* inputFile,int flavor, int max=-1, int LHCsqrts=8){
   newTree->Branch("p2qqb_mela_NEW",&p2qqb_mela,"p2qqb_mela_NEW/F"); // graviton produced by qqbar vector algebra, analytical,
   newTree->Branch("p2_VAJHU_NEW",&p2_VAJHU,"p2_VAJHU_NEW/F");  // graviton produced by gg, vector algebra, JHUgen,
   newTree->Branch("p2qqb_VAJHU_NEW",&p2qqb_VAJHU,"p2qqb_VAJHU_NEW/F");  // graviton produced by qqbar, vector algebra, JHUgen,
+  newTree->Branch("p2qqb_mela_NEW",&p2qqb_mela,"p2qqb_mela_NEW/F");  // graviton produced by qqbar, analytical,
   newTree->Branch("p1_decay_VAJHU_NEW",&p1_decay_VAJHU,"p1_decay_VAJHU_NEW/F");  // 1-, vector algebra, production indpendent JHUgen
+  newTree->Branch("p1_decay_mela_NEW",&p1_decay_mela,"p1_decay_mela_NEW/F");  // 1-, analytical, production indpendent
   newTree->Branch("p1plus_decay_VAJHU_NEW",&p1plus_decay_VAJHU,"p1plus_decay_VAJHU_NEW/F");  // 1+, vector algebra, production indpendent JHUgen
+  newTree->Branch("p1plus_decay_mela_NEW",&p1plus_decay_mela,"p1plus_decay_mela_NEW/F");  // 1+, analytical, production indpendent
   newTree->Branch("p2_decay_VAJHU_NEW",&p2_decay_VAJHU,"p2_decay_VAJHU_NEW/F");  // 2m+, vector algebra, production indpendent JHUgen
   newTree->Branch("p2_decay_mela_NEW",&p2_decay_mela,"p2_decay_mela_NEW/F");  // 2m+, analytical, production indpendent JHUgen
   newTree->Branch("p2hminus_VAJHU_NEW",&p2hminus_VAJHU,"p2hminus_VAJHU_NEW/F");  // 2h-, vector algebra, JHUgen,
@@ -110,20 +112,19 @@ void addProbtoTreeNew(char* inputFile,int flavor, int max=-1, int LHCsqrts=8){
   newTree->Branch("p2hminus_mela_NEW",&p2hminus_mela,"p2hminus_mela_NEW/F");  // 2h-, vector algebra, JHUgen,
   newTree->Branch("p2hplus_mela_NEW",&p2hplus_mela,"p2hplus_mela_NEW/F");     // 2h+, vector algebra, analytical,
   newTree->Branch("p2bplus_VAJHU_NEW",&p2bplus_VAJHU,"p2bplus_VAJHU_NEW/F");     // 2b+, vector algebra, JHUgen,
+  newTree->Branch("p2bplus_mela_NEW",&p2bplus_mela,"p2bplus_mela_NEW/F");     // 2b+, analytical
 
   //backgrounds
   newTree->Branch("bkg_mela_NEW",&bkg_mela,"bkg_mela_NEW/F");  // background,  analytic distribution 
-  newTree->Branch("bkg_VAMCFM",&bkg_VAMCFM,"bkg_VAMCFM/F");  // background, vector algebra, MCFM
-  newTree->Branch("ggzz_VAMCFM",&ggzz_VAMCFM,"ggzz_VAMCFM/F");  // background, vector algebra, MCFM for ggzz
-  newTree->Branch("bkg_VAMCFMNorm",&bkg_VAMCFMNorm,"bkg_VAMCFMNorm/F");  // background, vector algebra, MCFM Normalized
-  newTree->Branch("bkg_decay_VAMCFM",&bkg_decay_VAMCFM,"bkg_decay_VAMCFM/F");  // background, vector algebra, MCFM integrating out the production angles
+  newTree->Branch("bkg_VAMCFM_NEW",&bkg_VAMCFM,"bkg_VAMCFM_NEW/F");  // background, vector algebra, MCFM
+  newTree->Branch("ggzz_VAMCFM_NEW",&ggzz_VAMCFM,"ggzz_VAMCFM_NEW/F");  // background, vector algebra, MCFM for ggzz
+  newTree->Branch("bkg_VAMCFMNorm_NEW",&bkg_VAMCFMNorm,"bkg_VAMCFMNorm_NEW/F");  // background, vector algebra, MCFM Normalized
+  newTree->Branch("bkg_decay_VAMCFM_NEW",&bkg_decay_VAMCFM,"bkg_decay_VAMCFM_NEW/F");  // background, vector algebra, MCFM integrating out the production angles
   
   //interference weight
   float interfWeight;
   newTree->Branch("interfWeight",&interfWeight,"interfWeight/F"); // weight to be used for interference reweighting
 
-  cout << "branches set" << endl;
-  
   for(int iEvt=0; iEvt<(max<0?sigTree->GetEntries():max); iEvt++){
     
     if(iEvt>=sigTree->GetEntries()) break;
@@ -137,6 +138,13 @@ void addProbtoTreeNew(char* inputFile,int flavor, int max=-1, int LHCsqrts=8){
     // 
     // ANALYTICAL calcualtions
     // 
+
+    // qqZZ0+
+    myMELA.setProcess(TVar::ZZ_2e2m, TVar::ANALYTICAL, TVar::QQB);
+    myMELA.computeP(mzz, m1, m2, 
+		    hs,h1,h2,phi,phi1,flavor, 
+		    bkg_mela);
+
 
     // 0+
     myMELA.setProcess(TVar::HZZ_4l, TVar::ANALYTICAL, TVar::GG);
@@ -166,9 +174,9 @@ void addProbtoTreeNew(char* inputFile,int flavor, int max=-1, int LHCsqrts=8){
     
     // production independent
     myMELA.setProcess(TVar::VZZ_4l, TVar::ANALYTICAL, TVar::INDEPENDENT);
-    //myMELA.computeP(mzz, m1, m2, 
-    //hs,h1,h2,phi,phi1,flavor, 
-    //p1_decay_mela);
+    myMELA.computeP(mzz, m1, m2, 
+    hs,h1,h2,phi,phi1,flavor, 
+    p1_decay_mela);
     
     // 1+
     myMELA.setProcess(TVar::AVZZ_4l, TVar::ANALYTICAL, TVar::QQB);
@@ -177,17 +185,17 @@ void addProbtoTreeNew(char* inputFile,int flavor, int max=-1, int LHCsqrts=8){
 		    p1plus_mela);
     
     // production independent
-    //myMELA.setProcess(TVar::AVZZ_4l, TVar::ANALYTICAL, TVar::INDEPENDENT);
-    //myMELA.computeP(mzz, m1, m2, 
-    //hs,h1,h2,phi,phi1,flavor, 
-    //p1plus_decay_mela);
-    
+    myMELA.setProcess(TVar::AVZZ_4l, TVar::ANALYTICAL, TVar::INDEPENDENT);
+    myMELA.computeP(mzz, m1, m2, 
+    hs,h1,h2,phi,phi1,flavor, 
+    p1plus_decay_mela);
+
     // gg->2m+
     myMELA.setProcess(TVar::TZZ_4l, TVar::ANALYTICAL, TVar::GG);
     myMELA.computeP(mzz, m1, m2, 
 		    hs,h1,h2,phi,phi1,flavor, 
 		    p2_mela);
-    
+
     // qqb->2m+
     myMELA.setProcess(TVar::TZZ_4l, TVar::ANALYTICAL, TVar::QQB);
     myMELA.computeP(mzz, m1, m2, 
@@ -218,7 +226,6 @@ void addProbtoTreeNew(char* inputFile,int flavor, int max=-1, int LHCsqrts=8){
 		    hs,h1,h2,phi,phi1,flavor, 
 		    p2bplus_mela);
 
-    
     // 
     // MCFM calcualtionsA
     // 
@@ -242,6 +249,7 @@ void addProbtoTreeNew(char* inputFile,int flavor, int max=-1, int LHCsqrts=8){
 
     // ******  qqZZ-> production independent 
     
+    /*
     if ( flavor == 3 ) {
       myMELA.setProcess(TVar::ZZ_2e2m, TVar::MCFM, TVar::INDEPENDENT);
       myMELA.computeP(mzz, m1, m2, 
@@ -251,6 +259,7 @@ void addProbtoTreeNew(char* inputFile,int flavor, int max=-1, int LHCsqrts=8){
       myMELA.computeP(mzz, m1, m2, 
 		      hs,h1,h2,phi,phi1,flavor, bkg_decay_VAMCFM);
     }
+    */
 
     // 0+
     myMELA.setProcess(TVar::HZZ_4l, TVar::MCFM, TVar::GG);

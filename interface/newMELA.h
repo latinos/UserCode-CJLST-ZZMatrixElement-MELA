@@ -15,6 +15,7 @@ class RooArgSet;
 class AngularPdfFactory;
 class VectorPdfFactory;
 class TensorPdfFactory;
+class RooqqZZ_JHU_ZgammaZZ_fast;
 class newZZMatrixElement;
 class TGraph;
 
@@ -24,7 +25,7 @@ class TGraph;
 #include <ZZMatrixElement/MELA/src/AngularPdfFactory.h>
 #include <ZZMatrixElement/MELA/src/VectorPdfFactory.h>
 #include <ZZMatrixElement/MELA/src/TensorPdfFactory.h>
-
+#include <ZZMatrixElement/MELA/src/RooqqZZ_JHU_ZgammaZZ_fast.h>
 
 class newMELA{
 
@@ -58,6 +59,7 @@ public:
   AngularPdfFactory* spin0Model;
   VectorPdfFactory* spin1Model;
   TensorPdfFactory* spin2Model;
+  RooqqZZ_JHU_ZgammaZZ_fast* qqZZmodel;
 
   RooRealVar* mzz_rrv;
   RooRealVar* z1mass_rrv;
@@ -67,8 +69,12 @@ public:
   RooRealVar* costheta2_rrv;
   RooRealVar* phi_rrv;
   RooRealVar* phi1_rrv;
-  RooRealVar* pt_rrv;
-
+  RooRealVar* pt_rrv;  
+  RooRealVar* upFrac_rrv;
+  
+  TGraph* vaScale_4e;
+  TGraph* vaScale_4mu;
+  TGraph* vaScale_2e2mu;
 
  private:
 

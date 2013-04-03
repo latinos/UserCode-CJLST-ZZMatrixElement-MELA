@@ -36,10 +36,13 @@ newMELA::newMELA(int LHCsqrts, float mh)
   costheta2_rrv = new RooRealVar("costheta2","cos#theta_{2}",-1.,1.);
   phi_rrv= new RooRealVar("phi","#Phi",-3.1415,3.1415);
   phi1_rrv= new RooRealVar("phi1","#Phi_{1}",-3.1415,3.1415);
+  
+  upFrac_rrv = new RooRealVar("upFrac","fraction up-quarks",.5,0.,1.);
 
   spin0Model = new AngularPdfFactory(z1mass_rrv,z2mass_rrv,costheta1_rrv,costheta2_rrv,phi_rrv,mzz_rrv);
   spin1Model = new VectorPdfFactory(z1mass_rrv,z2mass_rrv,costhetastar_rrv,costheta1_rrv,costheta2_rrv,phi_rrv,phi1_rrv,mzz_rrv);
   spin2Model = new TensorPdfFactory(z1mass_rrv,z2mass_rrv,costhetastar_rrv,costheta1_rrv,costheta2_rrv,phi_rrv,phi1_rrv,mzz_rrv);
+  qqZZmodel = new RooqqZZ_JHU_ZgammaZZ_fast("qqZZmodel","qqZZmodel",*z1mass_rrv,*z2mass_rrv,*costheta1_rrv,*costheta2_rrv,*phi_rrv,*costhetastar_rrv,*phi1_rrv,*mzz_rrv,*upFrac_rrv);
 
   edm::FileInPath HiggsWidthFile("Higgs/Higgs_CS_and_Width/txtFiles/8TeV-ggH.txt");
   std::string path = HiggsWidthFile.fullPath();
@@ -58,6 +61,14 @@ newMELA::newMELA(int LHCsqrts, float mh)
   symlink(mcfmInput2.fullPath().c_str(), "process.DAT");
   mkdir("Pdfdata",S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
   symlink(mcfmInput3.fullPath().c_str(), "Pdfdata/cteq6l1.tbl");
+
+  // load TGraphs for VAMCFM scale factors
+  edm::FileInPath ScaleFactorFile("ZZMatrixElement/MELA/data/scaleFactors.root");
+  TFile* sf = TFile::Open(ScaleFactorFile.fullPath().c_str(),"r");
+  vaScale_4e    = (TGraph*)sf->Get("scaleFactors_4e");
+  vaScale_4mu   = (TGraph*)sf->Get("scaleFactors_4mu");
+  vaScale_2e2mu = (TGraph*)sf->Get("scaleFactors_2e2mu");
+  sf->Close(); 
   
 }
 
@@ -72,9 +83,12 @@ newMELA::~newMELA(){
   delete costheta2_rrv;
   delete phi_rrv;
   delete phi1_rrv;
+  delete upFrac_rrv;
+
   delete spin0Model;
   delete spin1Model;
   delete spin2Model;
+  delete qqZZmodel;
   delete ZZME;
 }
 
@@ -88,17 +102,13 @@ void newMELA::setProcess(TVar::Process myModel, TVar::MatrixElement myME, TVar::
   // configure the analytical calculations 
   // 
 
-  if(!spin0Model->configure(myModel_)) pdf = spin0Model->PDF;
-  else{
-    if(!spin1Model->configure(myModel_)) pdf = spin1Model->PDF;
-    else{
-      if(!spin2Model->configure(myModel_,myProduction_)) pdf = spin2Model->PDF;
-      else{
-	if(myME_ == TVar::ANALYTICAL)
-	  cout << "newMELA::setProcess -> ERROR TVar::Process not found!!! " << myME_ << endl; 
-      }	
-    }
-  }
+  if(myModel_==TVar::ZZ_2e2m || myModel_==TVar::ZZ_4e)
+    pdf = qqZZmodel;
+  else if(!spin0Model->configure(myModel_)) pdf = spin0Model->PDF;
+  else if(!spin1Model->configure(myModel_)) pdf = spin1Model->PDF;
+  else if(!spin2Model->configure(myModel_,myProduction_)) pdf = spin2Model->PDF;
+  else if(myME_ == TVar::ANALYTICAL)
+    cout << "newMELA::setProcess -> ERROR TVar::Process not found!!! " << myME_ << endl; 
 
 }
 
@@ -167,7 +177,7 @@ void newMELA::computeP(float mZZ, float mZ1, float mZ2, // input kinematics
 
       if(myProduction_==TVar::INDEPENDENT){
 	RooAbsPdf* integral = (RooAbsPdf*) pdf->createIntegral(RooArgSet(*costhetastar_rrv,*phi1_rrv));
-	integral->getVal();
+	prob = integral->getVal();
 	delete integral;
       }else{
 	prob = pdf->getVal();
@@ -189,7 +199,37 @@ void newMELA::computeP(float mZZ, float mZ1, float mZ2, // input kinematics
 		    costhetastar,costheta1,costheta2, 
 		    phi, phi1, flavor,
 		    myModel_, myME_,  myProduction_,  prob);
+
+    // adding scale factors for MCMF calculation
+    // -- taken from old code --
     
+    if(flavor==1){
+      if(mZZ > 900)                   
+	prob *= vaScale_4e->Eval(900.);
+      else if (mZZ <  100 )
+	prob *= vaScale_4e->Eval(100.);
+      else
+	prob *= vaScale_4e->Eval(mZZ);
+    }
+
+    if(flavor==2){
+      if(mZZ > 900)                   
+	prob *= vaScale_4mu->Eval(900.);
+      else if (mZZ <  100 )
+	prob *= vaScale_4mu->Eval(100.);
+      else
+	prob *= vaScale_4mu->Eval(mZZ);
+    }
+
+    if(flavor==3){
+      if(mZZ > 900)                   
+	prob *= vaScale_2e2mu->Eval(900.);
+      else if (mZZ <  100 )
+	prob *= vaScale_2e2mu->Eval(100.);
+      else
+	prob *= vaScale_2e2mu->Eval(mZZ);
+    }
+
     // 
     // define the constants to be used on JHUGen
     // 
@@ -263,7 +303,7 @@ void newMELA::computeP(float mZZ, float mZ1, float mZ2, // input kinematics
 	prob =  prob / float ( (gridsize_hs + 1) * (gridsize_phi1 +1 )); 
       }
   }
-  prob = prob * constant; 
+  prob *= constant; 
 }
 
 void newMELA::computeP(TLorentzVector Z1_lept1, int Z1_lept1Id,  // input 4-vectors
