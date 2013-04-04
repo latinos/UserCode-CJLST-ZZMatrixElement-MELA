@@ -203,7 +203,7 @@ void newMELA::computeP(float mZZ, float mZ1, float mZ2, // input kinematics
     // adding scale factors for MCMF calculation
     // -- taken from old code --
     
-    if(flavor==1){
+    if(flavor==1 && myME_ == TVar::MCFM){
       if(mZZ > 900)                   
 	prob *= vaScale_4e->Eval(900.);
       else if (mZZ <  100 )
@@ -212,7 +212,7 @@ void newMELA::computeP(float mZZ, float mZ1, float mZ2, // input kinematics
 	prob *= vaScale_4e->Eval(mZZ);
     }
 
-    if(flavor==2){
+    if(flavor==2 && myME_ == TVar::MCFM){
       if(mZZ > 900)                   
 	prob *= vaScale_4mu->Eval(900.);
       else if (mZZ <  100 )
@@ -221,7 +221,7 @@ void newMELA::computeP(float mZZ, float mZ1, float mZ2, // input kinematics
 	prob *= vaScale_4mu->Eval(mZZ);
     }
 
-    if(flavor==3){
+    if(flavor==3 && myME_ == TVar::MCFM){
       if(mZZ > 900)                   
 	prob *= vaScale_2e2mu->Eval(900.);
       else if (mZZ <  100 )
