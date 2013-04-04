@@ -236,7 +236,7 @@ public:
     g5Val->setVal(1.0); 
     g6Val->setVal(0.0); 
     g7Val->setVal(0.0); 
-    g5Val->setVal(0.0); 
+    g8Val->setVal(0.0); 
 
   };
 
