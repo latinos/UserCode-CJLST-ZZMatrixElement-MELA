@@ -21,7 +21,13 @@ public:
   RooRealVar* phi2Val;
   RooRealVar* a3Val;  
   RooRealVar* phi3Val;
-    
+
+  RooRealVar* useGTerm;
+  RooRealVar* g1Val;
+  RooRealVar* g2Val;
+  RooRealVar* g3Val;
+  RooRealVar* g4Val;
+      
   RooRealVar* R1Val;  
   RooRealVar* R2Val;  
   
@@ -45,10 +51,16 @@ public:
     a3Val  = new RooRealVar("a3Val","a3Val",0);
     phi3Val= new RooRealVar("phi3Val","phi3Val",0);
            
+    useGTerm = new RooRealVar("useGTerm","useGTerm",1.);
+    g1Val = new RooRealVar("g1Val","g1Val",0.);
+    g2Val = new RooRealVar("g2Val","g2Val",0.);
+    g3Val = new RooRealVar("g3Val","g3Val",0.);
+    g4Val = new RooRealVar("g4Val","g4Val",0.);
+
     R1Val  = new RooRealVar("R1Val","R1Val",0.15);
     R2Val  = new RooRealVar("R2Val","R2Val",0.15);
 
-    PDF = new RooXZsZs_5D("PDF","PDF",*m1,*m2,*h1,*h2,*Phi,*a1Val,*phi1Val,*a2Val,*phi2Val,*a3Val,*phi3Val,*mZ,*gamZ,*mZZ,*R1Val,*R2Val);
+    PDF = new RooXZsZs_5D("PDF","PDF",*m1,*m2,*h1,*h2,*Phi,*a1Val,*phi1Val,*a2Val,*phi2Val,*a3Val,*phi3Val,*useGTerm,*g1Val,*g2Val,*g3Val,*g4Val,*mZ,*gamZ,*mZZ,*R1Val,*R2Val);
 
   };
 
@@ -64,7 +76,13 @@ public:
     delete phi3Val;
     delete R1Val;
     delete R2Val;
-    
+
+    delete useGTerm;
+    delete g1Val;
+    delete g2Val;
+    delete g3Val;
+    delete g4Val;
+
     delete PDF;
 
   };
@@ -82,33 +100,31 @@ public:
   };
 
   void makeSMHiggs(){
-    a1Val->setVal(1.0);
-    phi1Val->setVal(0.0);
-    a2Val->setVal(0.0);
-    phi2Val->setVal(0.0);
-    a3Val->setVal(0.0);
-    phi3Val->setVal(0.0);
+    useGTerm->setVal(1.0);
+    g1Val->setVal(1.0);
+    g2Val->setVal(0.0);
+    g3Val->setVal(0.0);
+    g4Val->setVal(0.0);
     modelIndex=0;
   };
 
   void makeLGHiggs(){          
-    a1Val->setVal(0.0);        // need to calculate the proper normalizations
-    phi1Val->setVal(0.0);
-    a2Val->setVal(1.0);
-    phi2Val->setVal(0.0);
-    a3Val->setVal(0.0);
-    phi3Val->setVal(0.0);
+    useGTerm->setVal(1.0);
+    g1Val->setVal(0.0);
+    g2Val->setVal(1.0);
+    g3Val->setVal(0.0);
+    g4Val->setVal(0.0);
+    // need to calculate the proper normalizations
     modelIndex=2;
   };
 
 
   void makePSHiggs(){
-    a1Val->setVal(0.0);
-    phi1Val->setVal(0.0);
-    a2Val->setVal(0.0);
-    phi2Val->setVal(0.0);
-    a3Val->setVal(1.0);
-    phi3Val->setVal(0.0);
+    useGTerm->setVal(1.0);
+    g1Val->setVal(0.0);
+    g2Val->setVal(0.0);
+    g3Val->setVal(0.0);
+    g4Val->setVal(1.0);
     modelIndex=1;
   };
 
@@ -120,6 +136,16 @@ public:
     phi2Val->setVal(phi2);
     a3Val->setVal(a3);
     phi3Val->setVal(phi3);
+    modelIndex=-1;
+  };
+
+  void makeCustom(double g1, double g2, 
+		  double g3, double g4){
+    useGTerm->setVal(1.0);
+    g1Val->setVal(g1);
+    g2Val->setVal(g2);
+    g3Val->setVal(g3);
+    g4Val->setVal(g4);
     modelIndex=-1;
   };
 

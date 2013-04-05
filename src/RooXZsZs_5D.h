@@ -1,6 +1,3 @@
-// Included verbatim from UserCode/scasasso/HZZ4lAnalysis/HZZ4lCommon/src tag V00-00-00
-
-
 /*****************************************************************************
  * Project: RooFit                                                           *
  *                                                                           *
@@ -31,6 +28,11 @@ public:
                 RooAbsReal& _phi2Val,
                 RooAbsReal& _a3Val,
                 RooAbsReal& _phi3Val,
+		RooAbsReal& _useGTerm,
+		RooAbsReal& _g1Val,
+		RooAbsReal& _g2Val,
+		RooAbsReal& _g3Val,
+		RooAbsReal& _g4Val,
                 RooAbsReal& _mZ,
                 RooAbsReal& _gamZ,
                 RooAbsReal& _mX,
@@ -42,8 +44,6 @@ public:
     
     Int_t getAnalyticalIntegral(RooArgSet& allVars, RooArgSet& analVars, const char* rangeName=0) const ;
     Double_t analyticalIntegral(Int_t code, const char* rangeName=0) const ;
-
-  //ClassDef(RooXZsZs_5D,1) // Your description goes here...
     
 protected:
     
@@ -58,6 +58,11 @@ protected:
     RooRealProxy phi2Val ;
     RooRealProxy a3Val ;
     RooRealProxy phi3Val ;
+    RooRealProxy useGTerm ;
+    RooRealProxy g1Val ;
+    RooRealProxy g2Val ;
+    RooRealProxy g3Val ;
+    RooRealProxy g4Val ;
     RooRealProxy mZ ;
     RooRealProxy gamZ ;
     RooRealProxy mX ;
@@ -68,6 +73,7 @@ protected:
     
 private:
     
+    //ClassDef(RooXZsZs_5D,1) // Your description goes here...
 };
 
 #endif
