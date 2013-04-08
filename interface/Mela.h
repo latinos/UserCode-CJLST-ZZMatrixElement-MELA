@@ -3,6 +3,7 @@
 
 #include "TLorentzVector.h"
 #include <vector>
+#include <TRandom3.h>
 
 
 class TFile; 
@@ -18,7 +19,7 @@ class TensorPdfFactory;
 class RooqqZZ_JHU_ZgammaZZ_fast;
 class newZZMatrixElement;
 class TGraph;
-
+class SuperMELA;
 
 #include <ZZMatrixElement/MELA/interface/TVar.hh>
 #include <ZZMatrixElement/MELA/interface/TEvtProb.hh>
@@ -51,7 +52,19 @@ public:
 		TLorentzVector Z2_lept1, int Z2_lept1Id,
 		TLorentzVector Z2_lept2, int Z2_lept2Id,  
 		float& prob);                             // output probability
-    
+  
+  void computePM4l(float mZZ,
+		   TVar::LeptonFlavor flavor,
+		   TVar::SuperMelaSyst syst, 
+		   float& prob); //SuperMela
+  void computePM4l(TLorentzVector Z1_lept1, int Z1_lept1Id,  // input 4-vectors
+		   TLorentzVector Z1_lept2, int Z1_lept2Id,  // 
+		   TLorentzVector Z2_lept1, int Z2_lept1Id,
+		   TLorentzVector Z2_lept2, int Z2_lept2Id,
+		   TVar::SuperMelaSyst syst, 
+		   float& prob); //SuperMela
+  
+  
   // Ordering of Z1/Z2 according to internal convention
   void checkZorder(float& z1mass, float& z2mass, float& costhetastar, float& costheta1, float& costheta2, float& phi, float& phistar1);
   
@@ -60,6 +73,8 @@ public:
   VectorPdfFactory* spin1Model;
   TensorPdfFactory* spin2Model;
   RooqqZZ_JHU_ZgammaZZ_fast* qqZZmodel;
+  SuperMELA* super;
+  TRandom3 *myR; // random number for resolution szstematics
 
   RooRealVar* mzz_rrv;
   RooRealVar* z1mass_rrv;
@@ -71,7 +86,7 @@ public:
   RooRealVar* phi1_rrv;
   RooRealVar* pt_rrv;  
   RooRealVar* upFrac_rrv;
-  
+
   TGraph* vaScale_4e;
   TGraph* vaScale_4mu;
   TGraph* vaScale_2e2mu;

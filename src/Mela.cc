@@ -9,6 +9,7 @@
 #include "TensorPdfFactory.h"
 #include "RooqqZZ_JHU_ZgammaZZ_fast.h"
 #include "RooqqZZ_JHU.h"
+#include "ZZMatrixElement/MELA/interface/SuperMELA.h"
 
 #include <RooMsgService.h>
 #include <TFile.h>
@@ -69,6 +70,34 @@ Mela::Mela(int LHCsqrts, float mh)
   vaScale_4mu   = (TGraph*)sf->Get("scaleFactors_4mu");
   vaScale_2e2mu = (TGraph*)sf->Get("scaleFactors_2e2mu");
   sf->Close(); 
+
+
+  //
+  // setup supermela
+  //
+
+  //deactivate generation messages
+  RooMsgService::instance().getStream(1).removeTopic(NumIntegration);
+  RooMsgService::instance().setStreamStatus(1,kFALSE);
+  RooMsgService::instance().setStreamStatus(0,kFALSE);// silence also the error messages, but should really be looked at.
+
+
+  myR=new TRandom3(35797);
+  //  std::cout << "before supermela" << std::endl;
+  super = new SuperMELA(mh,"4mu",LHCsqrts); // preliminary intialization, we adjust the flavor later
+  char cardpath[500];
+  sprintf(cardpath,"HZZ4L_Combination/CombinationPy/CreateDatacards/SM_inputs_%dTeV/inputs_4mu.txt",LHCsqrts);
+  //std::cout << "before supermela, pathToCards: " <<cardpath<< std::endl;
+  edm::FileInPath cardfile(cardpath);
+  std::string cpath=cardfile.fullPath();
+  std::cout << cpath.substr(0,cpath.length()-14).c_str()  <<std::endl;
+  super->SetPathToCards(cpath.substr(0,cpath.length()-14).c_str() );
+  super->SetVerbosity(false);
+  // std::cout << "starting superMELA initialization" << std::endl;
+  super->init();
+  //std::cout << "after supermela" << std::endl;
+
+
   
 }
 
@@ -90,6 +119,8 @@ Mela::~Mela(){
   delete spin2Model;
   delete qqZZmodel;
   delete ZZME;
+  delete super;
+  delete myR;
 }
 
 void Mela::setProcess(TVar::Process myModel, TVar::MatrixElement myME, TVar::Production myProduction)
@@ -348,3 +379,92 @@ void Mela::computeP(TLorentzVector Z1_lept1, int Z1_lept1Id,  // input 4-vectors
 
 }
 
+void Mela::computePM4l(TLorentzVector Z1_lept1, int Z1_lept1Id,  // input 4-vectors
+		       TLorentzVector Z1_lept2, int Z1_lept2Id,  // 
+		       TLorentzVector Z2_lept1, int Z2_lept1Id,
+		       TLorentzVector Z2_lept2, int Z2_lept2Id,
+		       TVar::SuperMelaSyst syst, 
+		       float& prob){
+
+  TLorentzVector ZZ = (Z1_lept1 + Z1_lept2 + Z2_lept1 + Z2_lept2);
+  float mzz = ZZ.M();
+  TVar::LeptonFlavor flavor = TVar::Flavor_Dummy;
+
+  if( abs(Z1_lept1Id)==11 &&  abs(Z1_lept2Id)==11 &&
+      abs(Z2_lept1Id)==11 &&  abs(Z1_lept2Id)==11 )
+    flavor = TVar::Flavor_4e;
+  
+  if( abs(Z1_lept1Id)==13 &&  abs(Z1_lept2Id)==13 &&
+      abs(Z2_lept1Id)==13 &&  abs(Z1_lept2Id)==13 )
+    flavor = TVar::Flavor_4mu;
+
+  if( abs(Z1_lept1Id)==11 &&  abs(Z1_lept2Id)==11 &&
+      abs(Z2_lept1Id)==13 &&  abs(Z1_lept2Id)==13 )
+    flavor = TVar::Flavor_2e2mu;
+
+  if( abs(Z1_lept1Id)==13 &&  abs(Z1_lept2Id)==13 &&
+      abs(Z2_lept1Id)==11 &&  abs(Z1_lept2Id)==11 )
+    flavor = TVar::Flavor_2e2mu;
+  
+  
+  computePM4l(mzz,flavor,syst,prob);
+}
+
+void Mela::computePM4l(float mZZ, TVar::LeptonFlavor flavor, TVar::SuperMelaSyst syst, float& prob){
+  prob=-99;//default dummy.
+  
+  if(flavor == TVar::Flavor_Dummy) // only compute things if flavor determination succeded
+    return;
+  
+  switch(flavor){
+  case 1: super->SetDecayChannel("4e")   ;break;
+  case 2: super->SetDecayChannel("4mu")  ;break;
+  case 3: super->SetDecayChannel("2e2mu");break;
+  default: std::cout << " unknown flavor: " << flavor << std::endl; exit(0);
+  }
+
+
+  if(syst == TVar::SMSyst_None){
+    std::pair<double,double> m4lP = super->M4lProb(mZZ);
+    if(myModel_ == TVar::HZZ_4l) // currently only supported signal is H(0+)
+      prob = m4lP.first;
+    if(myModel_ == TVar::SummedBackgrounds) // currently only supported background is summed paramterization
+      prob = m4lP.second;
+  }
+  else{
+    //systematics for p(m4l)
+    float mZZtmp=mZZ;
+    float meanErr=float(super->GetSigShapeSystematic("meanCB") );
+    if( syst == TVar::SMSyst_ScaleUp ){
+      mZZtmp = mZZ*(1.0+meanErr);
+      if(mZZtmp>180.0 || mZZtmp<100)mZZtmp=mZZ;      
+      std::pair<double,double> m4lPScaleUp = super->M4lProb(mZZtmp);
+      if(myModel_ == TVar::HZZ_4l)
+	prob = m4lPScaleUp.first; 
+      if(myModel_ == TVar::SummedBackgrounds)
+	prob = m4lPScaleUp.second;
+    }
+
+    if( syst == TVar::SMSyst_ScaleDown ){    
+      mZZtmp = mZZ*(1.0-meanErr);
+      if(mZZtmp>180.0 || mZZtmp<100)mZZtmp=mZZ;
+      std::pair<double,double> m4lPScaleDown = super->M4lProb(mZZtmp);
+      if(myModel_ == TVar::HZZ_4l)
+	prob = m4lPScaleDown.first; 
+      if(myModel_ == TVar::SummedBackgrounds)
+	prob = m4lPScaleDown.second;
+    }
+    
+    float sigmaErr=float(super->GetSigShapeSystematic("sigmaCB") );
+    float sigmaCB=float(super->GetSigShapeParameter("sigmaCB"));    
+    if( syst == TVar::SMSyst_ResUp || syst ==  TVar::SMSyst_ResDown ){
+      mZZtmp= myR->Gaus(mZZ,sigmaErr*sigmaCB);
+      if(mZZtmp>180.0 || mZZtmp<100) mZZtmp=mZZ;
+      std::pair<double,double> m4lPResUp = super->M4lProb(mZZtmp);
+      if(myModel_ == TVar::HZZ_4l)
+	prob = m4lPResUp.first; 
+      if(myModel_ == TVar::SummedBackgrounds)
+	prob = m4lPResUp.second;      
+    }
+  }
+}
