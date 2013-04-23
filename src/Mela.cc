@@ -343,6 +343,22 @@ void Mela::computeP(TLorentzVector Z1_lept1, int Z1_lept1Id,  // input 4-vectors
 		       TLorentzVector Z2_lept2, int Z2_lept2Id,  
 		       float& prob){                             // output probability
     
+  // get flavor type
+  // NEED TO INCLUDE SOME PROTECTION SO THAT USER CANT                  
+  // PASS FOUR-VECTORS IN WRONG ORDER.  FOR NOW ASSUMING                
+  // THEY ARE PASSED AS e-,e+,mu-,mu+                                   
+  // ------------------ channel ------------------------                
+  int flavor;
+
+  if(abs(Z1_lept1Id)==abs(Z1_lept2Id)&&
+     abs(Z1_lept1Id)==abs(Z2_lept1Id)&&
+     abs(Z1_lept1Id)==abs(Z2_lept2Id)){
+
+    if(abs(Z1_lept1Id)==11) flavor=1;
+    else flavor=2;
+
+  }else flavor=3;
+
   //compute angles  
   float m1=(Z1_lept1 + Z1_lept2).M();
   float m2=(Z2_lept1 + Z2_lept2).M();
@@ -362,20 +378,13 @@ void Mela::computeP(TLorentzVector Z1_lept1, int Z1_lept1Id,  // input 4-vectors
 		      Z2_lept1, Z2_lept1Id, Z2_lept2, Z2_lept2Id,
 		      costhetastar,costheta1,costheta2,phi,phi1);
 
-  costhetastar_rrv->setVal(costhetastar);
-  costheta1_rrv->setVal(costheta1);
-  costheta2_rrv->setVal(costheta2);
-  phi_rrv->setVal(phi);
-  phi1_rrv->setVal(phi1);
-    
-  z1mass_rrv->setVal(m1);
-  z2mass_rrv->setVal(m2);
-  mzz_rrv->setVal(mzz);
-
-  if(mzz>100.)
-    prob = pdf->getVal();
-  else
-    prob = -99.;
+  computeP(mzz, m1, m2,
+	   costhetastar,
+	   costheta1,
+	   costheta2,
+	   phi,phi1,
+	   flavor,
+	   prob);
 
 }
 
@@ -468,3 +477,42 @@ void Mela::computePM4l(float mZZ, TVar::LeptonFlavor flavor, TVar::SuperMelaSyst
     }
   }
 }
+
+void Mela::computeWeight(float mZZ, float mZ1, float mZ2, 
+			 float costhetastar,
+			 float costheta1, 
+			 float costheta2,
+			 float phi,
+			 float phi1,
+			 // return variables:
+			  float& w
+			 ){
+
+  float dXsec_HZZ_JHU,dXsec_HZZ_JHU_interf; // temporary prob
+  
+  // calculate dXsec for 4e/4mu
+  setProcess(TVar::HZZ_4l,TVar::JHUGen,TVar::GG);
+  computeP(mZZ,mZ1,mZ2,
+	   costhetastar,
+	   costheta1,
+	   costheta2,
+	   phi,phi1,
+	   1,dXsec_HZZ_JHU_interf);
+
+  // calculate dXsec for 2e2mu
+  setProcess(TVar::HZZ_4l,TVar::JHUGen,TVar::GG);
+  computeP(mZZ,mZ1,mZ2,
+	   costhetastar,
+	   costheta1,
+	   costheta2,
+	   phi,phi1,
+	   3,dXsec_HZZ_JHU);
+  
+  w = dXsec_HZZ_JHU_interf / dXsec_HZZ_JHU;
+
+  // protect against anomalously large weights
+  if (w>10.) w=0.;
+
+}
+
+
