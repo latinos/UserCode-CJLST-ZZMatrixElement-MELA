@@ -29,6 +29,15 @@ using namespace RooFit;
 
 Mela::Mela(int LHCsqrts, float mh) 
 {
+  // Create symlinks to the required files, if these are not already present (do nothing otherwse)
+  edm::FileInPath mcfmInput1("ZZMatrixElement/MELA/data/input.DAT");
+  edm::FileInPath mcfmInput2("ZZMatrixElement/MELA/data/process.DAT");
+  edm::FileInPath mcfmInput3("ZZMatrixElement/MELA/data/Pdfdata/cteq6l1.tbl");  
+  symlink(mcfmInput1.fullPath().c_str(), "input.DAT");
+  symlink(mcfmInput2.fullPath().c_str(), "process.DAT");
+  mkdir("Pdfdata",S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+  symlink(mcfmInput3.fullPath().c_str(), "Pdfdata/cteq6l1.tbl");
+
   mzz_rrv = new RooRealVar("mzz","m_{ZZ}",0.,1000.);
   z1mass_rrv = new RooRealVar("z1mass","m_{Z1}",0.,180.);
   z2mass_rrv = new RooRealVar("z2mass","m_{Z2}",0.,120.); 
@@ -54,14 +63,6 @@ Mela::Mela(int LHCsqrts, float mh)
   // configure the JHUGEn and MCFM calculations 
   // 
   
-  // Create symlinks to the required files, if these are not already present (do nothing otherwse)
-  edm::FileInPath mcfmInput1("ZZMatrixElement/MELA/data/input.DAT");
-  edm::FileInPath mcfmInput2("ZZMatrixElement/MELA/data/process.DAT");
-  edm::FileInPath mcfmInput3("ZZMatrixElement/MELA/data/Pdfdata/cteq6l1.tbl");  
-  symlink(mcfmInput1.fullPath().c_str(), "input.DAT");
-  symlink(mcfmInput2.fullPath().c_str(), "process.DAT");
-  mkdir("Pdfdata",S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
-  symlink(mcfmInput3.fullPath().c_str(), "Pdfdata/cteq6l1.tbl");
 
   // load TGraphs for VAMCFM scale factors
   edm::FileInPath ScaleFactorFile("ZZMatrixElement/MELA/data/scaleFactors.root");
