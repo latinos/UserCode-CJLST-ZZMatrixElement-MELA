@@ -100,138 +100,153 @@ double TEvtProb::XsecCalc(TVar::Process proc, TVar::Production production, const
     if ( _matrixElement == TVar::MCFM ) 
       msqjk = SumMatrixElementPDF(proc, &mcfm_event, flavor_msq, &flux, EBEAM);
     if ( _matrixElement == TVar::JHUGen ) {
-      //
-      // spin 0 
-      //
-      if ( proc == TVar::HZZ_4l || proc == TVar::PSHZZ_4l || proc == TVar::HDHZZ_4l ) {
-	// By default set the Spin 0 couplings for SM case
-	// H->Glu Glu coupling constants 
-	double hggcoupl[3] = {1.0, 0.0, 0.0};  
-	// H->ZZ coupling constants 
-	double hzzcoupl[4] = {1.0, 0.0, 0.0, 0.0}; 
-	if ( proc == TVar::PSHZZ_4l ) {
-	  hzzcoupl[0] = 0.0;
-	  hzzcoupl[1] = 0.0;
-	  hzzcoupl[2] = 0.0;
-	  hzzcoupl[3] = 1.0;
-	}
-	if ( proc == TVar::HDHZZ_4l ) {
-	  hzzcoupl[0] = 0.0;
-	  hzzcoupl[1] = 1.0;
-	  hzzcoupl[2] = 0.0;
-	  hzzcoupl[3] = 0.0;
-	}
-	msqjk = JHUGenMatEl(proc, production, &mcfm_event, _hmass, _hwidth, hggcoupl, hzzcoupl);
-      }
 
-      //
-      // spin 2 
+      // all the possible couplings
+      double Hggcoupl[3][2];
+      double Hvvcoupl[4][2];
+      double Zqqcoupl[2][2];
+      double Zvvcoupl[2][2];
+      double Gqqcoupl[2][2];
+      double Gggcoupl[5][2];
+      double Gvvcoupl[10][2];
+      
+      // 
+      // set spin 0 default numbers
       // 
       
-      // 2m+
-      if ( proc == TVar::TZZ_4l ) {
-	// Graviton->Glu Glu coupling constants 
-	double Gggcoupl[5] = {1.0, 0.0, 0.0, 0.0, 0.0}; // 2m+
-	// Graviton->qqbar coupling constants
-	double Gqqcoupl[2] = {1.0, 1.0}; // do not change
-	
-	// Graviton->ZZ coupling constants 
-	double Gvvcoupl[10]; 
-	Gvvcoupl[0]=1.0;
-	Gvvcoupl[1]=0.0; 
-	Gvvcoupl[2]=0.0;  
-	Gvvcoupl[3]=0.0;
-	Gvvcoupl[4]=1.0;
-	Gvvcoupl[5]=0.0;
-	Gvvcoupl[6]=0.0;
-	Gvvcoupl[7]=0.0;
-	Gvvcoupl[8]=0.0;
-	Gvvcoupl[9]=0.0;
-	if ( production == TVar::GG  || production == TVar::INDEPENDENT ) {
-	  msqjk = JHUGenMatEl(proc, production, &mcfm_event, _hmass, _hwidth, Gggcoupl, Gvvcoupl);
-	}
-	if ( _production == TVar::QQB ) {
-	  msqjk = JHUGenMatEl(proc, production, &mcfm_event, _hmass, _hwidth, Gqqcoupl, Gvvcoupl);
-	}
+      // By default set the Spin 0 couplings for SM case
+      Hggcoupl[0][0]=1.0;  Hggcoupl[0][1]=0.0;   // first/second number is the real/imaginary part
+      Hggcoupl[1][0]=0.0;  Hggcoupl[1][1]=0.0;  
+      Hggcoupl[2][0]=0.0;  Hggcoupl[2][1]=0.0;  
+      
+      Hvvcoupl[0][0]=1.0;  Hvvcoupl[0][1]=0.0;  
+      Hvvcoupl[1][0]=0.0;  Hvvcoupl[1][1]=0.0;  
+      Hvvcoupl[2][0]=0.0;  Hvvcoupl[2][1]=0.0;  
+      Hvvcoupl[3][0]=0.0;  Hvvcoupl[3][1]=0.0;        
+      
+      // 
+      // set spin 2 default numbers (2m+)
+      // 
+      Gggcoupl[0][0]=1.0;  Gggcoupl[0][1]=0.0; // 2m+
+      Gggcoupl[1][0]=0.0;  Gggcoupl[1][1]=0.0;
+      Gggcoupl[2][0]=0.0;  Gggcoupl[2][1]=0.0;
+      Gggcoupl[3][0]=0.0;  Gggcoupl[3][1]=0.0;
+      Gggcoupl[4][0]=0.0;  Gggcoupl[4][1]=0.0;
+
+      Gqqcoupl[0][0]=1.0;  Gqqcoupl[0][1]=0.0;  
+      Gqqcoupl[1][0]=1.0;  Gqqcoupl[1][1]=0.0; 
+      
+      Gvvcoupl[0][0]=1.0;  Gvvcoupl[0][1]=0.0; // 2m+
+      Gvvcoupl[1][0]=0.0;  Gvvcoupl[1][1]=0.0;
+      Gvvcoupl[2][0]=0.0;  Gvvcoupl[2][1]=0.0;
+      Gvvcoupl[3][0]=0.0;  Gvvcoupl[3][1]=0.0;
+      Gvvcoupl[4][0]=1.0;  Gvvcoupl[4][1]=0.0; // 2m+
+      Gvvcoupl[5][0]=0.0;  Gvvcoupl[5][1]=0.0;
+      Gvvcoupl[6][0]=0.0;  Gvvcoupl[6][1]=0.0;
+      Gvvcoupl[7][0]=0.0;  Gvvcoupl[7][1]=0.0;
+      Gvvcoupl[8][0]=0.0;  Gvvcoupl[8][1]=0.0;
+      Gvvcoupl[9][0]=0.0;  Gvvcoupl[9][1]=0.0;
+
+      // 
+      // set spin 1 default numbers (1-)
+      // 
+      Zqqcoupl[0][0]=1.0;  Zqqcoupl[0][1]=0.0;   // first/second number is the real/imaginary part
+      Zqqcoupl[1][0]=1.0;  Zqqcoupl[1][1]=0.0;
+      // z->vv coupling constants
+      Zvvcoupl[0][0]=1.0;  Zvvcoupl[0][1]=0.0; // 1-
+      Zvvcoupl[1][0]=0.0;  Zvvcoupl[1][1]=0.0; 
+      
+
+      // 0-
+      if ( proc == TVar::PSHZZ_4l ) {
+	Hvvcoupl[0][0] = 0.0;
+	Hvvcoupl[1][0] = 0.0;
+	Hvvcoupl[2][0] = 0.0;
+	  Hvvcoupl[3][0] = 1.0;
+      }
+      // 0h+
+      if ( proc == TVar::HDHZZ_4l ) {
+	Hvvcoupl[0][0] = 0.0;
+	Hvvcoupl[1][0] = 1.0;
+	Hvvcoupl[2][0] = 0.0;
+	Hvvcoupl[3][0] = 0.0;
       }
       
       // 2h-
       if ( proc == TVar::PTZZ_2hminus_4l ) {
-	double Gggcoupl[5] = {0.0, 0.0, 0.0, 0.0, 1.0};
+	// gg production coupling constants
+	Gggcoupl[0][0]=0.0;  Gggcoupl[0][1]=0.0;
+	Gggcoupl[1][0]=0.0;  Gggcoupl[1][1]=0.0;
+	Gggcoupl[2][0]=0.0;  Gggcoupl[2][1]=0.0;
+	Gggcoupl[3][0]=0.0;  Gggcoupl[3][1]=0.0;
+	Gggcoupl[4][0]=1.0;  Gggcoupl[4][1]=0.0; // 2h-
+	
 	// Graviton->ZZ coupling constants 
-	double Gvvcoupl[10]; 
-	Gvvcoupl[0]=0.0;
-	Gvvcoupl[1]=0.0; 
-	Gvvcoupl[2]=0.0;  
-	Gvvcoupl[3]=0.0;
-	Gvvcoupl[4]=0.0;
-	Gvvcoupl[5]=0.0;
-	Gvvcoupl[6]=0.0;
-	Gvvcoupl[7]=1.0;
-	Gvvcoupl[8]=0.0;
-	Gvvcoupl[9]=0.0;
-	if ( production == TVar::GG  )
-	  msqjk = JHUGenMatEl(proc, production, &mcfm_event, _hmass, _hwidth, Gggcoupl, Gvvcoupl);
+	Gvvcoupl[0][0]=0.0;  Gvvcoupl[0][1]=0.0;
+	Gvvcoupl[1][0]=0.0;  Gvvcoupl[1][1]=0.0;
+	Gvvcoupl[2][0]=0.0;  Gvvcoupl[2][1]=0.0;
+	Gvvcoupl[3][0]=0.0;  Gvvcoupl[3][1]=0.0;
+	Gvvcoupl[4][0]=0.0;  Gvvcoupl[4][1]=0.0;
+	Gvvcoupl[5][0]=0.0;  Gvvcoupl[5][1]=0.0;
+	Gvvcoupl[6][0]=0.0;  Gvvcoupl[6][1]=0.0;
+	Gvvcoupl[7][0]=1.0;  Gvvcoupl[7][1]=0.0; // 2h-
+	Gvvcoupl[8][0]=0.0;  Gvvcoupl[8][1]=0.0;
+	Gvvcoupl[9][0]=0.0;  Gvvcoupl[9][1]=0.0; 
       }
       
       // 2h+
       if ( proc == TVar::TZZ_2hplus_4l ) {
-	double Gggcoupl[5] = {0.0, 0.0, 0.0, 1.0, 0.0}; // 2h+
+	// gg production coupling constants
+	Gggcoupl[0][0]=0.0;  Gggcoupl[0][1]=0.0;
+	Gggcoupl[1][0]=0.0;  Gggcoupl[1][1]=0.0;
+	Gggcoupl[2][0]=0.0;  Gggcoupl[2][1]=0.0;
+	Gggcoupl[3][0]=1.0;  Gggcoupl[3][1]=0.0; // 2h+
+	Gggcoupl[4][0]=0.0;  Gggcoupl[4][1]=0.0;
+	
 	// Graviton->ZZ coupling constants 
-	double Gvvcoupl[10]; 
-	Gvvcoupl[0]=0.0;
-	Gvvcoupl[1]=0.0; 
-	Gvvcoupl[2]=0.0;  
-	Gvvcoupl[3]=1.0; // 2h+
-	Gvvcoupl[4]=0.0;
-	Gvvcoupl[5]=0.0;
-	Gvvcoupl[6]=0.0;
-	Gvvcoupl[7]=0.0;
-	Gvvcoupl[8]=0.0;
-	Gvvcoupl[9]=0.0;
-	if ( _production == TVar::GG  )
-	  msqjk = JHUGenMatEl(proc, production, &mcfm_event, _hmass, _hwidth, Gggcoupl, Gvvcoupl);
+	Gvvcoupl[0][0]=0.0;  Gvvcoupl[0][1]=0.0;
+	Gvvcoupl[1][0]=0.0;  Gvvcoupl[1][1]=0.0;
+	Gvvcoupl[2][0]=0.0;  Gvvcoupl[2][1]=0.0;
+	Gvvcoupl[3][0]=1.0;  Gvvcoupl[3][1]=0.0; // 2h+
+	Gvvcoupl[4][0]=0.0;  Gvvcoupl[4][1]=0.0;
+	Gvvcoupl[5][0]=0.0;  Gvvcoupl[5][1]=0.0;
+	Gvvcoupl[6][0]=0.0;  Gvvcoupl[6][1]=0.0;
+	Gvvcoupl[7][0]=0.0;  Gvvcoupl[7][1]=0.0;
+	Gvvcoupl[8][0]=0.0;  Gvvcoupl[8][1]=0.0;
+	Gvvcoupl[9][0]=0.0;  Gvvcoupl[9][1]=0.0;
       }
       
       // 2b+
       if ( proc == TVar::TZZ_2bplus_4l ) {
-	double Gggcoupl[5] = {1.0, 0.0, 0.0, 0.0, 0.0}; // 2b+
+	// gg production coupling constants
+	Gggcoupl[0][0]=1.0;  Gggcoupl[0][1]=0.0;  // 2b+
+	Gggcoupl[1][0]=0.0;  Gggcoupl[1][1]=0.0;
+	Gggcoupl[2][0]=0.0;  Gggcoupl[2][1]=0.0;
+	Gggcoupl[3][0]=0.0;  Gggcoupl[3][1]=0.0;
+	Gggcoupl[4][0]=0.0;  Gggcoupl[4][1]=0.0;
+	
 	// Graviton->ZZ coupling constants 
-	double Gvvcoupl[10]; 
-	Gvvcoupl[0]=0.0;
-	Gvvcoupl[1]=0.0; 
-	Gvvcoupl[2]=0.0;  
-	Gvvcoupl[3]=0.0; 
-	Gvvcoupl[4]=1.0; // 2b+
-	Gvvcoupl[5]=0.0;
-	Gvvcoupl[6]=0.0;
-	Gvvcoupl[7]=0.0;
-	Gvvcoupl[8]=0.0;
-	Gvvcoupl[9]=0.0;
-	if ( _production == TVar::GG  )
-	  msqjk = JHUGenMatEl(proc, production, &mcfm_event, _hmass, _hwidth, Gggcoupl, Gvvcoupl);
-      }
-      
-      //
-      // spin 1
-      // 
-      
-      if ( proc == TVar::VZZ_4l ) {
-	// Zprime->qq coupling constants 
-	double Zqqcoupl[2] = {1.0, 1.0}; // do not change 
-	double Zvvcoupl[2] = {1.0, 0.0};  // 1 -
-	msqjk = JHUGenMatEl(proc, production, &mcfm_event, _hmass, _hwidth, Zqqcoupl, Zvvcoupl);
+	Gvvcoupl[0][0]=0.0;  Gvvcoupl[0][1]=0.0;
+	Gvvcoupl[1][0]=0.0;  Gvvcoupl[1][1]=0.0;
+	Gvvcoupl[2][0]=0.0;  Gvvcoupl[2][1]=0.0;
+	Gvvcoupl[3][0]=0.0;  Gvvcoupl[3][1]=0.0;
+	Gvvcoupl[4][0]=1.0;  Gvvcoupl[4][1]=0.0; // 2b+
+	Gvvcoupl[5][0]=0.0;  Gvvcoupl[5][1]=0.0;
+	Gvvcoupl[6][0]=0.0;  Gvvcoupl[6][1]=0.0;
+	Gvvcoupl[7][0]=0.0;  Gvvcoupl[7][1]=0.0;
+	Gvvcoupl[8][0]=0.0;  Gvvcoupl[8][1]=0.0;
+	Gvvcoupl[9][0]=0.0;  Gvvcoupl[9][1]=0.0;
       }
       
       if ( proc == TVar::AVZZ_4l ) {
-	// Zprime->qq coupling constants 
-	double Zqqcoupl[2] = {1.0, 1.0}; // do not change 
-	double Zvvcoupl[2] = {0.0, 1.0};  // 1 +
-	msqjk = JHUGenMatEl(proc, production, &mcfm_event, _hmass, _hwidth, Zqqcoupl, Zvvcoupl);
+	// z->vv coupling constants
+	Zvvcoupl[0][0]=0.0;  Zvvcoupl[0][1]=0.0;
+	Zvvcoupl[1][0]=1.0;  Zvvcoupl[1][1]=0.0; // 1+
       }
       
-    }
-    
+      msqjk = JHUGenMatEl(proc, production, &mcfm_event, _hmass, _hwidth, Hggcoupl, Hvvcoupl, Zqqcoupl, Zvvcoupl, Gqqcoupl, Gggcoupl, Gvvcoupl);
+      
+    } // end of JHUGen matrix element calculations
     
     if(msqjk<=0){ mcfm_event.pswt=0; }
     
