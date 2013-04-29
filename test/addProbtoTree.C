@@ -5,7 +5,7 @@
 using namespace RooFit;
 bool includePathIsSet = false;
 
-void addProbtoTreeNew(char* inputFile,int flavor, int max=-1, int LHCsqrts=8){
+void addProbtoTree(char* inputFile,int flavor, int max=-1, int LHCsqrts=8){
   //flavor: 1:4e, 2:4mu, 3:2e2mu
 
 
@@ -25,6 +25,8 @@ void addProbtoTreeNew(char* inputFile,int flavor, int max=-1, int LHCsqrts=8){
     // if this function is invoked multiple times per session
     includePathIsSet = true;
   }
+
+  gROOT->LoadMacro("$CMSSW_BASE/src/ZZMatrixElement/MELA/interface/Mela.h+");
 
   Mela myMELA(LHCsqrts,flavor);
   
