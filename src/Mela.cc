@@ -272,13 +272,18 @@ void Mela::computeP(float mZZ, float mZ1, float mZ2, // input kinematics
 	if ( myModel_ == TVar::PSHZZ_4l )  constant = 6.0;
 	if ( myModel_ == TVar::HDHZZ_4l )  constant = 2.1;
 	if ( myModel_ == TVar::TZZ_4l )  constant = 0.6;
+	if ( myModel_ == TVar::TZZ_2hplus_4l )  constant = 2.8;
+	if ( myModel_ == TVar::PTZZ_2hminus_4l )  constant = 4.3;
+	if ( myModel_ == TVar::TZZ_2bplus_4l )  constant = 1.0;
       }  else {
 	if ( myModel_ == TVar::PSHZZ_4l )  constant = 7.0;
 	if ( myModel_ == TVar::HDHZZ_4l )  constant = 2.3;
 	if ( myModel_ == TVar::TZZ_4l )  constant = 1.4;
+	if ( myModel_ == TVar::TZZ_2hplus_4l )  constant = 2.5;
+	if ( myModel_ == TVar::PTZZ_2hminus_4l )  constant = 3.6;
+	if ( myModel_ == TVar::TZZ_2bplus_4l )  constant = 1.2;
       }
-      if ( myModel_ == TVar::PTZZ_2hminus_4l )  constant = 1e+10;
-      if ( myModel_ == TVar::TZZ_2hplus_4l )  constant = 1e+10;
+
     } 
     // qqb productions 
     if ( myME_ == TVar::JHUGen && myProduction_ == TVar::QQB  ) {
@@ -294,9 +299,64 @@ void Mela::computeP(float mZZ, float mZ1, float mZ2, // input kinematics
     }
     // production independent calculations
     if ( myME_ == TVar::JHUGen && myProduction_ == TVar::INDEPENDENT  ) {
-      if ( myModel_ == TVar::VZZ_4l )  constant = 1e+10;
-      if ( myModel_ == TVar::AVZZ_4l )  constant = 1e+10;
-      if ( myModel_ == TVar::TZZ_4l )  constant = 1.6e+9;
+      if ( flavor == 3) {
+	if ( myModel_ == TVar::VZZ_4l )  constant = 1.3e+10;
+	if ( myModel_ == TVar::AVZZ_4l )  constant = 1.3e+10;
+	if ( myModel_ == TVar::TZZ_4l )  constant = 1.6e+9;
+      } else {
+	if ( myModel_ == TVar::VZZ_4l )  constant = 1.6e+10;
+	if ( myModel_ == TVar::AVZZ_4l )  constant = 1.4e+10;
+	if ( myModel_ == TVar::TZZ_4l )  constant = 2.0e+9;
+      }
+    } 
+
+
+    // 
+    // define the constants to be used on analytical
+    // 
+    
+    // gg productions 
+    if ( myME_ == TVar::ANALYTICAL && myProduction_ == TVar::GG  ) {
+      if ( flavor == 3 ) {
+	if ( myModel_ == TVar::PSHZZ_4l )  constant = 6.4;
+	if ( myModel_ == TVar::HDHZZ_4l )  constant = 2.2;
+	if ( myModel_ == TVar::TZZ_4l )  constant = 9.5;
+	if ( myModel_ == TVar::TZZ_2hplus_4l )  constant = 7.3e7;
+	if ( myModel_ == TVar::PTZZ_2hminus_4l )  constant = 1.1e8;
+	if ( myModel_ == TVar::TZZ_2bplus_4l )  constant = 16.3;
+      }  else {
+	if ( myModel_ == TVar::PSHZZ_4l )  constant = 6.5;
+	if ( myModel_ == TVar::HDHZZ_4l )  constant = 2.2;
+	if ( myModel_ == TVar::TZZ_4l )  constant = 9.3;
+	if ( myModel_ == TVar::TZZ_2hplus_4l )  constant = 1.1e8;
+	if ( myModel_ == TVar::PTZZ_2hminus_4l )  constant = 1.9e8;
+	if ( myModel_ == TVar::TZZ_2bplus_4l )  constant = 15.6;
+      }
+
+    } 
+    // qqb productions 
+    if ( myME_ == TVar::ANALYTICAL && myProduction_ == TVar::QQB  ) {
+      if ( flavor == 3 ) {
+	if ( myModel_ == TVar::VZZ_4l )  constant = 4.6e5;
+	if ( myModel_ == TVar::AVZZ_4l )  constant = 4.0e5;
+	if ( myModel_ == TVar::TZZ_4l )  constant = 7.9;
+      } else {
+	if ( myModel_ == TVar::VZZ_4l )  constant = 4.6e5;
+	if ( myModel_ == TVar::AVZZ_4l )  constant = 4.0e5;
+	if ( myModel_ == TVar::TZZ_4l )  constant = 7.9;
+      }
+    }
+    // production independent calculations
+    if ( myME_ == TVar::ANALYTICAL && myProduction_ == TVar::INDEPENDENT  ) {
+      if ( flavor == 3) {
+	if ( myModel_ == TVar::VZZ_4l )  constant = 3.4e4;
+	if ( myModel_ == TVar::AVZZ_4l )  constant = 3.4e4;
+	if ( myModel_ == TVar::TZZ_4l )  constant = 0.66;
+      } else {
+	if ( myModel_ == TVar::VZZ_4l )  constant = 3.4e4;
+	if ( myModel_ == TVar::AVZZ_4l )  constant = 3.4e4;
+	if ( myModel_ == TVar::TZZ_4l )  constant = .66;
+      }
     } 
     
     // ***
