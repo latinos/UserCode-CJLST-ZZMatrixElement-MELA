@@ -186,8 +186,10 @@ void Mela::computeP(float mZZ, float mZ1, float mZ2, // input kinematics
 		       float phi,
 		       float phi1,
 		       int flavor, 
-		       float& prob){                   // output probability
-    
+		       float& prob){                   // output probability    
+
+  //cout << "Mela::computeP - begin" << endl;
+
   costhetastar_rrv->setVal(costhetastar);
   costheta1_rrv->setVal(costheta1);
   costheta2_rrv->setVal(costheta2);
@@ -197,6 +199,8 @@ void Mela::computeP(float mZZ, float mZ1, float mZ2, // input kinematics
   z1mass_rrv->setVal(mZ1);
   z2mass_rrv->setVal(mZ2);
   mzz_rrv->setVal(mZZ);
+
+  //cout << "Mela::computeP() - set RooRealVars" << endl;
   
   float constant = 1.;
   
@@ -204,6 +208,8 @@ void Mela::computeP(float mZZ, float mZ1, float mZ2, // input kinematics
   // analytical calculations
   // 
   if ( myME_ == TVar::ANALYTICAL ) {
+    
+    //cout << "Mela::computeP() - analytical calc " << endl;
    
     if(mZZ>100.){
 
@@ -218,12 +224,86 @@ void Mela::computeP(float mZZ, float mZ1, float mZ2, // input kinematics
     }else{
       prob = -99.0;
     }
-  } 
+    
+    //cout << "Mela::computeP() - getting analytical c-constants" << endl;
+    
+    // 
+    // define the constants to be used on analytical
+    // 
+    
+    // gg productions 
+    if ( myME_ == TVar::ANALYTICAL && myProduction_ == TVar::GG  ) {
+      if ( flavor == 3 ) {
+	
+	//cout << "ANALYTICAL - GG - flavor=3" << endl;
+	
+	if ( myModel_ == TVar::PSHZZ_4l )  constant = 6.4;
+	if ( myModel_ == TVar::HDHZZ_4l )  constant = 2.2;
+	if ( myModel_ == TVar::TZZ_4l )  constant = 9.5;
+	if ( myModel_ == TVar::TZZ_2hplus_4l )  constant = 7.3e7;
+	if ( myModel_ == TVar::PTZZ_2hminus_4l )  constant = 1.1e8;
+	if ( myModel_ == TVar::TZZ_2bplus_4l )  constant = 16.3;
+      }  else {
+
+	//cout << "ANALYTICAL - GG - flavor!=3" << endl;
+
+	if ( myModel_ == TVar::PSHZZ_4l )  constant = 6.5;
+	if ( myModel_ == TVar::HDHZZ_4l )  constant = 2.2;
+	if ( myModel_ == TVar::TZZ_4l )  constant = 9.3;
+	if ( myModel_ == TVar::TZZ_2hplus_4l )  constant = 1.1e8;
+	if ( myModel_ == TVar::PTZZ_2hminus_4l )  constant = 1.9e8;
+	if ( myModel_ == TVar::TZZ_2bplus_4l )  constant = 15.6;
+      }
+
+    }
+    // qqb productions 
+    if ( myME_ == TVar::ANALYTICAL && myProduction_ == TVar::QQB  ) {
+      if ( flavor == 3 ) {
+
+	//cout << "ANALYTICAL - QQB - flavor=3" << endl;
+
+	if ( myModel_ == TVar::VZZ_4l )  constant = 4.6e5;
+	if ( myModel_ == TVar::AVZZ_4l )  constant = 4.0e5;
+	if ( myModel_ == TVar::TZZ_4l )  constant = 7.9;
+      } else {
+
+	//cout << "ANALYTICAL - QQB - flavor!=3" << endl;
+
+	if ( myModel_ == TVar::VZZ_4l )  constant = 4.6e5;
+	if ( myModel_ == TVar::AVZZ_4l )  constant = 4.0e5;
+	if ( myModel_ == TVar::TZZ_4l )  constant = 7.9;
+      }
+    }
+    // production independent calculations
+    if ( myME_ == TVar::ANALYTICAL && myProduction_ == TVar::INDEPENDENT  ) {
+      if ( flavor == 3) {
+
+	//cout << "ANALYTICAL - INDEP - flavor=3" << endl;
+
+	if ( myModel_ == TVar::VZZ_4l )  constant = 3.4e4;
+	if ( myModel_ == TVar::AVZZ_4l )  constant = 3.4e4;
+	if ( myModel_ == TVar::TZZ_4l )  constant = 0.66;
+      } else {
+
+	//cout << "ANALYTICAL - INDEP - flavor!=3" << endl;
+
+	if ( myModel_ == TVar::VZZ_4l )  constant = 3.4e4;
+	if ( myModel_ == TVar::AVZZ_4l )  constant = 3.4e4;
+	if ( myModel_ == TVar::TZZ_4l )  constant = .66;
+      }
+    } 
+
+
+  }
+
+  //cout << "Mela::computeP() - I am out!!" << endl;
 
   //
   // JHUGen or MCFM 
   //
   if ( myME_ == TVar::JHUGen || myME_ == TVar::MCFM ) {
+
+    //cout << "Mela::computeP() - JHUGen/MCFM calc " << endl;
     
     //initialize variables
     checkZorder(mZ1,mZ2,costhetastar,costheta1,costheta2,phi,phi1);
@@ -261,6 +341,8 @@ void Mela::computeP(float mZZ, float mZ1, float mZ2, // input kinematics
       else
 	prob *= vaScale_2e2mu->Eval(mZZ);
     }
+
+    //cout << "Mela::computeP() - getting JHUGen c-constants" << endl;
 
     // 
     // define the constants to be used on JHUGen
@@ -309,59 +391,12 @@ void Mela::computeP(float mZZ, float mZ1, float mZ2, // input kinematics
 	if ( myModel_ == TVar::TZZ_4l )  constant = 2.0e+9;
       }
     } 
-
-
-    // 
-    // define the constants to be used on analytical
-    // 
-    
-    // gg productions 
-    if ( myME_ == TVar::ANALYTICAL && myProduction_ == TVar::GG  ) {
-      if ( flavor == 3 ) {
-	if ( myModel_ == TVar::PSHZZ_4l )  constant = 6.4;
-	if ( myModel_ == TVar::HDHZZ_4l )  constant = 2.2;
-	if ( myModel_ == TVar::TZZ_4l )  constant = 9.5;
-	if ( myModel_ == TVar::TZZ_2hplus_4l )  constant = 7.3e7;
-	if ( myModel_ == TVar::PTZZ_2hminus_4l )  constant = 1.1e8;
-	if ( myModel_ == TVar::TZZ_2bplus_4l )  constant = 16.3;
-      }  else {
-	if ( myModel_ == TVar::PSHZZ_4l )  constant = 6.5;
-	if ( myModel_ == TVar::HDHZZ_4l )  constant = 2.2;
-	if ( myModel_ == TVar::TZZ_4l )  constant = 9.3;
-	if ( myModel_ == TVar::TZZ_2hplus_4l )  constant = 1.1e8;
-	if ( myModel_ == TVar::PTZZ_2hminus_4l )  constant = 1.9e8;
-	if ( myModel_ == TVar::TZZ_2bplus_4l )  constant = 15.6;
-      }
-
-    } 
-    // qqb productions 
-    if ( myME_ == TVar::ANALYTICAL && myProduction_ == TVar::QQB  ) {
-      if ( flavor == 3 ) {
-	if ( myModel_ == TVar::VZZ_4l )  constant = 4.6e5;
-	if ( myModel_ == TVar::AVZZ_4l )  constant = 4.0e5;
-	if ( myModel_ == TVar::TZZ_4l )  constant = 7.9;
-      } else {
-	if ( myModel_ == TVar::VZZ_4l )  constant = 4.6e5;
-	if ( myModel_ == TVar::AVZZ_4l )  constant = 4.0e5;
-	if ( myModel_ == TVar::TZZ_4l )  constant = 7.9;
-      }
-    }
-    // production independent calculations
-    if ( myME_ == TVar::ANALYTICAL && myProduction_ == TVar::INDEPENDENT  ) {
-      if ( flavor == 3) {
-	if ( myModel_ == TVar::VZZ_4l )  constant = 3.4e4;
-	if ( myModel_ == TVar::AVZZ_4l )  constant = 3.4e4;
-	if ( myModel_ == TVar::TZZ_4l )  constant = 0.66;
-      } else {
-	if ( myModel_ == TVar::VZZ_4l )  constant = 3.4e4;
-	if ( myModel_ == TVar::AVZZ_4l )  constant = 3.4e4;
-	if ( myModel_ == TVar::TZZ_4l )  constant = .66;
-      }
-    } 
     
     // ***
     // experimental for the ZZ decay 
     // ****
+    
+    //cout << "Mela::computeP() - production indep MCFM" << endl;
     
     if ( myME_ == TVar::MCFM 
 	 && myProduction_ == TVar::INDEPENDENT 
@@ -369,13 +404,13 @@ void Mela::computeP(float mZZ, float mZ1, float mZ2, // input kinematics
 	 )
       {
 	prob = 0.;
-	int gridsize_hs = 10; 
-	double hs_min = -1.;
+	int gridsize_hs = 5; 
+	double hs_min = 0.; //-1.;
 	double hs_max = 1.;
 	double hs_step =( hs_max - hs_min ) / double (gridsize_hs); 
 	
-	int gridsize_phi1 = 10; 
-	double phi1_min = -TMath::Pi();
+	int gridsize_phi1 = 5; 
+	double phi1_min = 0.; //-TMath::Pi();
 	double phi1_max = TMath::Pi();
 	double phi1_step =( phi1_max - phi1_min ) / double (gridsize_phi1); 
 	
@@ -395,7 +430,9 @@ void Mela::computeP(float mZZ, float mZ1, float mZ2, // input kinematics
 	prob =  prob / float ( (gridsize_hs + 1) * (gridsize_phi1 +1 )); 
       }
   }
+
   prob *= constant; 
+
 }
 
 void Mela::computeP(TLorentzVector Z1_lept1, int Z1_lept1Id,  // input 4-vectors
