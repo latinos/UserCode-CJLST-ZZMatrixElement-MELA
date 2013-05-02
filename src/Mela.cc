@@ -354,15 +354,15 @@ void Mela::computeP(float mZZ, float mZ1, float mZ2, // input kinematics
 	if ( myModel_ == TVar::PSHZZ_4l )  constant = 6.0;
 	if ( myModel_ == TVar::HDHZZ_4l )  constant = 2.1;
 	if ( myModel_ == TVar::TZZ_4l )  constant = 0.6/2.;
-	if ( myModel_ == TVar::TZZ_2hplus_4l )  constant = 2.8;
-	if ( myModel_ == TVar::PTZZ_2hminus_4l )  constant = 4.3;
+	if ( myModel_ == TVar::TZZ_2hplus_4l )  constant = 2.8e10;
+	if ( myModel_ == TVar::PTZZ_2hminus_4l )  constant = 4.3e10;
 	if ( myModel_ == TVar::TZZ_2bplus_4l )  constant = 1.0;
       }  else {
 	if ( myModel_ == TVar::PSHZZ_4l )  constant = 7.0;
 	if ( myModel_ == TVar::HDHZZ_4l )  constant = 2.3;
 	if ( myModel_ == TVar::TZZ_4l )  constant = 1.4/2.;
-	if ( myModel_ == TVar::TZZ_2hplus_4l )  constant = 2.5;
-	if ( myModel_ == TVar::PTZZ_2hminus_4l )  constant = 3.6;
+	if ( myModel_ == TVar::TZZ_2hplus_4l )  constant = 2.5e10;
+	if ( myModel_ == TVar::PTZZ_2hminus_4l )  constant = 3.6e10;
 	if ( myModel_ == TVar::TZZ_2bplus_4l )  constant = 1.2;
       }
 
