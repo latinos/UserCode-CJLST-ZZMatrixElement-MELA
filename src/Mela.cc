@@ -353,7 +353,7 @@ void Mela::computeP(float mZZ, float mZ1, float mZ2, // input kinematics
       if ( flavor == 3 ) {
 	if ( myModel_ == TVar::PSHZZ_4l )  constant = 6.0;
 	if ( myModel_ == TVar::HDHZZ_4l )  constant = 2.1;
-	if ( myModel_ == TVar::TZZ_4l )  constant = 0.6/2.;
+	if ( myModel_ == TVar::TZZ_4l )  constant = 0.6;
 	if ( myModel_ == TVar::TZZ_2hplus_4l )  constant = 2.8e10;
 	if ( myModel_ == TVar::PTZZ_2hminus_4l )  constant = 4.3e10;
 	if ( myModel_ == TVar::TZZ_2bplus_4l )  constant = 1.0;
@@ -370,9 +370,9 @@ void Mela::computeP(float mZZ, float mZ1, float mZ2, // input kinematics
     // qqb productions 
     if ( myME_ == TVar::JHUGen && myProduction_ == TVar::QQB  ) {
       if ( flavor == 3 ) {
-	if ( myModel_ == TVar::VZZ_4l )  constant = 16/2.;
-	if ( myModel_ == TVar::AVZZ_4l )  constant = 13/2.;
-	if ( myModel_ == TVar::TZZ_4l )  constant = 13/2.;
+	if ( myModel_ == TVar::VZZ_4l )  constant = 16.;
+	if ( myModel_ == TVar::AVZZ_4l )  constant = 13.;
+	if ( myModel_ == TVar::TZZ_4l )  constant = 13.;
       } else {
 	if ( myModel_ == TVar::VZZ_4l )  constant = 38/2.;
 	if ( myModel_ == TVar::AVZZ_4l )  constant = 28/2.;
