@@ -396,7 +396,7 @@ double JHUGenMatEl(TVar::Process process, TVar::Production production, mcfm_even
   if ( production == TVar::QQB ) {
     if ( process == TVar::TZZ_4l ) {
       // -- YY: note that even if it is called xggcouplings, we are only testing xqq!
-      __modgraviton_MOD_evalamp_qqb_g_vv(p4, &MReso,  &GaReso, Gggcoupl, Gvvcoupl, MYIDUP, &MatElSq);
+      __modgraviton_MOD_evalamp_qqb_g_vv(p4, &MReso,  &GaReso, Gqqcoupl, Gvvcoupl, MYIDUP, &MatElSq);
     }
     if ( process == TVar::VZZ_4l || process == TVar::AVZZ_4l ) {
       // -- YY: note that even if it is called xggcouplings, we are only testing xqq!
