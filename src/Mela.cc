@@ -314,7 +314,7 @@ void Mela::computeP(float mZZ, float mZ1, float mZ2, // input kinematics
 
     // adding scale factors for MCMF calculation
     // -- taken from old code --
-    
+    /*    
     if(flavor==1 && myME_ == TVar::MCFM){
       if(mZZ > 900)                   
 	prob *= vaScale_4e->Eval(900.);
@@ -341,7 +341,7 @@ void Mela::computeP(float mZZ, float mZ1, float mZ2, // input kinematics
       else
 	prob *= vaScale_2e2mu->Eval(mZZ);
     }
-
+    */
     //cout << "Mela::computeP() - getting JHUGen c-constants" << endl;
 
     // 
@@ -354,16 +354,16 @@ void Mela::computeP(float mZZ, float mZ1, float mZ2, // input kinematics
 	if ( myModel_ == TVar::PSHZZ_4l )  constant = 6.0;
 	if ( myModel_ == TVar::HDHZZ_4l )  constant = 2.1;
 	if ( myModel_ == TVar::TZZ_4l )  constant = 0.6;
-	if ( myModel_ == TVar::TZZ_2hplus_4l )  constant = 2.8e10;
-	if ( myModel_ == TVar::PTZZ_2hminus_4l )  constant = 4.3e10;
-	if ( myModel_ == TVar::TZZ_2bplus_4l )  constant = 1.0;
+	if ( myModel_ == TVar::TZZ_2hplus_4l )  constant = 2.7e10;
+	if ( myModel_ == TVar::PTZZ_2hminus_4l )  constant = 4.1e10;
+	if ( myModel_ == TVar::TZZ_2bplus_4l )  constant = .97;
       }  else {
 	if ( myModel_ == TVar::PSHZZ_4l )  constant = 7.0;
 	if ( myModel_ == TVar::HDHZZ_4l )  constant = 2.3;
 	if ( myModel_ == TVar::TZZ_4l )  constant = 1.4/2.;
-	if ( myModel_ == TVar::TZZ_2hplus_4l )  constant = 2.5e10;
-	if ( myModel_ == TVar::PTZZ_2hminus_4l )  constant = 3.6e10;
-	if ( myModel_ == TVar::TZZ_2bplus_4l )  constant = 1.2;
+	if ( myModel_ == TVar::TZZ_2hplus_4l )  constant = 2.6e10;
+	if ( myModel_ == TVar::PTZZ_2hminus_4l )  constant = 3.7e10;
+	if ( myModel_ == TVar::TZZ_2bplus_4l )  constant = 1.26;
       }
 
     } 
