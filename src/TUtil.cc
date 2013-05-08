@@ -390,7 +390,7 @@ double JHUGenMatEl(TVar::Process process, TVar::Production production, mcfm_even
       __modgraviton_MOD_evalamp_g_vv(P, &MReso,  &GaReso, Gvvcoupl, MYIDUP, &MatElSq);
 
     if ( process == TVar::VZZ_4l || process == TVar::AVZZ_4l )
-      __modzprime_MOD_evalamp_zprime_vv(P, &MReso,  &GaReso, Gvvcoupl, MYIDUP, &MatElSq);
+      __modzprime_MOD_evalamp_zprime_vv(P, &MReso,  &GaReso, Zvvcoupl, MYIDUP, &MatElSq);
   } 
   
   if ( production == TVar::QQB ) {
