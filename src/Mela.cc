@@ -498,19 +498,19 @@ void Mela::computePM4l(TLorentzVector Z1_lept1, int Z1_lept1Id,  // input 4-vect
   TVar::LeptonFlavor flavor = TVar::Flavor_Dummy;
 
   if( abs(Z1_lept1Id)==11 &&  abs(Z1_lept2Id)==11 &&
-      abs(Z2_lept1Id)==11 &&  abs(Z1_lept2Id)==11 )
+      abs(Z2_lept1Id)==11 &&  abs(Z2_lept2Id)==11 )
     flavor = TVar::Flavor_4e;
   
   if( abs(Z1_lept1Id)==13 &&  abs(Z1_lept2Id)==13 &&
-      abs(Z2_lept1Id)==13 &&  abs(Z1_lept2Id)==13 )
+      abs(Z2_lept1Id)==13 &&  abs(Z2_lept2Id)==13 )
     flavor = TVar::Flavor_4mu;
 
   if( abs(Z1_lept1Id)==11 &&  abs(Z1_lept2Id)==11 &&
-      abs(Z2_lept1Id)==13 &&  abs(Z1_lept2Id)==13 )
+      abs(Z2_lept1Id)==13 &&  abs(Z2_lept2Id)==13 )
     flavor = TVar::Flavor_2e2mu;
 
   if( abs(Z1_lept1Id)==13 &&  abs(Z1_lept2Id)==13 &&
-      abs(Z2_lept1Id)==11 &&  abs(Z1_lept2Id)==11 )
+      abs(Z2_lept1Id)==11 &&  abs(Z2_lept2Id)==11 )
     flavor = TVar::Flavor_2e2mu;
   
   
