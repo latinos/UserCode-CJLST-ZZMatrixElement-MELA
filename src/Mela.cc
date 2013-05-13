@@ -314,7 +314,7 @@ void Mela::computeP(float mZZ, float mZ1, float mZ2, // input kinematics
 
     // adding scale factors for MCMF calculation
     // -- taken from old code --
-    /*    
+
     if(flavor==1 && myME_ == TVar::MCFM){
       if(mZZ > 900)                   
 	prob *= vaScale_4e->Eval(900.);
@@ -341,7 +341,7 @@ void Mela::computeP(float mZZ, float mZ1, float mZ2, // input kinematics
       else
 	prob *= vaScale_2e2mu->Eval(mZZ);
     }
-    */
+
     //cout << "Mela::computeP() - getting JHUGen c-constants" << endl;
 
     // 
