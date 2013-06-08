@@ -102,6 +102,7 @@ public:
   TGraph* vaScale_4e;
   TGraph* vaScale_4mu;
   TGraph* vaScale_2e2mu;
+  TGraph* DggZZ_scalefactor;
 
  private:
 

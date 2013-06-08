@@ -71,8 +71,16 @@ Mela::Mela(int LHCsqrts, float mh)
   vaScale_4mu   = (TGraph*)sf->Get("scaleFactors_4mu");
   vaScale_2e2mu = (TGraph*)sf->Get("scaleFactors_2e2mu");
   sf->Close(); 
-
-
+  edm::FileInPath DggScaleFactorFile("ZZMatrixElement/MELA/data/scalefactor_DggZZ.root");
+  //cout << DggScaleFactorFile.fullPath().c_str() << endl;
+  TFile* af = new TFile(DggScaleFactorFile.fullPath().c_str(),"r");
+  DggZZ_scalefactor = (TGraph*) af->Get("scalefactor");
+  af->Close();
+  assert(vaScale_4e);
+  assert(vaScale_4mu);
+  assert(vaScale_2e2mu);
+  assert(DggZZ_scalefactor);
+  
   //
   // setup supermela
   //
@@ -91,7 +99,7 @@ Mela::Mela(int LHCsqrts, float mh)
   //std::cout << "before supermela, pathToCards: " <<cardpath<< std::endl;
   edm::FileInPath cardfile(cardpath);
   std::string cpath=cardfile.fullPath();
-  std::cout << cpath.substr(0,cpath.length()-14).c_str()  <<std::endl;
+  //std::cout << cpath.substr(0,cpath.length()-14).c_str()  <<std::endl;
   super->SetPathToCards(cpath.substr(0,cpath.length()-14).c_str() );
   super->SetVerbosity(false);
   // std::cout << "starting superMELA initialization" << std::endl;
@@ -189,6 +197,7 @@ void Mela::computeP(float mZZ, float mZ1, float mZ2, // input kinematics
 		       float& prob){                   // output probability    
 
   //cout << "Mela::computeP - begin" << endl;
+  //cout << "calculator: " << myME_ << " model: " << myModel_ << " production: " << myProduction_ << endl;
 
   costhetastar_rrv->setVal(costhetastar);
   costheta1_rrv->setVal(costheta1);
@@ -253,6 +262,7 @@ void Mela::computeP(float mZZ, float mZ1, float mZ2, // input kinematics
 	if ( myModel_ == TVar::TZZ_2hplus_4l )  constant = 1.1e8;
 	if ( myModel_ == TVar::PTZZ_2hminus_4l )  constant = 1.9e8;
 	if ( myModel_ == TVar::TZZ_2bplus_4l )  constant = 15.6;
+
       }
 
     }
@@ -312,35 +322,104 @@ void Mela::computeP(float mZZ, float mZ1, float mZ2, // input kinematics
 		    phi, phi1, flavor,
 		    myModel_, myME_,  myProduction_,  prob);
 
+    //cout << "Mela::computeP() - mZZ: " << mZZ << endl;
+    //cout << "Mela::computeP() - mZ1: " << mZ1 << endl;
+    //cout << "Mela::computeP() - mZ2: " << mZ2 << endl;
+    //cout << "Mela::computeP() - costheta1: " << costheta1 << endl;
+    //cout << "Mela::computeP() - costheta2: " << costheta2 << endl;
+    //cout << "Mela::computeP() - costhetastar: " << costhetastar << endl;
+    //cout << "Mela::computeP() - phi: " << phi << endl;
+    //cout << "Mela::computeP() - phi1: " << phi1 << endl;    
+    //cout << "Mela::computeP() - prob: " << prob << endl;
+
     // adding scale factors for MCMF calculation
     // -- taken from old code --
 
+    // note: constants are being added to ggZZ ME calculation 
+    // for the purpose of building DggZZ to separate qqZZ from
+    // ggZZ.  These constants have been tune on the unadulterated
+    // qqZZ ME calculation, so the qqZZ scale factors should be 
+    // included inorder to cancel those in the qqZZ ME calc
+
+    // 4e scale factors
     if(flavor==1 && myME_ == TVar::MCFM){
-      if(mZZ > 900)                   
-	prob *= vaScale_4e->Eval(900.);
-      else if (mZZ <  100 )
-	prob *= vaScale_4e->Eval(100.);
-      else
-	prob *= vaScale_4e->Eval(mZZ);
-    }
 
+      // for ggZZ 
+      if(myProduction_ == TVar::GG){
+
+	if(mZZ > 900)
+	  prob *=vaScale_4e->Eval(900.)/DggZZ_scalefactor->Eval(900.);
+	else if (mZZ <  110 )
+	  prob *=vaScale_4e->Eval(110.)/DggZZ_scalefactor->Eval(110.);
+	else
+	  prob *=vaScale_4e->Eval(mZZ)/DggZZ_scalefactor->Eval(mZZ);
+	
+      }// end GG
+
+      // for qqZZ
+      if(myProduction_ == TVar::QQB){
+
+	if(mZZ > 900)
+	  prob *= vaScale_4e->Eval(900.);
+	else if (mZZ <  100 )
+	  prob *= vaScale_4e->Eval(100.);
+	else
+	  prob *= vaScale_4e->Eval(mZZ);
+
+      }// end QQB 
+
+    }// end 4e scale factors
+
+    // 4mu scale factors
     if(flavor==2 && myME_ == TVar::MCFM){
-      if(mZZ > 900)                   
-	prob *= vaScale_4mu->Eval(900.);
-      else if (mZZ <  100 )
-	prob *= vaScale_4mu->Eval(100.);
-      else
-	prob *= vaScale_4mu->Eval(mZZ);
-    }
+      
+      // for ggZZ 
+      if(myProduction_ == TVar::GG){
+	if(mZZ > 900)                   
+	  prob *=vaScale_4mu->Eval(900.)/DggZZ_scalefactor->Eval(900.);
+	else if (mZZ <  110 )
+	  prob *=vaScale_4mu->Eval(110.)/DggZZ_scalefactor->Eval(110.);
+	else
+	  prob *=vaScale_4mu->Eval(mZZ)/DggZZ_scalefactor->Eval(mZZ);
+      }// end GG
+            
+      // for qqZZ
+      if(myProduction_ == TVar::QQB){
+	if(mZZ > 900)                   
+	  prob *= vaScale_4mu->Eval(900.);
+	else if (mZZ <  100 )
+	  prob *= vaScale_4mu->Eval(100.);
+	else
+	  prob *= vaScale_4mu->Eval(mZZ);
+      }// end qqZZ
 
+    }// end 4mu scale factors
+
+    // 2e2mu scale factors
     if(flavor==3 && myME_ == TVar::MCFM){
-      if(mZZ > 900)                   
-	prob *= vaScale_2e2mu->Eval(900.);
-      else if (mZZ <  100 )
-	prob *= vaScale_2e2mu->Eval(100.);
+
+      // for ggZZ 
+      if(myProduction_ == TVar::GG){
+	if(mZZ > 900) 
+	  prob *=vaScale_2e2mu->Eval(900.)/DggZZ_scalefactor->Eval(900.);
+      else if (mZZ <  110 )
+	  prob *=vaScale_2e2mu->Eval(110.)/DggZZ_scalefactor->Eval(110.);
       else
-	prob *= vaScale_2e2mu->Eval(mZZ);
-    }
+	  prob *=vaScale_2e2mu->Eval(mZZ)/DggZZ_scalefactor->Eval(mZZ);
+
+      }// end GG
+
+      // for qqZZ
+      if(myProduction_ == TVar::QQB){
+	if(mZZ > 900)                   
+	  prob *= vaScale_2e2mu->Eval(900.);
+	else if (mZZ <  100 )
+	  prob *= vaScale_2e2mu->Eval(100.);
+	else
+	  prob *= vaScale_2e2mu->Eval(mZZ);
+      }// end qqZZ
+
+    }// end 2e2mu scale factors
 
     //cout << "Mela::computeP() - getting JHUGen c-constants" << endl;
 
@@ -428,6 +507,37 @@ void Mela::computeP(float mZZ, float mZ1, float mZ2, // input kinematics
 	  }
 	}
 	prob =  prob / float ( (gridsize_hs + 1) * (gridsize_phi1 +1 )); 
+      
+	// adding scale factors for MCMF calculation
+	// -- taken from old code --
+	
+	if(flavor==1){
+	  if(mZZ > 900)                   
+	    prob *= vaScale_4e->Eval(900.);
+	  else if (mZZ <  100 )
+	    prob *= vaScale_4e->Eval(100.);
+	  else
+	    prob *= vaScale_4e->Eval(mZZ);
+	}
+	
+	if(flavor==2){
+	  if(mZZ > 900)                   
+	    prob *= vaScale_4mu->Eval(900.);
+	  else if (mZZ <  100 )
+	    prob *= vaScale_4mu->Eval(100.);
+	  else
+	    prob *= vaScale_4mu->Eval(mZZ);
+	}
+	
+	if(flavor==3){
+	  if(mZZ > 900)                   
+	    prob *= vaScale_2e2mu->Eval(900.);
+	  else if (mZZ <  100 )
+	    prob *= vaScale_2e2mu->Eval(100.);
+	  else
+	    prob *= vaScale_2e2mu->Eval(mZZ);
+	}
+	
       }
   }
 
